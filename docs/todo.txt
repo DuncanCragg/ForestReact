@@ -24,3 +24,5 @@ To Do
  -
  - React cpt refers to state and 'subscribes' to it, but what about 'watching.counter'? what if that changes?
  - .. and giphy.url instead of image.. relies on 'own' state subscribing and setting something for render
+ - extract the children which are too coupled to React
+    - make it a list of UIDs and work out react render of children from object graph
