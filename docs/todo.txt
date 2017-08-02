@@ -1,28 +1,33 @@
 To Do
 -----
 
- - any other way to pass thread than setTimeout(1)?
- - fetch:
-   - timeout? don't use fetch
+- autogenerate UIDs
+
+- render is too tightly coupled here, as a react class
+   - extract the children, which are too coupled to React
+   - make it a list of UIDs and work out react render of children from object graph
+   - can have remote URL in renderTree, without evaluate of course: send user-state over the wire
+
+- more widgets: selector, textarea, radio, checkbox.. move to another file
+   - separate out gui widgets from 'this'
+
+- fetch remote objects:
    - refresh? after viewed and time rel to cache ttl
-   - check fetch()ing a URL!; lastmod/etag?
+   - check actually fetch()ing a URL!; lastmod/etag?
    - error on fetch
-   - fetch: empty state first, so deletions can be picked up
- - wrap remote with Forest, like WebObjects did?
- - remote only need Notify and render
- - render is too tightly coupled here, as a react class
- - ensureObjectState f(Forest.objects[uid]) add observer to Notify!
- - widgets expand: selector, textarea, radio, checkbox.. move to another file
- - separate out gui widgets from 'this'
- -
- - only look through giphy (url) if button pressed, but then need to look through when it comes in and notify/evaluates.. ?
- - every view-through fetches means only don't notify when it's not changed .. and giphy always changes so get stuck in loop
- - giphy: opaque URLs; non-idempotency
- - autogenerate UIDs
- - can have remote URL in renderTree, without evaluate of course: send user-state over the wire
- - isomorphism
- -
- - React cpt refers to state and 'subscribes' to it, but what about 'watching.counter'? what if that changes?
- - .. and giphy.url instead of image.. relies on 'own' state subscribing and setting something for render
- - extract the children which are too coupled to React
-    - make it a list of UIDs and work out react render of children from object graph
+   - timeout? don't use fetch!
+- wrap remote with Forest, like WebObjects did?
+   - remote only need Notify and render
+- only look through giphy (url) if button pressed, but then need to look through when it comes in and notify/evaluates.. ?
+   - every view-through fetches means only don't notify when it's not changed .. and giphy always changes so get stuck in loop
+   - giphy: opaque URLs; non-idempotency
+- ensureObjectState if(Forest.objects[uid]) add observer to Notify!
+
+- empty state first, so deletions can be picked up
+
+- any other way to pass thread than setTimeout(1)? setTimeout(0)!!
+
+- isomorphism
+
+- React cpt refers to state and 'subscribes' to it, but what about 'watching.counter'? what if that changes?
+   - .. and giphy.url instead of image.. relies on 'own' state subscribing and setting something for render
