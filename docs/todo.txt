@@ -11,7 +11,7 @@ To Do
  - wrap remote with Forest, like WebObjects did?
  - remote only need Notify and render
  - render is too tightly coupled here, as a react class
- -
+ - ensureObjectState f(Forest.objects[uid]) add observer to Notify!
  - widgets expand: selector, textarea, radio, checkbox.. move to another file
  - separate out gui widgets from 'this'
  -
