@@ -1,0 +1,69 @@
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Forest Minimal Example</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.5.0/react.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.5.0/react-dom.js"></script>
+    <script src="../lib/forest.js"></script>
+    <script type="text/babel">
+
+// ------------------------------------
+
+function renderMin(state,gui){
+  return (
+    <div>
+      <hr/>
+      {state.enableCounting? 'Count!': 'Hold on...'}
+      <br/><br/>
+      {gui.textField('counter', 'Count')}
+      {gui.button('inc','increment')}
+      <br/><br/>
+      {gui.textField('message', '')}
+      <br/><br/>
+      <hr/>
+      <br/>
+      {state.children}
+    </div>);
+}
+
+const renderers = {
+  'minimal': renderMin
+};
+
+// ------------------------------------
+
+forest.renderTree(
+  { UID: 'uid-1',
+    is: 'minimal',
+    evaluate: evalMin,
+    enableCounting: true,
+    counter: 17,
+    message: 'Hello World!'
+  },
+  renderers
+);
+
+function evalMin(state){
+
+  const incrementPushed  = !state('inc') && state('user-state.inc');
+
+  return Object.assign({},
+    state('Timer') === 0? { Timer: 2000 }:{},
+    state('Timer') === 0? { enableCounting: !state('enableCounting') }:{},
+    !state('enableCounting')? { counter: 0 }:{},
+    (state('enableCounting') && incrementPushed)? { counter: state('counter') + 1}:{},
+    { inc: !!state('user-state.inc') },
+    (typeof state('user-state.message') !== 'undefined')? { message: state('user-state.message').toLowerCase() }:{}
+  );
+}
+
+// ------------------------------------
+
+    </script>
+  </body>
+</html>

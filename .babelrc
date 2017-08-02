@@ -1,0 +1,9 @@
+{
+  "plugins": [
+    ["transform-es2015-modules-umd", {
+      "globals": {
+      },
+      "exactGlobals": true
+    }]
+  ]
+}
