@@ -19,6 +19,42 @@ FOREST (Functional Observer REST) just adds HTTP to that model.
 
 OK, here's a minimal example:
 
+```javascript
+function renderMin(state,gui){
+  return (
+    <div>
+      <hr/>
+      {gui.textField('counter', 'Count')}
+      {gui.button('inc','increment')}
+      <br/><br/>
+      {gui.textField('message', '')}
+      <br/><br/><hr/><br/>
+    </div>);
+}
+
+const renderers = {
+  'minimal': renderMin
+};
+
+forest.renderTree(
+  { UID: 'uid-1',
+    is: 'minimal',
+    evaluate: evalMin,
+    counter: 17,
+    message: 'Hello World!'
+  },
+  renderers
+);
+
+function evalMin(state){
+
+  return Object.assign({},
+    (!state('inc') && state('user-state.inc'))? { counter: state('counter') + 1 }:{},
+    { inc: !!state('user-state.inc') },
+    (typeof state('user-state.message') !== 'undefined')? { message: state('user-state.message').toLowerCase() }:{}
+  );
+}
+```
 
 ## Credit
 

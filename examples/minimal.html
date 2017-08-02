@@ -27,7 +27,6 @@ function renderMin(state,gui){
       <br/><br/>
       <hr/>
       <br/>
-      {state.children}
     </div>);
 }
 
@@ -56,7 +55,7 @@ function evalMin(state){
     state('Timer') === 0? { Timer: 2000 }:{},
     state('Timer') === 0? { enableCounting: !state('enableCounting') }:{},
     !state('enableCounting')? { counter: 0 }:{},
-    (state('enableCounting') && incrementPushed)? { counter: state('counter') + 1}:{},
+    (state('enableCounting') && incrementPushed)? { counter: state('counter') + 1 }:{},
     { inc: !!state('user-state.inc') },
     (typeof state('user-state.message') !== 'undefined')? { message: state('user-state.message').toLowerCase() }:{}
   );
