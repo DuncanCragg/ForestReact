@@ -1,7 +1,7 @@
 
 # Forest
 
-A React-based, Javascript implementation of the ideas of [FOREST]() - "Functional
+A React-based, Javascript implementation of the ideas of [FOREST](https://link.springer.com/chapter/10.1007/978-1-4419-8303-9_7) - "Functional
 Observer REST" - replacing Redux in your dynamic Web pages.
 
 
