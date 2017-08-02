@@ -24,7 +24,7 @@ function renderMin(state,gui){
   return (
     <div>
       <hr/>
-      {gui.textField('counter', 'Count')}
+      <span>Count: {state.counter}</span>&nbsp;&nbsp;&nbsp;
       {gui.button('inc','increment')}
       <br/><br/>
       {gui.textField('message', '')}
