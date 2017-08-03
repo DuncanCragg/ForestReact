@@ -27,62 +27,38 @@ function classNames () {
   return classes.substr(1);
 }
 
-const ALL_TODOS = 'all';
-const ACTIVE_TODOS = 'active';
-const COMPLETED_TODOS = 'completed';
-
 function renderTodoApp(state,gui){
+
+  const numactive = state.numactive;
+  const numdone  = state.numdone;
+
   var main, footer;
-  const todos = [{ completed: false }]; //state.todos;
 
-  var activeTodoCount = todos.reduce(function (accum, todo) {
-    return todo.completed ? accum : accum + 1;
-  }, 0);
+  if (numactive || numdone) {
 
-  var completedCount = todos.length - activeTodoCount;
-
-  if (activeTodoCount || completedCount) {
-
-    var activeTodoWord = pluralize(activeTodoCount, 'item');
+    var activeTodoWord = pluralize(numactive, 'item');
     var clearButton = null;
 
-    if (completedCount > 0) {
-      clearButton = (
-        <button
-          className="clear-completed"
-          onClick={clearCompleted}>
-          Clear completed
-        </button>
-      );
+    if (numdone > 0) {
+      clearButton = <button className="clear-completed" >Clear completed</button>;
     }
 
     footer = (
       <footer className="footer">
         <span className="todo-count">
-          <strong>{activeTodoCount}</strong> {activeTodoWord} left
+          <strong>{numactive}</strong> {activeTodoWord} left
         </span>
         <ul className="filters">
-          <li> <a href="#/" className={classNames({selected: state.nowShowing === ALL_TODOS})}> All </a> </li> {' '}
-          <li> <a href="#/active" className={classNames({selected: state.nowShowing === ACTIVE_TODOS})}> Active </a> </li> {' '}
-          <li> <a href="#/completed" className={classNames({selected: state.nowShowing === COMPLETED_TODOS})}> Completed </a> </li>
+          <li> <a href="#/" className={classNames({selected: state.nowShowing === 'all'})}> All </a> </li> {' '}
+          <li> <a href="#/active" className={classNames({selected: state.nowShowing === 'active'})}> Active </a> </li> {' '}
+          <li> <a href="#/completed" className={classNames({selected: state.nowShowing === 'completed'})}> Completed </a> </li>
         </ul>
         {clearButton}
       </footer>
     );
   }
 
-  var shownTodos = todos.filter(function (todo) {
-    switch (state.nowShowing) {
-      case ACTIVE_TODOS:
-        return !todo.completed;
-      case COMPLETED_TODOS:
-        return todo.completed;
-      default:
-        return true;
-    }
-  }, this);
-
-  shownTodos = state.todos;
+  const shownTodos = state.todos;
 
   if (shownTodos.length) {
     main = (
@@ -91,7 +67,7 @@ function renderTodoApp(state,gui){
           className="toggle-all"
           type="checkbox"
           onChange={this.toggleAll}
-          checked={activeTodoCount === 0}
+          checked={numactive === 0}
         />
         <ul className="todo-list">
           {shownTodos.map((uid) => <Forest state={Forest.objects[uid]} key={uid}></Forest>)}

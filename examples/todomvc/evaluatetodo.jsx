@@ -9,6 +9,25 @@ Forest.store(
   renderers
 );
 
+/*
+  var numactive = todos.reduce(function (accum, todo) {
+    return todo.completed ? accum : accum + 1;
+  }, 0);
+
+  var numdone = todos.length - numactive;
+
+  var shownTodos = todos.filter(function (todo) {
+    switch (state.nowShowing) {
+      case 'active':
+        return !todo.completed;
+      case 'completed':
+        return todo.completed;
+      default:
+        return true;
+    }
+  }, this);
+*/
+
 function evalTodo(state){
   console.log('evalTodo', state('user-state.'));
   const r= Object.assign({},
@@ -21,6 +40,7 @@ function evalTodo(state){
         newTodo: ''
       }:{},
     { creating: !!state('user-state.newTodo-submitted') },
+    { numactive: 1, numdone: 1 }
   );
   console.log('new state: ', r);
   return r;
