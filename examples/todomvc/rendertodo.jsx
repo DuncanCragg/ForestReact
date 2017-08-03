@@ -85,7 +85,6 @@ function renderTodoApp(state,gui){
   shownTodos = state.todos;
 
   if (shownTodos.length) {
-console.log(shownTodos);
     main = (
       <section className="main">
         <input
