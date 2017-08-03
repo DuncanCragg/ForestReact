@@ -31,9 +31,9 @@ const ALL_TODOS = 'all';
 const ACTIVE_TODOS = 'active';
 const COMPLETED_TODOS = 'completed';
 
-function renderTodoApp(state){
+function renderTodoApp(state,gui){
   var main, footer;
-  const todos = []; //state.todos;
+  const todos = [{ completed: false }]; //state.todos;
 
   var activeTodoCount = todos.reduce(function (accum, todo) {
     return todo.completed ? accum : accum + 1;
@@ -41,7 +41,7 @@ function renderTodoApp(state){
 
   var completedCount = todos.length - activeTodoCount;
 
-  if (true ||activeTodoCount || completedCount) {
+  if (activeTodoCount || completedCount) {
 
     var activeTodoWord = pluralize(activeTodoCount, 'item');
     var clearButton = null;
@@ -62,29 +62,9 @@ function renderTodoApp(state){
           <strong>{activeTodoCount}</strong> {activeTodoWord} left
         </span>
         <ul className="filters">
-          <li>
-            <a
-              href="#/"
-              className={classNames({selected: state.nowShowing === ALL_TODOS})}>
-                All
-            </a>
-          </li>
-          {' '}
-          <li>
-            <a
-              href="#/active"
-              className={classNames({selected: state.nowShowing === ACTIVE_TODOS})}>
-                Active
-            </a>
-          </li>
-          {' '}
-          <li>
-            <a
-              href="#/completed"
-              className={classNames({selected: state.nowShowing === COMPLETED_TODOS})}>
-                Completed
-            </a>
-          </li>
+          <li> <a href="#/" className={classNames({selected: state.nowShowing === ALL_TODOS})}> All </a> </li> {' '}
+          <li> <a href="#/active" className={classNames({selected: state.nowShowing === ACTIVE_TODOS})}> Active </a> </li> {' '}
+          <li> <a href="#/completed" className={classNames({selected: state.nowShowing === COMPLETED_TODOS})}> Completed </a> </li>
         </ul>
         {clearButton}
       </footer>
@@ -126,14 +106,7 @@ console.log(shownTodos);
     <div>
       <header className="header">
         <h1>todos</h1>
-        <input
-          className="new-todo"
-          placeholder="What needs to be done?"
-          value={state.newTodo}
-          onKeyDown={this.handleNewTodoKeyDown}
-          onChange={this.handleChange}
-          autoFocus={true}
-        />
+        {gui.textField('newTodo','','new-todo','What needs to be done?')}
       </header>
       {main}
       {footer}

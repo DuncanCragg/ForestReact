@@ -4,7 +4,7 @@ import renderers from 'rendertodo';
 
 Forest.store(
   [
-    { UID: 'uid-1', evaluate: evalTodo,     is: 'todoapp', newTodo: '', nowShowing: 'all', todos: ['uid-2', 'uid-3'] },
+    { UID: 'uid-1', evaluate: evalTodo,     is: 'todoapp', newTodo: '', nowShowing: 'all', todos: [] },
     { UID: 'uid-2', evaluate: evalTodoItem, is: 'todoitem', title: 'banana', completed: false, editing: false },
     { UID: 'uid-3', evaluate: evalTodoItem, is: 'todoitem', title: 'mango' , completed: false, editing: false }
   ],
@@ -13,8 +13,10 @@ Forest.store(
 
 function evalTodo(state){
 console.log('evalTodo', state('is'));
-  return {
-  };
+  return Object.assign({},
+    { newTodo: state('user-state.newTodo') || '' },
+    state('user-state.newTodo-submitted')? { todos: ['uid-2', 'uid-3'] }:{}
+  );
 }
 
 function evalTodoItem(state){

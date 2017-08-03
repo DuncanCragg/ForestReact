@@ -58,6 +58,18 @@ export default class Forest extends Component {
     this.doEvaluate();
   }
 
+  ENTER_KEY = 13;
+
+  onKeyDown(name, e){
+    if (e.keyCode !== this.ENTER_KEY){
+      this.userState[name+'-submitted']=false;
+      return;
+    }
+    e.preventDefault();
+    this.userState[name+'-submitted']=true;
+    this.doEvaluate();
+  }
+
   stateAccess(p) { const r = ((path)=>{
     const uid = this.UID;
     const state = Forest.objects[uid];
@@ -117,8 +129,18 @@ export default class Forest extends Component {
     return <button className={className} onMouseDown={(e) => this.onChange(name, true)} onMouseUp={(e) => this.onChange(name, false)}>{label}</button>;
   }
 
-  textField(name, label, className){
-    return <span><span>{label} </span><input className={className} type="text" onChange={(e) => this.onChange(name, e.target.value)} value={this.state[name]} /></span>;
+  textField(name, label, className, placeholder){
+    return (
+      <span><span>{label}</span>
+            <input className={className}
+                   type="text"
+                   onChange={(e) => this.onChange(name, e.target.value)}
+                   onKeyDown={(e) => this.onKeyDown(name, e)}
+                   value={this.state[name]}
+                   placeholder={placeholder}
+                   autoFocus={true} />
+      </span>
+    );
   }
 
   image(name, label, className){
