@@ -47,7 +47,7 @@ export default class Forest extends Component {
 
   static spawnObject(state){
     const uid = this.makeUID();
-    const o = Object.assign(state, { UID: uid });
+    const o = Object.assign(state, { UID: uid, Notify: [] });
     Forest.objects[uid] = o;
     return uid;
   }
@@ -89,17 +89,29 @@ export default class Forest extends Component {
     this.doEvaluate();
   }
 
-  stateAccess(p) { const r = ((path)=>{
+  stateAccess(p,m) { const r = ((path, match)=>{
     const uid = this.UID;
     const state = Forest.objects[uid];
     const pathbits = path.split('.');
     if(pathbits.length==1){
       if(path === 'Timer') return state.Timer || 0;
-      return state[path];
+      const val = state[path];
+      if(val == null) return null;
+      if(val.constructor === Array){
+        if(match == null || match.constructor !== Object) return val;
+        return val.filter((v) => {
+          if(v.constructor !== String) return false;
+          const o = Forest.objects[v];
+          if(!o) return false;
+          if(o.Notify.indexOf(uid) === -1) o.Notify.push(uid);
+          return Object.keys(match).every(k => o[k] === match[k]);
+        });
+      }
+      return (match == null || val == match)? val: null;
     }
     const val = state[pathbits[0]];
-    if(typeof val === 'undefined' || val === null) return null;
-    if(val.constructor !== String){ console.log('Not implemented yet', path, val); return null; }
+    if(val == null) return null;
+    if(val.constructor !== String) return null;
     const linkedObject = Forest.objects[val];
     if(!linkedObject){
       if(!Forest.fetching[val]){
@@ -114,8 +126,8 @@ export default class Forest extends Component {
     if(linkedObject.Notify.indexOf(uid) === -1) linkedObject.Notify.push(uid);
     if(pathbits[1]==='') return linkedObject;
     return linkedObject[pathbits[1]];
-  })(p);
-    // console.log('path',p,'=>',r);
+  })(p,m);
+    // console.log('path',p,'match',m,'=>',r);
     return r;
   }
 

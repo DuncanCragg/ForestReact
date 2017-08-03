@@ -3,7 +3,7 @@ import Forest from 'forest';
 import renderers from 'rendertodo';
 
 Forest.store(
-  [{ UID: 'uid-1', evaluate: evalTodo, is: 'todoapp', newTodo: '', nowShowing: 'active', todos: [] }],
+  [{ UID: 'uid-1', evaluate: evalTodo, is: 'todoapp', newTodo: '', nowShowing: 'all', todos: [] }],
   renderers
 );
 
@@ -18,8 +18,9 @@ function evalTodo(state){
         newTodo: ''
       }:{},
     { creating: !!state('user-state.newTodo-submitted') },
-    { activeTodos: state('todos'), completedTodos: state('todos') }
-// toggleAll: activeTodos.length == 0
+    { activeTodos:    state('todos', {completed: false}),
+      completedTodos: state('todos', {completed: true}) },
+    { toggleAll: state('activeTodos') == null || state('activeTodos').length == 0 }
   );
   console.log('new state: ', r);
   return r;
