@@ -113,16 +113,16 @@ export default class Forest extends Component {
 
   // ------------- Widgets ---------------
 
-  button(name, label){
-    return <button onMouseDown={(e) => this.onChange(name, true)} onMouseUp={(e) => this.onChange(name, false)}>{label}</button>;
+  button(name, label, className){
+    return <button className={className} onMouseDown={(e) => this.onChange(name, true)} onMouseUp={(e) => this.onChange(name, false)}>{label}</button>;
   }
 
-  textField(name, label){
-    return <span><span>{label} </span><input type="text" onChange={(e) => this.onChange(name, e.target.value)} value={this.state[name]} /></span>;
+  textField(name, label, className){
+    return <span><span>{label} </span><input className={className} type="text" onChange={(e) => this.onChange(name, e.target.value)} value={this.state[name]} /></span>;
   }
 
-  image(name, label){
-    return <span>{label} <img src={this.state[name]} /></span>;
+  image(name, label, className){
+    return <span>{label} <img className={className} src={this.state[name]} /></span>;
   }
 
   checkbox(name, className){

@@ -121,9 +121,9 @@ console.log(shownTodos);
     );
   }
 
+      // {Object.keys(state).map((key) => (typeof(state[key]) !== 'function') && <span key={key}> | {key}: {String(state[key])} | </span>)}
   return (
     <div>
-      {Object.keys(state).map((key) => (typeof(state[key]) !== 'function') && <span key={key}> | {key}: {String(state[key])} | </span>)}
       <header className="header">
         <h1>todos</h1>
         <input
@@ -141,21 +141,21 @@ console.log(shownTodos);
   );
 }
 
+   // {Object.keys(state).map((key) => (typeof(state[key]) !== 'function') && <span key={key}> | {key}: {String(state[key])} | </span>)}
 function renderTodoItem(state,gui){
   return (
     <li className={classNames({
       completed: state.completed,
       editing: state.editing
     })}>
-      {Object.keys(state).map((key) => (typeof(state[key]) !== 'function') && <span key={key}> | {key}: {String(state[key])} | </span>)}
       <div className="view">
         {gui.checkbox('completed', 'toggle')}
         <label onDoubleClick={this.handleEdit}>
           {state.title}
         </label>
-        {gui.button('destroy','XXX')}
+        {gui.button('destroy','','destroy')}
       </div>
-      {gui.textField('title', 'Title:')}
+      {gui.textField('title', '', 'edit')}
       <input
         ref="editField"
         className="edit"
@@ -167,7 +167,6 @@ function renderTodoItem(state,gui){
       />
     </li>
   );
-//     <button className="destroy" onClick={onDestroy} />
 }
 
 export default {
