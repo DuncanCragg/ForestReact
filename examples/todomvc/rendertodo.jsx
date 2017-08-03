@@ -5,34 +5,12 @@ function pluralize(count, word) {
   return count === 1 ? word : word + 's';
 }
 
-function classNames () {
-  var hasOwn = {}.hasOwnProperty;
-  var classes = '';
-  for (var i = 0; i < arguments.length; i++) {
-    var arg = arguments[i];
-    if (!arg) continue;
-    var argType = typeof arg;
-    if (argType === 'string' || argType === 'number') {
-      classes += ' ' + arg;
-    } else if (Array.isArray(arg)) {
-      classes += ' ' + classNames.apply(null, arg);
-    } else if (argType === 'object') {
-      for (var key in arg) {
-        if (hasOwn.call(arg, key) && arg[key]) {
-          classes += ' ' + key;
-        }
-      }
-    }
-  }
-  return classes.substr(1);
-}
-
 // {Object.keys(state).map((key) => (typeof(state[key]) !== 'function') && <span key={key}> | {key}: {String(state[key])} | </span>)}
 function renderTodoApp(state,gui){
 
   const numactive    = state.activeTodos && state.activeTodos.length;
   const numcompleted = state.completedTodos && state.completedTodos.length;
-  const shownTodos = {'all': state.todos, 'active': state.activeTodos, 'completed': state.completedTodos}[state.nowShowing];
+  const shownTodos = {'all': state.todos, 'active': state.activeTodos || [], 'completed': state.completedTodos || []}[state.nowShowing];
 
   return (
     <div>

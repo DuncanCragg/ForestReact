@@ -3,7 +3,7 @@ import Forest from 'forest';
 import renderers from 'rendertodo';
 
 Forest.store(
-  [ { UID: 'uid-1', evaluate: evalTodo,     is: 'todoapp', newTodo: '', nowShowing: 'all', todos: [] } ],
+  [{ UID: 'uid-1', evaluate: evalTodo, is: 'todoapp', newTodo: '', nowShowing: 'active', todos: [] }],
   renderers
 );
 
