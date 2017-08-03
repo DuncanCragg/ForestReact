@@ -40,7 +40,7 @@ function evalTodo(state){
         newTodo: ''
       }:{},
     { creating: !!state('user-state.newTodo-submitted') },
-    { numactive: 1, numdone: 1 }
+    { activeTodos: [], completedTodos: [] }
   );
   console.log('new state: ', r);
   return r;

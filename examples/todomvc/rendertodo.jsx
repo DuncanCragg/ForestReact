@@ -29,17 +29,17 @@ function classNames () {
 
 function renderTodoApp(state,gui){
 
-  const numactive = state.numactive;
-  const numdone  = state.numdone;
+  const numactive    = state.activeTodos && state.activeTodos.length;
+  const numcompleted = state.completedTodos && state.completedTodos.length;
 
   var main, footer;
 
-  if (numactive || numdone) {
+  if (numactive || numcompleted) {
 
     var activeTodoWord = pluralize(numactive, 'item');
     var clearButton = null;
 
-    if (numdone > 0) {
+    if (numcompleted > 0) {
       clearButton = <button className="clear-completed" >Clear completed</button>;
     }
 
@@ -58,7 +58,7 @@ function renderTodoApp(state,gui){
     );
   }
 
-  const shownTodos = state.todos;
+  const shownTodos = {'all': state.todos, 'active': state.activeTodos, 'completed': state.completedTodos}[state.nowShowing];
 
   if (shownTodos.length) {
     main = (
