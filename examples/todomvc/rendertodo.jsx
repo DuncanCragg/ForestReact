@@ -27,13 +27,13 @@ function classNames () {
   return classes.substr(1);
 }
 
+// {Object.keys(state).map((key) => (typeof(state[key]) !== 'function') && <span key={key}> | {key}: {String(state[key])} | </span>)}
 function renderTodoApp(state,gui){
 
   const numactive    = state.activeTodos && state.activeTodos.length;
   const numcompleted = state.completedTodos && state.completedTodos.length;
   const shownTodos = {'all': state.todos, 'active': state.activeTodos, 'completed': state.completedTodos}[state.nowShowing];
 
-  // {Object.keys(state).map((key) => (typeof(state[key]) !== 'function') && <span key={key}> | {key}: {String(state[key])} | </span>)}
   return (
     <div>
       <header className="header">
@@ -51,44 +51,28 @@ function renderTodoApp(state,gui){
 
       {(numactive!=0 || numcompleted!=0) && (
       <footer className="footer">
-        <span className="todo-count">
-          <strong>{numactive}</strong> {pluralize(numactive, 'item')} left
-        </span>
+        <span className="todo-count"><strong>{numactive}</strong> {pluralize(numactive, 'item')} left</span>
         <ul className="filters">
           <li><a href="#/"          className={classNames({selected: state.nowShowing === 'all'      })}>All</a></li> {' '}
           <li><a href="#/active"    className={classNames({selected: state.nowShowing === 'active'   })}>Active</a></li> {' '}
           <li><a href="#/completed" className={classNames({selected: state.nowShowing === 'completed'})}>Completed</a></li>
         </ul>
-        {(numcompleted!=0) && <button className="clear-completed" >Clear completed</button>}
+        {(numcompleted!=0) && gui.button('clear', 'Clear completed', 'clear-completed')}
       </footer>)}
     </div>
   );
 }
 
-   // {Object.keys(state).map((key) => (typeof(state[key]) !== 'function') && <span key={key}> | {key}: {String(state[key])} | </span>)}
+// {Object.keys(state).map((key) => (typeof(state[key]) !== 'function') && <span key={key}> | {key}: {String(state[key])} | </span>)}
 function renderTodoItem(state,gui){
   return (
-    <li className={classNames({
-      completed: state.completed,
-      editing: state.editing
-    })}>
+    <li className={classNames({completed: state.completed, editing: state.editing})}>
       <div className="view">
         {gui.checkbox('completed', 'toggle')}
-        <label onDoubleClick={this.handleEdit}>
-          {state.title}
-        </label>
+        <label onDoubleClick={this.handleEdit}>{state.title}</label>
         {gui.button('destroy','','destroy')}
       </div>
       {gui.textField('title', '', 'edit')}
-      <input
-        ref="editField"
-        className="edit"
-        value={state.editText}
-
-        onBlur={this.handleSubmit}
-        onChange={this.handleChange}
-        onKeyDown={this.handleKeyDown}
-      />
     </li>
   );
 }
