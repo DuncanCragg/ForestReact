@@ -1,8 +1,11 @@
 
-function renderApp(state){
+import Forest from 'forest';
+
+function renderGuiStack(state){
   return (
     <div>
       <div>{state.name}</div>
+      {state.list.map((uid) => <Forest state={Forest.objects[uid]} key={uid}></Forest>)}
     </div>);
 }
 
@@ -30,7 +33,7 @@ function renderFed(state,gui){
 }
 
 export default {
-  'app':        renderApp,
+  'guistack':   renderGuiStack,
   'fedexample': renderFed
 };
 

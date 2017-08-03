@@ -3,14 +3,18 @@ import { Component } from 'React';
 
 export default class Forest extends Component {
 
+  static renderers;
+  static objects = {};
+
   static store(list, renderers){
+    list.map((o) => Forest.objects[o.UID] = o);
+    Forest.renderers = renderers;
+    const top = list[0];
     ReactDOM.render(
-      <div>{list.map((o) => <Forest state={o} render={renderers[o.is]} evaluate={o.evaluate} key={o.UID}></Forest>)}</div>,
+      <Forest state={top}></Forest>,
       document.getElementById('root')
     );
   }
-
-  static objects = {};
 
   static fetching = {};
 
@@ -43,9 +47,7 @@ export default class Forest extends Component {
     this.userState.Notify = [];
     this.state.doEvaluate = this.doEvaluate.bind(this);
     this.stateAccess = this.stateAccess.bind(this);
-    this.evaluate = props.evaluate;
-    this.renderIt = props.render;
-    Forest.objects[this.UID] = this.state;
+    this.evaluate = this.state.evaluate;
     Forest.objects[userStateUID] = this.userState;
   }
 
@@ -126,7 +128,7 @@ export default class Forest extends Component {
   // -------------------------------------
 
   render () {
-    return this.renderIt(this.state, this);
+    return Forest.renderers[this.state.is](this.state, this);
   }
 }
 
