@@ -31,20 +31,9 @@ const ALL_TODOS = 'all';
 const ACTIVE_TODOS = 'active';
 const COMPLETED_TODOS = 'completed';
 
-function renderGuiStack(state){
+function renderTodoApp(state){
   var main, footer;
-  const todos = [];
-
-  var shownTodos = todos.filter(function (todo) {
-    switch (state.nowShowing) {
-    case ACTIVE_TODOS:
-      return !todo.completed;
-    case COMPLETED_TODOS:
-      return todo.completed;
-    default:
-      return true;
-    }
-  }, this);
+  const todos = []; //state.todos;
 
   var activeTodoCount = todos.reduce(function (accum, todo) {
     return todo.completed ? accum : accum + 1;
@@ -102,23 +91,36 @@ function renderGuiStack(state){
     );
   }
 
-  if (todos.length) {
-    var todoItems = [];/* = shownTodos.map(function (todo) {
-      return (
+  var shownTodos = todos.filter(function (todo) {
+    switch (state.nowShowing) {
+      case ACTIVE_TODOS:
+        return !todo.completed;
+      case COMPLETED_TODOS:
+        return todo.completed;
+      default:
+        return true;
+    }
+  }, this);
+
+  shownTodos = state.todos;
+
+  if (shownTodos.length) {
+console.log(shownTodos);
+    /* shownTodos.map(function (todo) { return (
         <TodoItem
-          key={todo.id}
           todo={todo}
+          editing={state.editing === todo.id}
+
           onToggle={this.toggle.bind(this, todo)}
           onDestroy={this.destroy.bind(this, todo)}
           onEdit={this.edit.bind(this, todo)}
-          editing={state.editing === todo.id}
           onSave={this.save.bind(this, todo)}
           onCancel={this.cancel}
-        />
-      );
-    }, this);
-    */
 
+          key={todo.id}
+        />
+    ); }, this);
+    */
     main = (
       <section className="main">
         <input
@@ -128,10 +130,7 @@ function renderGuiStack(state){
           checked={activeTodoCount === 0}
         />
         <ul className="todo-list">
-/*
-          {todoItems}
-      {state.list.map((uid) => <Forest state={Forest.objects[uid]} key={uid}></Forest>)}
-*/
+          {shownTodos.map((uid) => <Forest state={Forest.objects[uid]} key={uid}></Forest>)}
         </ul>
       </section>
     );
@@ -139,6 +138,7 @@ function renderGuiStack(state){
 
   return (
     <div>
+      {Object.keys(state).map((key) => (typeof(state[key]) !== 'function') && <span key={key}> | {key}: {String(state[key])} | </span>)}
       <header className="header">
         <h1>todos</h1>
         <input
@@ -156,31 +156,41 @@ function renderGuiStack(state){
   );
 }
 
-function renderTodo(state,gui){
+function renderTodoItem(state,gui){
   return (
-    <div>
-      <hr/>
+    <li className={classNames({
+      completed: state.completed,
+      editing: state.editing
+    })}>
       {Object.keys(state).map((key) => (typeof(state[key]) !== 'function') && <span key={key}> | {key}: {String(state[key])} | </span>)}
-      <br/><br/>
-      {state.enableCounting===true? 'GO!': '...'}
-      <br/><br/>
-      {gui.textField('counter', 'Count')}
-      {gui.button('add','increment')}
-      <br/><br/>
-      {gui.textField('topic', 'Topic')}
-      {gui.button('loadrandompicture', 'Load picture about that')}
-      <br/><br/>
-      {state.loading? 'loading..': ''}
-      <br/><br/>
-      {gui.image('image', 'Your random image:')}
-      <br/>
-      <hr/>
-      <br/>
-    </div>);
+      <div className="view">
+        <input
+          className="toggle"
+          type="checkbox"
+          checked={state.completed}
+        />
+        <label onDoubleClick={this.handleEdit}>
+          {state.title}
+        </label>
+        {gui.button('destroy','XXX')}
+      </div>
+      {gui.textField('title', 'Title:')}
+      <input
+        ref="editField"
+        className="edit"
+        value={state.editText}
+
+        onBlur={this.handleSubmit}
+        onChange={this.handleChange}
+        onKeyDown={this.handleKeyDown}
+      />
+    </li>
+  );
+//     <button className="destroy" onClick={onDestroy} />
 }
 
 export default {
-  'guistack': renderGuiStack,
-  'todomvc':  renderTodo
+  'todoapp':  renderTodoApp,
+  'todoitem': renderTodoItem
 };
 
