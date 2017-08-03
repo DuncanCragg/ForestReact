@@ -14,7 +14,7 @@ There are no actions, events, messages, commands, calls, queues, streams, etc. i
 Functional Observer, just state observing other state and updating itself. The React
 component state observes other states around it:
 
-ReactComponentState =
+`ReactComponentState` =
 
 #### &nbsp; ƒ(
 &nbsp; &nbsp; `ReactComponentState`,<br/>
