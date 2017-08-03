@@ -19,7 +19,10 @@ console.log('evalTodo', state('is'));
 
 function evalTodoItem(state){
 console.log('evalTodoItem', state('is'));
-  return {
-  };
+  // todoitem.editing={state.editing === todo.uid}
+  return Object.assign({},
+    { completed: !!state('user-state.completed') }
+  );
 }
+
 

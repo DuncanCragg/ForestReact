@@ -106,21 +106,6 @@ function renderTodoApp(state){
 
   if (shownTodos.length) {
 console.log(shownTodos);
-    /* shownTodos.map(function (todo) { return (
-        <TodoItem
-          todo={todo}
-          editing={state.editing === todo.id}
-
-          onToggle={this.toggle.bind(this, todo)}
-          onDestroy={this.destroy.bind(this, todo)}
-          onEdit={this.edit.bind(this, todo)}
-          onSave={this.save.bind(this, todo)}
-          onCancel={this.cancel}
-
-          key={todo.id}
-        />
-    ); }, this);
-    */
     main = (
       <section className="main">
         <input
@@ -164,11 +149,7 @@ function renderTodoItem(state,gui){
     })}>
       {Object.keys(state).map((key) => (typeof(state[key]) !== 'function') && <span key={key}> | {key}: {String(state[key])} | </span>)}
       <div className="view">
-        <input
-          className="toggle"
-          type="checkbox"
-          checked={state.completed}
-        />
+        {gui.checkbox('completed', 'toggle')}
         <label onDoubleClick={this.handleEdit}>
           {state.title}
         </label>

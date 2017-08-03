@@ -118,11 +118,15 @@ export default class Forest extends Component {
   }
 
   textField(name, label){
-    return <span><span>{label} </span><input type="text" onChange={(e) => this.onChange(name, e.target.value)} value={this.state[name]} /></span>
+    return <span><span>{label} </span><input type="text" onChange={(e) => this.onChange(name, e.target.value)} value={this.state[name]} /></span>;
   }
 
   image(name, label){
     return <span>{label} <img src={this.state[name]} /></span>;
+  }
+
+  checkbox(name, className){
+    return <input className={className} type="checkbox" onChange={(e) => this.onChange(name, e.target.checked)} checked={this.state[name]} />;
   }
 
   // -------------------------------------
