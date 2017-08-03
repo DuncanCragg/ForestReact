@@ -68,7 +68,7 @@ function evalMin(state){
 See how, in `evalMin`, the returned component state is a function of previous state and
 user state. It always reads these states around it through its own state, because in
 Forest, _the dot `.` can jump across to those other objects to observe them_ which makes
-the whole process incredibly consistent and simple.
+the whole process incredibly powerful, consistent and simple.
 
 The fact that Forest doesn't use actions or events means that detecting change is done
 via comparison to previous state, as in the expression `!state('inc') && state('user-state.inc')`,
@@ -79,6 +79,13 @@ state for the next time around.
 It can also discover peer component and remote API state in the same way in order to
 determine it's own next state (e.g. `state('selectorpeer.choice')` or
 `state('remote324.choicelist')`).
+
+## _"Why is that better?"_
+
+It's consistent and simple, putting a lot of power into small state reducer or
+transformation functions and expressions - one single dot `.` can give a component
+access to all the state around it, locally and remotely, _and_ subscribe it to that
+state so that it's notified if it changes.
 
 ## Credit
 
