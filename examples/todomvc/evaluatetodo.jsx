@@ -11,16 +11,23 @@ Forest.store(
   renderers
 );
 
+function spawn(){
+  return 'uid-2';
+}
+
 function evalTodo(state){
-console.log('evalTodo', state('is'));
-  return Object.assign({},
-    { newTodo: state('user-state.newTodo') || '' },
-    state('user-state.newTodo-submitted')? { todos: ['uid-2', 'uid-3'] }:{}
+console.log('evalTodo', state('user-state.'));
+  const r= Object.assign({},
+    !state('user-state.newTodo-submitted')? { newTodo: state('user-state.newTodo') || '' }:{},
+    !state('creating') && state('user-state.newTodo-submitted')? { todos: state('todos').concat([spawn()]), newTodo: '' }:{},
+    { creating: !!state('user-state.newTodo-submitted') },
   );
+  console.log('new state: ', r);
+  return r;
 }
 
 function evalTodoItem(state){
-console.log('evalTodoItem', state('is'));
+console.log('evalTodoItem', state('user-state.'));
   // todoitem.editing={state.editing === todo.uid}
   return Object.assign({},
     { completed: !!state('user-state.completed') }
