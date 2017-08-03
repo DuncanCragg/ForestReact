@@ -4,7 +4,7 @@ To Do
 - render is too tightly coupled here, as a react class
    - extract the children, which are too coupled to React - I swap the children for react ones.. :-/
    - make it a list of UIDs and work out react render of children from object graph
-   - can have remote URL in renderTree, without evaluate of course (Notify/render): send user-state over the wire
+   - can have remote URL in any object, without evaluate of course (Notify/render): send user-state over the wire
 
 - autogenerate UIDs
 

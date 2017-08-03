@@ -3,16 +3,11 @@ import { createElement, cloneElement, Children, Component } from 'React';
 
 export default class Forest extends Component {
 
-  static renderTreeRecurse(tree, renderers){
-    return (
-      <Forest state={tree} render={renderers[tree.is]} evaluate={tree.evaluate} key={tree.UID}>
-      { tree.children && tree.children.map(c => Forest.renderTreeRecurse(c, renderers)) }
-      </Forest>
+  static store(list, renderers){
+    ReactDOM.render(
+      <div>{list.map((o) => <Forest state={o} render={renderers[o.is]} evaluate={o.evaluate} key={o.UID}></Forest>)}</div>,
+      document.getElementById('root')
     );
-  }
-
-  static renderTree(tree, renderers){
-    ReactDOM.render(Forest.renderTreeRecurse(tree, renderers), document.getElementById('root'));
   }
 
   static objects = {};

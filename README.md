@@ -46,13 +46,13 @@ const renderers = {
   'minimal': renderMin
 };
 
-forest.renderTree(
-  { UID: 'uid-1',
-    evaluate: evalMin,
-    is: 'minimal',
-    counter: 17,
-    message: 'Hello World!'
-  },
+forest.store(
+  [{ UID: 'uid-1',
+     evaluate: evalMin,
+     is: 'minimal',
+     counter: 17,
+     message: 'Hello World!'
+  }],
   renderers
 );
 

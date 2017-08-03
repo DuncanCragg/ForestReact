@@ -2,17 +2,12 @@
 import Forest from 'forest';
 import renderers from 'renderfed';
 
-Forest.renderTree(
-  { UID: 'uid-1',
-    is: 'app',
-    name: 'Forest App',
-    children: [
-      {UID: 'uid-2', evaluate: evalFed, is: 'fedexample', counter: 42, topic: 'banana', watching: 'uid-3'},
-      {UID: 'uid-3', evaluate: evalFed, is: 'fedexample', counter: 99, topic: 'mango', children: [
-        {UID: 'uid-4', evaluate: evalFed, is: 'fedexample', counter: 17, topic: 'damson'}
-      ] }
-    ]
-  },
+Forest.store(
+  [
+    {UID: 'uid-1',                    is: 'app',        name: 'Forest App' },
+    {UID: 'uid-2', evaluate: evalFed, is: 'fedexample', counter: 42, topic: 'banana', watching: 'uid-3'},
+    {UID: 'uid-3', evaluate: evalFed, is: 'fedexample', counter: 99, topic: 'mango' }
+  ],
   renderers
 );
 
