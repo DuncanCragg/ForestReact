@@ -4,7 +4,7 @@ import renderers from 'rendertodo';
 
 Forest.store(
   [
-    { UID: 'uid-1',                     is: 'guistack',   name: 'TodoMVC', list: ['uid-3', 'uid-2'] },
+    { UID: 'uid-1',                     is: 'guistack', newTodo: '', nowShowing: 'all', list: ['uid-3', 'uid-2'] },
     { UID: 'uid-2', evaluate: evalTodo, is: 'todomvc', counter: 42, topic: 'banana', watching: 'uid-3'},
     { UID: 'uid-3', evaluate: evalTodo, is: 'todomvc', counter: 99, topic: 'mango' }
   ],
