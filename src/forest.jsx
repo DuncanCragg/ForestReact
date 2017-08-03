@@ -1,6 +1,6 @@
 
 import { createElement, cloneElement, Children, Component } from 'React';
-  
+
 export default class Forest extends Component {
 
   static renderTreeRecurse(tree, renderers){

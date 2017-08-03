@@ -10,10 +10,20 @@ Observer REST" - replacing Redux in your dynamic Web pages.
 Yes, *Functional Observer* is a programming model that is entirely based around state
 and pure functional transformation from state to state.
 
-There are no actions, events or messages in Functional Observer, just state observing
-other state and updating itself.
+There are no actions, events, messages, commands, calls, queues, streams, etc. in
+Functional Observer, just state observing other state and updating itself. The React
+component state observes other states around it:
 
-FOREST (Functional Observer REST) just adds HTTP to that model.
+<div style="font-family:Courier; padding-left:22px;">
+ReactComponentState = <span style="font-family:Times New Roman; font-size:15pt">ƒ</span>(<br/>
+&nbsp; ReactComponentState,<br/>
+&nbsp; UserEnteredState,<br/>
+&nbsp; PeerReactComponentStates,<br/>
+&nbsp; RemoteJSONAPIStates<br/>
+)
+</div>
+
+FOREST (Functional Observer REST) just adds HTTP to that model, via the `RemoteJSONAPIStates` above.
 
 ## _"Sounds very academic! Show me the code!!"_
 
@@ -38,8 +48,8 @@ const renderers = {
 
 forest.renderTree(
   { UID: 'uid-1',
-    is: 'minimal',
     evaluate: evalMin,
+    is: 'minimal',
     counter: 17,
     message: 'Hello World!'
   },
@@ -54,6 +64,21 @@ function evalMin(state){
   );
 }
 ```
+
+See how, in `evalMin`, the returned component state is a function of previous state and
+user state. It always reads these states around it through its own state, because in
+Forest, _the dot `.` can jump across to those other objects to observe them_ which makes
+the whole process incredibly consistent and simple.
+
+The fact that Forest doesn't use actions or events means that detecting change is done
+via comparison to previous state, as in the expression `!state('inc') && state('user-state.inc')`,
+which detects that the user-state `inc` button is `true` (down) while the known state
+was `false` (up). The line `inc: !!state('user-state.inc')` then records the latest
+state for the next time around.
+
+It can also discover peer component and remote API state in the same way in order to
+determine it's own next state (e.g. `state('selectorpeer.choice')` or
+`state('remote324.choicelist')`).
 
 ## Credit
 
