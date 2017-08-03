@@ -14,14 +14,14 @@ There are no actions, events, messages, commands, calls, queues, streams, etc. i
 Functional Observer, just state observing other state and updating itself. The React
 component state observes other states around it:
 
-<div style="font-family:Courier; padding-left:22px;">
-ReactComponentState = <span style="font-family:Times New Roman; font-size:15pt">ƒ</span>(<br/>
-&nbsp; ReactComponentState,<br/>
-&nbsp; UserEnteredState,<br/>
-&nbsp; PeerReactComponentStates,<br/>
-&nbsp; RemoteJSONAPIStates<br/>
-)
-</div>
+ReactComponentState =
+
+#### &nbsp; ƒ(
+&nbsp; &nbsp; `ReactComponentState`,<br/>
+&nbsp; &nbsp; `UserEnteredState`,<br/>
+&nbsp; &nbsp; `PeerReactComponentStates`,<br/>
+&nbsp; &nbsp; `RemoteJSONAPIStates`<br/>
+#### &nbsp; )
 
 FOREST (Functional Observer REST) just adds HTTP to that model, via the `RemoteJSONAPIStates` above.
 
