@@ -85,7 +85,8 @@ determine it's own next state (e.g. `state('selectorpeer.choice')` or
 It's consistent and simple, putting a lot of power into small state reducer or
 transformation functions and expressions - one single dot `.` can give a component
 access to all the state around it, locally and remotely, _and_ subscribe it to that
-state so that it's notified if it changes.
+state so that it's notified if it changes. All the interactive logic is held in pure
+functions.
 
 ## Credit
 
