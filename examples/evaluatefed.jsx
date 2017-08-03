@@ -4,9 +4,9 @@ import renderers from 'renderfed';
 
 Forest.store(
   [
-    {UID: 'uid-1',                    is: 'guistack',   name: 'Forest App', list: ['uid-3', 'uid-2'] },
-    {UID: 'uid-2', evaluate: evalFed, is: 'fedexample', counter: 42, topic: 'banana', watching: 'uid-3'},
-    {UID: 'uid-3', evaluate: evalFed, is: 'fedexample', counter: 99, topic: 'mango' }
+    { UID: 'uid-1',                    is: 'guistack',   name: 'Forest App', list: ['uid-3', 'uid-2'] },
+    { UID: 'uid-2', evaluate: evalFed, is: 'fedexample', counter: 42, topic: 'banana', watching: 'uid-3'},
+    { UID: 'uid-3', evaluate: evalFed, is: 'fedexample', counter: 99, topic: 'mango' }
   ],
   renderers
 );

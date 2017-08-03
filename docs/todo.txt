@@ -1,17 +1,14 @@
 To Do
 -----
 
-- render is too tightly coupled here, as a react class
-   - extract the children, which are too coupled to React - I swap the children for react ones.. :-/
-   - make it a list of UIDs and work out react render of children from object graph
-   - can have remote URL in any object, without evaluate of course (Notify/render): send user-state over the wire
-
 - autogenerate UIDs
 
 - more widgets: selector, textarea, radio, checkbox.. move to another file
    - separate out gui widgets from 'this'
 
 - fetch remote objects:
+   - can have remote URL in any object, without evaluate of course (Notify/render): send user-state over the wire
+      - what if list includes remote, can't use Forest.objects[url]
    - refresh? after viewed and time rel to cache ttl
    - check actually fetch()ing a URL!; lastmod/etag?
    - error on fetch
