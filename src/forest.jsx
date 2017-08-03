@@ -1,5 +1,5 @@
 
-import { createElement, cloneElement, Children, Component } from 'React';
+import { Component } from 'React';
 
 export default class Forest extends Component {
 
@@ -35,7 +35,6 @@ export default class Forest extends Component {
   constructor(props) {
     super(props)
     this.state = props.state || {};
-    this.state.children = props.children;
     this.UID = this.state.UID;
     const userStateUID = this.UID + '-1';
     this.userState.UID = userStateUID;

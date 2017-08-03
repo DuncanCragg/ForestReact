@@ -3,7 +3,6 @@ function renderApp(state){
   return (
     <div>
       <div>{state.name}</div>
-      {state.children}
     </div>);
 }
 
@@ -11,7 +10,7 @@ function renderFed(state,gui){
   return (
     <div>
       <hr/>
-      {Object.keys(state).map((key) => (key !== 'children' && typeof(state[key]) !== 'function') && <span key={key}> | {key}: {String(state[key])} | </span>)}
+      {Object.keys(state).map((key) => (typeof(state[key]) !== 'function') && <span key={key}> | {key}: {String(state[key])} | </span>)}
       <br/><br/>
       {state.enableCounting===true? 'GO!': '...'}
       <br/><br/>
@@ -27,7 +26,6 @@ function renderFed(state,gui){
       <br/>
       <hr/>
       <br/>
-      {state.children}
     </div>);
 }
 
