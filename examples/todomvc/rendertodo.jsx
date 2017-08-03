@@ -31,60 +31,36 @@ function renderTodoApp(state,gui){
 
   const numactive    = state.activeTodos && state.activeTodos.length;
   const numcompleted = state.completedTodos && state.completedTodos.length;
-
-  var main, footer;
-
-  if (numactive || numcompleted) {
-
-    var activeTodoWord = pluralize(numactive, 'item');
-    var clearButton = null;
-
-    if (numcompleted > 0) {
-      clearButton = <button className="clear-completed" >Clear completed</button>;
-    }
-
-    footer = (
-      <footer className="footer">
-        <span className="todo-count">
-          <strong>{numactive}</strong> {activeTodoWord} left
-        </span>
-        <ul className="filters">
-          <li> <a href="#/" className={classNames({selected: state.nowShowing === 'all'})}> All </a> </li> {' '}
-          <li> <a href="#/active" className={classNames({selected: state.nowShowing === 'active'})}> Active </a> </li> {' '}
-          <li> <a href="#/completed" className={classNames({selected: state.nowShowing === 'completed'})}> Completed </a> </li>
-        </ul>
-        {clearButton}
-      </footer>
-    );
-  }
-
   const shownTodos = {'all': state.todos, 'active': state.activeTodos, 'completed': state.completedTodos}[state.nowShowing];
 
-  if (shownTodos.length) {
-    main = (
-      <section className="main">
-        <input
-          className="toggle-all"
-          type="checkbox"
-          onChange={this.toggleAll}
-          checked={numactive === 0}
-        />
-        <ul className="todo-list">
-          {shownTodos.map((uid) => <Forest state={Forest.objects[uid]} key={uid}></Forest>)}
-        </ul>
-      </section>
-    );
-  }
-
-      // {Object.keys(state).map((key) => (typeof(state[key]) !== 'function') && <span key={key}> | {key}: {String(state[key])} | </span>)}
+  // {Object.keys(state).map((key) => (typeof(state[key]) !== 'function') && <span key={key}> | {key}: {String(state[key])} | </span>)}
   return (
     <div>
       <header className="header">
         <h1>todos</h1>
         {gui.textField('newTodo','','new-todo','What needs to be done?')}
       </header>
-      {main}
-      {footer}
+
+      {(shownTodos.length!=0) && (
+      <section className="main">
+        {gui.checkbox('toggleAll','toggle-all-X')}
+        <ul className="todo-list">
+          {shownTodos.map((uid) => <Forest state={Forest.objects[uid]} key={uid}></Forest>)}
+        </ul>
+      </section>)}
+
+      {(numactive!=0 || numcompleted!=0) && (
+      <footer className="footer">
+        <span className="todo-count">
+          <strong>{numactive}</strong> {pluralize(numactive, 'item')} left
+        </span>
+        <ul className="filters">
+          <li><a href="#/"          className={classNames({selected: state.nowShowing === 'all'      })}>All</a></li> {' '}
+          <li><a href="#/active"    className={classNames({selected: state.nowShowing === 'active'   })}>Active</a></li> {' '}
+          <li><a href="#/completed" className={classNames({selected: state.nowShowing === 'completed'})}>Completed</a></li>
+        </ul>
+        {(numcompleted!=0) && <button className="clear-completed" >Clear completed</button>}
+      </footer>)}
     </div>
   );
 }
