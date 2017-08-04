@@ -80,8 +80,7 @@ export default class Forest extends Component {
     this.UID = this.state.UID;
     const userStateUID = this.UID + '-1';
     this.userState.UID = userStateUID;
-    this.state['user-state'] = userStateUID;
-    this.state.Notify = [];
+    this.state['user-state'] = userStateUID; // :0(
     this.userState.Notify = [];
     this.state.doEvaluate = this.doEvaluate.bind(this);
     this.stateAccess = this.stateAccess.bind(this);
@@ -117,6 +116,7 @@ export default class Forest extends Component {
   stateAccess(p,m) { const r = ((path, match)=>{
     const uid = this.UID;
     const state = Forest.objects[uid];
+    if(path==='.') return state;
     const pathbits = path.split('.');
     if(pathbits.length==1){
       if(path === 'Timer') return state.Timer || 0;
