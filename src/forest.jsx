@@ -49,10 +49,22 @@ export default class Forest extends Component {
     Forest.objects[UID] = { UID, Notify: [ observer ] };
   }
 
+  static difference(object, base) {
+    function changes(object, base) {
+      return _.transform(object, function(result, value, key) {
+        if (!_.isEqual(value, base[key])) {
+          result[key] = (_.isObject(value) && _.isObject(base[key])) ? changes(value, base[key]) : value;
+        }
+      });
+    }
+    return changes(object, base);
+  }
+
   static setObjectState(uid, state){
     const newState = Object.assign({}, Forest.objects[uid], state);
     const changed = !_.isEqual(Forest.objects[uid], newState);
     if(changed){
+      // console.log('changed: ', Forest.difference(Forest.objects[uid], newState))
       Forest.objects[uid] = newState;
       Forest.objects[uid].Notify.map(o => setTimeout(Forest.objects[o].doEvaluate, 1));
     }
@@ -78,6 +90,12 @@ export default class Forest extends Component {
   }
 
   componentDidMount() { this.doEvaluate(); }
+
+  onRead(name){
+    const value = this.state[name];
+    this.userState[name]=value;
+    return value;
+  }
 
   onChange = (name, value) => {
     this.userState[name]=value;
@@ -164,17 +182,20 @@ export default class Forest extends Component {
   // ------------- Widgets ---------------
 
   button(name, label, className){
+    if(this.userState[name]===undefined) this.userState[name] = false;
     return <button className={className} onMouseDown={e => this.onChange(name, true)} onMouseUp={e => this.onChange(name, false)}>{label}</button>;
   }
 
   textField(name, label, className, placeholder){
+    if(this.userState[name]===undefined) this.userState[name] = '';
+    if(this.userState[name+'-submitted']===undefined) this.userState[name+'-submitted']=false;
     return (
       <span><span>{label}</span>
             <input className={className}
                    type="text"
                    onChange={e => this.onChange(name, e.target.value)}
                    onKeyDown={e => this.onKeyDown(name, e)}
-                   value={this.state[name]}
+                   value={this.onRead(name)}
                    placeholder={placeholder}
                    autoFocus={true} />
       </span>
@@ -186,9 +207,9 @@ export default class Forest extends Component {
   }
 
   checkbox(name, className){
-    return <input className={className} type="checkbox" onChange={e => this.onChange(name, e.target.checked)} checked={this.state[name]} />;
+    if(this.userState[name]===undefined) this.userState[name] = false;
+    return <input className={className} type="checkbox" onChange={e => this.onChange(name, e.target.checked)} checked={this.onRead(name)} />;
   }
-
   // -------------------------------------
 
   render () {

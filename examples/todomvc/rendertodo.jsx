@@ -5,7 +5,6 @@ function pluralize(count, word) {
   return count === 1 ? word : word + 's';
 }
 
-// {Object.keys(state).map((key) => (typeof(state[key]) !== 'function') && <span key={key}> | {key}: {String(state[key])} | </span>)}
 function renderTodoApp(state,gui){
 
   const numactive    = state.activeTodos && state.activeTodos.length;
@@ -14,6 +13,7 @@ function renderTodoApp(state,gui){
 
   return (
     <div>
+      {this.debug && Object.keys(state).map((key) => (typeof(state[key]) !== 'function') && <span key={key}> | {key}: {String(state[key])} | </span>)}
       <header className="header">
         <h1>todos</h1>
         {gui.textField('newTodo','','new-todo','What needs to be done?')}
@@ -35,16 +35,16 @@ function renderTodoApp(state,gui){
           <li><a href="#/active"    className={classNames({selected: state.nowShowing === 'active'   })}>Active</a></li> {' '}
           <li><a href="#/completed" className={classNames({selected: state.nowShowing === 'completed'})}>Completed</a></li>
         </ul>
-        {(numcompleted!=0) && gui.button('clear', 'Clear completed', 'clear-completed')}
+        {/* (numcompleted!=0) && */ gui.button('clearCompleted', 'Clear completed', 'clear-completed')}
       </footer>)}
     </div>
   );
 }
 
-// {Object.keys(state).map((key) => (typeof(state[key]) !== 'function') && <span key={key}> | {key}: {String(state[key])} | </span>)}
 function renderTodoItem(state,gui){
   return (
     <li className={classNames({completed: state.completed, editing: state.editing})}>
+     {this.debug && Object.keys(state).map((key) => (typeof(state[key]) !== 'function') && <span key={key}> | {key}: {String(state[key])} | </span>)}
       <div className="view">
         {gui.checkbox('completed', 'toggle')}
         <label onDoubleClick={this.handleEdit}>{state.title}</label>
