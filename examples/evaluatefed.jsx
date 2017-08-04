@@ -16,7 +16,7 @@ function evalFed(state){
     Timer: 4000,
     enableCounting: state('Timer') === 0? !state('enableCounting'): state('enableCounting'),
     counter: state('watching.counter') || (state('enableCounting')!==false? (!state('adding') && state('user-state.add')? state('counter')+1: state('counter')): 0),
-    topic: (typeof state('user-state.topic') === 'undefined' && state('topic')) || state('user-state.topic').toLowerCase(),
+    topic: state('user-state.topic').toLowerCase(),
     giphy: ((state('fetching') == null) || (!state('fetching') && state('user-state.loadrandompicture')))? 'https://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&tag=' + state('topic'): state('giphy'),
     image: state('giphy.fixed_height_small_url') || state('image'),
     loading: !state('giphy.fixed_height_small_url'),

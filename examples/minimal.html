@@ -54,7 +54,7 @@ function evalMin(state){
     !state('enableCounting')? { counter: 0 }:{},
     (state('enableCounting') && incrementPushed)? { counter: state('counter') + 1 }:{},
     { inc: !!state('user-state.inc') },
-    (typeof state('user-state.message') !== 'undefined')? { message: state('user-state.message').toLowerCase() }:{}
+    { message: state('user-state.message').toLowerCase() }
   );
 }
 

@@ -59,7 +59,7 @@ function evalMin(state){
   return Object.assign({},
     (!state('inc') && state('user-state.inc'))? { counter: state('counter') + 1 }:{},
     { inc: !!state('user-state.inc') },
-    (typeof state('user-state.message') !== 'undefined')? { message: state('user-state.message').toLowerCase() }:{}
+    { message: state('user-state.message').toLowerCase() }
   );
 }
 ```
