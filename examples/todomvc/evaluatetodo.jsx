@@ -2,8 +2,8 @@
 import Forest from 'forest';
 import renderers from 'rendertodo';
 
-Forest.store(
-  [{ UID: 'uid-1', evaluate: evalTodo, is: 'todoapp', newTodo: '', nowShowing: 'all', todos: [] }],
+Forest.storeObjects(
+  [{ evaluate: evalTodo, is: 'todoapp', newTodo: '', nowShowing: 'all', todos: [] }],
   renderers
 );
 

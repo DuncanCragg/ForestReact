@@ -3,36 +3,6 @@ import { Component } from 'React';
 
 export default class Forest extends Component {
 
-  static renderers;
-  static objects = {};
-
-  static store(list, renderers){
-    list.map((o) => Forest.objects[o.UID] = o);
-    Forest.renderers = renderers;
-    const top = list[0];
-    ReactDOM.render(
-      <Forest state={top}></Forest>,
-      document.getElementById('root')
-    );
-  }
-
-  static fetching = {};
-
-  static ensureObjectState(uid, observer){
-    if(Forest.objects[uid]) return;
-    Forest.objects[uid] = { UID: uid, Notify: [ observer ] };
-  }
-
-  static setObjectState(uid, state){
-    const newState = Object.assign({}, Forest.objects[uid], state);
-    const changed = !_.isEqual(Forest.objects[uid], newState);
-    if(changed){
-      Forest.objects[uid] = newState;
-      Forest.objects[uid].Notify.map(o => setTimeout(Forest.objects[o].doEvaluate, 1));
-    }
-    return changed;
-  }
-
   static makeUID(){
     /*jshint bitwise:false */
     var i, random;
@@ -45,11 +15,48 @@ export default class Forest extends Component {
     return uuid;
   }
 
-  static spawnObject(state){
-    const uid = this.makeUID();
-    const o = Object.assign(state, { UID: uid, Notify: [] });
-    Forest.objects[uid] = o;
-    return uid;
+  static renderers;
+  static objects = {};
+
+  static spawnObject(o){
+    const UID = o.UID || this.makeUID();
+    Forest.objects[UID] = Object.assign(o, { UID, Notify: [] });
+    return UID;
+  }
+
+  static storeObjects(list, renderers){
+    list.map(o => Forest.spawnObject(o));
+    Forest.renderers = renderers;
+    const top = list[0];
+    ReactDOM.render(
+      <Forest state={top}></Forest>,
+      document.getElementById('root')
+    );
+  }
+
+  static fetching = {};
+
+  static setNotify(o,uid){
+    if(o.Notify.indexOf(uid) === -1) o.Notify.push(uid);
+  }
+
+  static ensureObjectState(UID, observer){
+    const o = Forest.objects[UID];
+    if(o){
+      Forest.setNotify(o,observer);
+      return;
+    }
+    Forest.objects[UID] = { UID, Notify: [ observer ] };
+  }
+
+  static setObjectState(uid, state){
+    const newState = Object.assign({}, Forest.objects[uid], state);
+    const changed = !_.isEqual(Forest.objects[uid], newState);
+    if(changed){
+      Forest.objects[uid] = newState;
+      Forest.objects[uid].Notify.map(o => setTimeout(Forest.objects[o].doEvaluate, 1));
+    }
+    return changed;
   }
 
   UID;
@@ -77,10 +84,10 @@ export default class Forest extends Component {
     this.doEvaluate();
   }
 
-  ENTER_KEY = 13;
+  KEY_ENTER = 13;
 
   onKeyDown(name, e){
-    if (e.keyCode !== this.ENTER_KEY){
+    if (e.keyCode !== this.KEY_ENTER){
       this.userState[name+'-submitted']=false;
       return;
     }
@@ -99,11 +106,11 @@ export default class Forest extends Component {
       if(val == null) return null;
       if(val.constructor === Array){
         if(match == null || match.constructor !== Object) return val;
-        return val.filter((v) => {
+        return val.filter(v => {
           if(v.constructor !== String) return false;
           const o = Forest.objects[v];
           if(!o) return false;
-          if(o.Notify.indexOf(uid) === -1) o.Notify.push(uid);
+          Forest.setNotify(o,uid);
           return Object.keys(match).every(k => o[k] === match[k]);
         });
       }
@@ -123,7 +130,7 @@ export default class Forest extends Component {
       }
       return null;
     }
-    if(linkedObject.Notify.indexOf(uid) === -1) linkedObject.Notify.push(uid);
+    Forest.setNotify(linkedObject,uid);
     if(pathbits[1]==='') return linkedObject;
     return linkedObject[pathbits[1]];
   })(p,m);
@@ -157,7 +164,7 @@ export default class Forest extends Component {
   // ------------- Widgets ---------------
 
   button(name, label, className){
-    return <button className={className} onMouseDown={(e) => this.onChange(name, true)} onMouseUp={(e) => this.onChange(name, false)}>{label}</button>;
+    return <button className={className} onMouseDown={e => this.onChange(name, true)} onMouseUp={e => this.onChange(name, false)}>{label}</button>;
   }
 
   textField(name, label, className, placeholder){
@@ -165,8 +172,8 @@ export default class Forest extends Component {
       <span><span>{label}</span>
             <input className={className}
                    type="text"
-                   onChange={(e) => this.onChange(name, e.target.value)}
-                   onKeyDown={(e) => this.onKeyDown(name, e)}
+                   onChange={e => this.onChange(name, e.target.value)}
+                   onKeyDown={e => this.onKeyDown(name, e)}
                    value={this.state[name]}
                    placeholder={placeholder}
                    autoFocus={true} />
@@ -179,7 +186,7 @@ export default class Forest extends Component {
   }
 
   checkbox(name, className){
-    return <input className={className} type="checkbox" onChange={(e) => this.onChange(name, e.target.checked)} checked={this.state[name]} />;
+    return <input className={className} type="checkbox" onChange={e => this.onChange(name, e.target.checked)} checked={this.state[name]} />;
   }
 
   // -------------------------------------

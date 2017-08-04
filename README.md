@@ -46,9 +46,8 @@ const renderers = {
   'minimal': renderMin
 };
 
-forest.store(
-  [{ UID: 'uid-1',
-     evaluate: evalMin,
+forest.storeObjects(
+  [{ evaluate: evalMin,
      is: 'minimal',
      counter: 17,
      message: 'Hello World!'
