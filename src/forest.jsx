@@ -191,12 +191,14 @@ export default class Forest extends Component {
     this.doEvaluate();
   }
 
-  button(name, label, className){
+  // ------
+
+  button({name, label='', className=''}){
     if(this.userState[name]===undefined) this.userState[name] = false;
     return <button className={className} onMouseDown={e => this.onChange(name, true)} onMouseUp={e => this.onChange(name, false)}>{label}</button>;
   }
 
-  textField(name, label, className, placeholder){
+  textField({name, label='', className='', placeholder=''}){
     if(this.userState[name]===undefined) this.userState[name] = '';
     if(this.userState[name+'-submitted']===undefined) this.userState[name+'-submitted']=false;
     return (
@@ -212,11 +214,11 @@ export default class Forest extends Component {
     );
   }
 
-  image(name, label, className){
+  image({name, label='', className=''}){
     return <span>{label} <img className={className} src={this.state[name]} /></span>;
   }
 
-  checkbox(name, className){
+  checkbox({name, label='', className=''}){
     if(this.userState[name]===undefined) this.userState[name] = false;
     return <input className={className} type="checkbox" onChange={e => this.onChange(name, e.target.checked)} checked={this.onRead(name)} />;
   }

@@ -16,12 +16,12 @@ function renderTodoApp(state, userState){
       {false && Object.keys(state).map((key) => (typeof(state[key]) !== 'function') && <span key={key}> | {key}: {String(state[key])} | </span>)}
       <header className="header">
         <h1>todos</h1>
-        {userState.textField('newTodo','','new-todo','What needs to be done?')}
+        {userState.textField({name: 'newTodo', className: 'new-todo', placeholder: 'What needs to be done?'})}
       </header>
 
       {(shownTodos.length!=0) && (
       <section className="main">
-        {userState.checkbox('toggleAll','toggle-all-X')}
+        {userState.checkbox({name: 'toggleAll', className: 'toggle-all-X'})}
         <ul className="todo-list">
           {shownTodos.map((uid) => Forest.wrapObject(uid))}
         </ul>
@@ -35,7 +35,7 @@ function renderTodoApp(state, userState){
           <li><a href="#/active"    className={classNames({selected: state.nowShowing === 'active'   })}>Active</a></li> {' '}
           <li><a href="#/completed" className={classNames({selected: state.nowShowing === 'completed'})}>Completed</a></li>
         </ul>
-        {/* (numcompleted!=0) && */ userState.button('clearCompleted', 'Clear completed', 'clear-completed')}
+        {/* (numcompleted!=0) && */ userState.button({name: 'clearCompleted', label: 'Clear completed', className: 'clear-completed'})}
       </footer>)}
     </div>
   );
@@ -46,11 +46,11 @@ function renderTodoItem(state, userState){
     <li className={classNames({completed: state.completed, editing: state.editing})}>
      {false && Object.keys(state).map((key) => (typeof(state[key]) !== 'function') && <span key={key}> | {key}: {String(state[key])} | </span>)}
       <div className="view">
-        {userState.checkbox('completed', 'toggle')}
+        {userState.checkbox({name: 'completed', className: 'toggle'})}
         <label onDoubleClick={this.handleEdit}>{state.title}</label>
-        {userState.button('destroy','','destroy')}
+        {userState.button({name: 'destroy', className: 'destroy'})}
       </div>
-      {userState.textField('title', '', 'edit')}
+      {userState.textField({name: 'title', className: 'edit'})}
     </li>
   );
 }

@@ -35,9 +35,9 @@ function renderMin(state, userState){
     <div>
       <hr/>
       <span>Count: {state.counter}</span>&nbsp;&nbsp;&nbsp;
-      {userState.button('inc','increment')}
+      {userState.button({name: 'inc', label: 'increment'})}
       <br/><br/>
-      {userState.textField('message', '')}
+      {userState.textField({name: 'message'})}
       <br/><br/><hr/><br/>
     </div>);
 }
