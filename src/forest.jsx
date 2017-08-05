@@ -1,80 +1,28 @@
 
 import { Component } from 'React';
+import core from 'forest-core';
 
 export default class Forest extends Component {
-
-  static makeUID(){
-    /*jshint bitwise:false */
-    var i, random;
-    var uuid = '';
-    for (i = 0; i < 32; i++) {
-      random = Math.random() * 16 | 0;
-      if (i === 8 || i === 12 || i === 16 || i === 20) uuid += '-';
-      uuid += (i === 12 ? 4 : (i === 16 ? (random & 3 | 8) : random)).toString(16);
-    }
-    return uuid;
-  }
-
-  static difference(a, b) {
-    function changes(a, b) {
-      return _.transform(b, function(result, value, key) {
-        if (!_.isEqual(value, a[key])) {
-          result[key] = (_.isObject(value) && _.isObject(a[key])) ? changes(value, a[key]) : value;
-        }
-      });
-    }
-    return changes(a, b);
-  }
-
-  // --------------- ONF ----------------
-
-  static objects = {};
-
-  static spawnObject(o){
-    const UID = o.UID || this.makeUID();
-    Forest.objects[UID] = Object.assign(o, { UID, Notify: [] });
-    return UID;
-  }
-
-  static storeObjects(list, renderers){
-    const uids=list.map(state => Forest.spawnObject(state));
-    Forest.renderers = renderers;
-    ReactDOM.render(
-      this.wrapObject(uids[0]),
-      document.getElementById('root')
-    );
-  }
-
-  static ensureObjectState(UID, observer){
-    const o = Forest.objects[UID];
-    if(o){
-      Forest.setNotify(o,observer);
-      return;
-    }
-    Forest.objects[UID] = { UID, Notify: [ observer ] };
-  }
-
-  static setNotify(o,uid){
-    if(o.Notify.indexOf(uid) === -1) o.Notify.push(uid);
-  }
-
-  static setObjectState(uid, state){
-    const newState = Object.assign({}, Forest.objects[uid], state);
-    const changed = !_.isEqual(Forest.objects[uid], newState);
-    if(changed){
-      if(Forest.debug) console.log(uid, 'changed: ', Forest.difference(Forest.objects[uid], newState))
-      Forest.objects[uid] = newState;
-      Forest.objects[uid].Notify.map(o => setTimeout(Forest.objects[o].doEvaluate, 1));
-    }
-    return changed;
-  }
 
   // ---------------- React bits -----------------------
 
   static renderers;
 
+  static storeObjects(list, renderers){
+    const uids = core.storeObjects(list);
+    Forest.renderers = renderers;
+    ReactDOM.render(
+      Forest.wrapObject(uids[0]),
+      document.getElementById('root')
+    );
+  }
+
   static wrapObject(uid){
-    return <Forest state={Forest.objects[uid]} key={uid}></Forest>
+    return <Forest state={core.objects[uid]} key={uid}></Forest>
+  }
+
+  static spawnObject(o){
+    return core.spawnObject(o);
   }
 
   UID;
@@ -84,7 +32,7 @@ export default class Forest extends Component {
     super(props)
     this.state = props.state || {};
     this.UID = this.state.UID;
-    this.userStateUID = Forest.spawnObject({});
+    this.userStateUID = core.spawnObject({});
     this.state.userState = this.userStateUID;
     this.state.doEvaluate = this.doEvaluate.bind(this);
     this.stateAccess = this.stateAccess.bind(this);
@@ -99,11 +47,9 @@ export default class Forest extends Component {
 
   // ------------ ONF/ONP -----------------------
 
-  static fetching = {};
-
   stateAccess(p,m) { const r = ((path, match)=>{
     const uid = this.UID;
-    const state = Forest.objects[uid];
+    const state = core.objects[uid];
     if(path==='.') return state;
     const pathbits = path.split('.');
     if(pathbits.length==1){
@@ -114,9 +60,9 @@ export default class Forest extends Component {
         if(match == null || match.constructor !== Object) return val;
         return val.filter(v => {
           if(v.constructor !== String) return false;
-          const o = Forest.objects[v];
+          const o = core.objects[v];
           if(!o) return false;
-          Forest.setNotify(o,uid);
+          core.setNotify(o,uid);
           return Object.keys(match).every(k => o[k] === match[k]);
         });
       }
@@ -125,22 +71,22 @@ export default class Forest extends Component {
     const val = state[pathbits[0]];
     if(val == null) return null;
     if(val.constructor !== String) return null;
-    const linkedObject = Forest.objects[val];
+    const linkedObject = core.objects[val];
     if(!linkedObject){
-      if(!Forest.fetching[val]){
-        Forest.fetching[val]=true;
-        Forest.ensureObjectState(val, uid);
+      if(!core.fetching[val]){
+        core.fetching[val]=true;
+        core.ensureObjectState(val, uid);
         fetch(val)
-        .then(res => { Forest.fetching[val]=false; return res.json()})
-        .then(json => Forest.setObjectState(val, json.data));
+        .then(res => { core.fetching[val]=false; return res.json()})
+        .then(json => core.setObjectState(val, json.data));
       }
       return null;
     }
-    Forest.setNotify(linkedObject,uid);
+    core.setNotify(linkedObject,uid);
     if(pathbits[1]==='') return linkedObject;
     return linkedObject[pathbits[1]];
   })(p,m);
- // if(Forest.debug) console.log('path',p,'match',m,'=>',r);
+ // if(this.debug) console.log('path',p,'match',m,'=>',r);
     return r;
   }
 
@@ -150,7 +96,7 @@ export default class Forest extends Component {
     if(time && time > 0 && !this.timerId){
       this.timerId = setTimeout(() => {
         this.timerId = null;
-        Forest.setObjectState(this.UID, { Timer: 0 });
+        core.setObjectState(this.UID, { Timer: 0 });
         this.doEvaluate();
       }, time);
     }
@@ -161,12 +107,12 @@ export default class Forest extends Component {
   doEvaluate() {
     if(!this.evaluate) return;
     for(var i=0; i<4; i++){
-      if(Forest.debug) console.log(i, '>>>>>>>>>>>>> ', this.stateAccess('.'));
-      if(Forest.debug) console.log(i, '>>>>>>>>>>>>> ', this.stateAccess('userState.'));
+      if(this.debug) console.log(i, '>>>>>>>>>>>>> ', this.stateAccess('.'));
+      if(this.debug) console.log(i, '>>>>>>>>>>>>> ', this.stateAccess('userState.'));
       const newState = this.evaluate(this.stateAccess);
-      if(Forest.debug) console.log(i, '<<<<<<<<<<<<< new state bits: ', newState);
+      if(this.debug) console.log(i, '<<<<<<<<<<<<< new state bits: ', newState);
       this.checkTimer(newState.Timer);
-      const changed = Forest.setObjectState(this.UID, newState);
+      const changed = core.setObjectState(this.UID, newState);
       if(!changed) break;
     }
     this.notifyReact();
@@ -176,34 +122,34 @@ export default class Forest extends Component {
 
   onRead(name){
     const value = this.stateAccess(name);
-    Forest.setObjectState(this.userStateUID, { [name]: value });
+    core.setObjectState(this.userStateUID, { [name]: value });
     return value;
   }
 
   onChange = (name, value) => {
-    Forest.setObjectState(this.userStateUID, { [name]: value });
+    core.setObjectState(this.userStateUID, { [name]: value });
   }
 
   KEY_ENTER = 13;
 
   onKeyDown(name, e){
     if (e.keyCode !== this.KEY_ENTER){
-      Forest.setObjectState(this.userStateUID, { [name+'-submitted']: false });
+      core.setObjectState(this.userStateUID, { [name+'-submitted']: false });
       return;
     }
-    Forest.setObjectState(this.userStateUID, { [name+'-submitted']: true });
+    core.setObjectState(this.userStateUID, { [name+'-submitted']: true });
     e.preventDefault();
   }
 
   // ------
 
   button({name, label='', className=''}){
-    Forest.setObjectState(this.userStateUID, { [name]: false });
+    core.setObjectState(this.userStateUID, { [name]: false });
     return <button className={className} onMouseDown={e => this.onChange(name, true)} onMouseUp={e => this.onChange(name, false)}>{label}</button>;
   }
 
   textField({name, label='', className='', placeholder=''}){
-    Forest.setObjectState(this.userStateUID, { [name+'-submitted']: false });
+    core.setObjectState(this.userStateUID, { [name+'-submitted']: false });
     return (
       <span><span>{label}</span>
             <input className={className}
