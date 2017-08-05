@@ -2,6 +2,7 @@ To Do
 -----
 
  - --------------------
+ - this.state.userState = this.userStateUID; !!
  - more widgets: selector, textarea, radio.. move to another file
    - separate out gui widgets from 'this'
    - .. separate react render bits ONT from deeper Forest object management ONF/ONP
@@ -26,6 +27,7 @@ To Do
  - empty state first, so deletions can be picked up
  - --------------------
  - any other way to pass thread than setTimeout(1)? setTimeout(0)!!
+   - need to queue up doEvaluates, not use setTimeout?
  - --------------------
  - isomorphism
  - --------------------

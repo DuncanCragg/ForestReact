@@ -15,15 +15,15 @@ export default class Forest extends Component {
     return uuid;
   }
 
-  static difference(object, base) {
-    function changes(object, base) {
-      return _.transform(object, function(result, value, key) {
-        if (!_.isEqual(value, base[key])) {
-          result[key] = (_.isObject(value) && _.isObject(base[key])) ? changes(value, base[key]) : value;
+  static difference(a, b) {
+    function changes(a, b) {
+      return _.transform(b, function(result, value, key) {
+        if (!_.isEqual(value, a[key])) {
+          result[key] = (_.isObject(value) && _.isObject(a[key])) ? changes(value, a[key]) : value;
         }
       });
     }
-    return changes(object, base);
+    return changes(a, b);
   }
 
   // --------------- ONF ----------------
@@ -62,7 +62,7 @@ export default class Forest extends Component {
     const newState = Object.assign({}, Forest.objects[uid], state);
     const changed = !_.isEqual(Forest.objects[uid], newState);
     if(changed){
-      // console.log('changed: ', Forest.difference(Forest.objects[uid], newState))
+      if(Forest.debug) console.log(uid, 'changed: ', Forest.difference(Forest.objects[uid], newState))
       Forest.objects[uid] = newState;
       Forest.objects[uid].Notify.map(o => setTimeout(Forest.objects[o].doEvaluate, 1));
     }
@@ -78,13 +78,14 @@ export default class Forest extends Component {
   }
 
   UID;
-  userState = {};
+  userStateUID;
 
   constructor(props) {
     super(props)
     this.state = props.state || {};
     this.UID = this.state.UID;
-    this.state['userState'] = Forest.spawnObject(this.userState);
+    this.userStateUID = Forest.spawnObject({});
+    this.state.userState = this.userStateUID;
     this.state.doEvaluate = this.doEvaluate.bind(this);
     this.stateAccess = this.stateAccess.bind(this);
     this.evaluate = this.state.evaluate;
@@ -135,7 +136,7 @@ export default class Forest extends Component {
     if(pathbits[1]==='') return linkedObject;
     return linkedObject[pathbits[1]];
   })(p,m);
-    // console.log('path',p,'match',m,'=>',r);
+ // if(Forest.debug) console.log('path',p,'match',m,'=>',r);
     return r;
   }
 
@@ -151,14 +152,15 @@ export default class Forest extends Component {
     }
   }
 
-  debug = false;
+  static debug = false;
 
   doEvaluate() {
     if(!this.evaluate) return;
     for(var i=0; i<4; i++){
-      if(this.debug) console.log('>>>>>>>>>>>>> ', stateAccess('.'), stateAccess('userState.'));
+      if(Forest.debug) console.log(i, '>>>>>>>>>>>>> ', this.stateAccess('.'));
+      if(Forest.debug) console.log(i, '>>>>>>>>>>>>> ', this.stateAccess('userState.'));
       const newState = this.evaluate(this.stateAccess);
-      if(this.debug) console.log('<<<<<<<<<<<<< new state bits: ', newState);
+      if(Forest.debug) console.log(i, '<<<<<<<<<<<<< new state bits: ', newState);
       this.checkTimer(newState.Timer);
       const changed = Forest.setObjectState(this.UID, newState);
       if(!changed) break;
@@ -170,37 +172,34 @@ export default class Forest extends Component {
 
   onRead(name){
     const value = this.state[name];
-    this.userState[name]=value;
+    Forest.setObjectState(this.userStateUID, { [name]: value });
     return value;
   }
 
   onChange = (name, value) => {
-    this.userState[name]=value;
-    this.doEvaluate();
+    Forest.setObjectState(this.userStateUID, { [name]: value });
   }
 
   KEY_ENTER = 13;
 
   onKeyDown(name, e){
     if (e.keyCode !== this.KEY_ENTER){
-      this.userState[name+'-submitted']=false;
+      Forest.setObjectState(this.userStateUID, { [name+'-submitted']: false });
       return;
     }
+    Forest.setObjectState(this.userStateUID, { [name+'-submitted']: true });
     e.preventDefault();
-    this.userState[name+'-submitted']=true;
-    this.doEvaluate();
   }
 
   // ------
 
   button({name, label='', className=''}){
-    if(this.userState[name]===undefined) this.userState[name] = false;
+    Forest.setObjectState(this.userStateUID, { [name]: false });
     return <button className={className} onMouseDown={e => this.onChange(name, true)} onMouseUp={e => this.onChange(name, false)}>{label}</button>;
   }
 
   textField({name, label='', className='', placeholder=''}){
-    if(this.userState[name]===undefined) this.userState[name] = '';
-    if(this.userState[name+'-submitted']===undefined) this.userState[name+'-submitted']=false;
+    Forest.setObjectState(this.userStateUID, { [name+'-submitted']: false });
     return (
       <span><span>{label}</span>
             <input className={className}
@@ -219,7 +218,6 @@ export default class Forest extends Component {
   }
 
   checkbox({name, label='', className=''}){
-    if(this.userState[name]===undefined) this.userState[name] = false;
     return <input className={className} type="checkbox" onChange={e => this.onChange(name, e.target.checked)} checked={this.onRead(name)} />;
   }
 
