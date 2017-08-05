@@ -30,14 +30,14 @@ FOREST (Functional Observer REST) just adds HTTP to that model, via the `RemoteJ
 OK, here's a minimal example:
 
 ```javascript
-function renderMin(state,gui){
+function renderMin(state, userState){
   return (
     <div>
       <hr/>
       <span>Count: {state.counter}</span>&nbsp;&nbsp;&nbsp;
-      {gui.button('inc','increment')}
+      {userState.button('inc','increment')}
       <br/><br/>
-      {gui.textField('message', '')}
+      {userState.textField('message', '')}
       <br/><br/><hr/><br/>
     </div>);
 }

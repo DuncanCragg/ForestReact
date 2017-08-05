@@ -3,11 +3,11 @@ To Do
 
  - --------------------
  - more widgets: selector, textarea, radio.. move to another file
- - separate out gui widgets from 'this'
-   - gui -> userState('name', ..)
+   - separate out gui widgets from 'this'
+   - .. separate react render bits ONT from deeper Forest object management ONF/ONP
  - state.counter -> state('counter') again, which is more consistent with gui.widget('counter'..)
    - state -> state('name.name.even')
- - React cpt refers to state and 'subscribes' to it, but what about 'watching.counter'? what if that changes?
+   - React cpt refers to state and 'subscribes' to it, but what about 'watching.counter'? what if that changes?
    - .. and giphy.url instead of image.. relies on 'own' state subscribing and setting something for render
  - --------------------
  - fetch remote objects:
