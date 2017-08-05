@@ -93,6 +93,10 @@ export default class Forest extends Component {
 
   componentDidMount() { this.doEvaluate(); }
 
+  notifyReact(){
+    this.setState({});
+  }
+
   // ------------ ONF/ONP -----------------------
 
   static fetching = {};
@@ -165,7 +169,7 @@ export default class Forest extends Component {
       const changed = Forest.setObjectState(this.UID, newState);
       if(!changed) break;
     }
-    this.setState(Forest.objects[this.UID]);
+    this.notifyReact();
   }
 
   // ------------- Widgets ---------------
