@@ -171,7 +171,7 @@ export default class Forest extends Component {
   // ------------- Widgets ---------------
 
   onRead(name){
-    const value = this.state[name];
+    const value = this.stateAccess(name);
     Forest.setObjectState(this.userStateUID, { [name]: value });
     return value;
   }
@@ -214,7 +214,7 @@ export default class Forest extends Component {
   }
 
   image({name, label='', className=''}){
-    return <span>{label} <img className={className} src={this.state[name]} /></span>;
+    return <span>{label} <img className={className} src={this.stateAccess(name)} /></span>;
   }
 
   checkbox({name, label='', className=''}){
@@ -224,7 +224,7 @@ export default class Forest extends Component {
   // -------------------------------------
 
   render () {
-    return Forest.renderers[this.state.is](this.stateAccess, this);
+    return Forest.renderers[this.stateAccess('is')](this.stateAccess, this);
   }
 }
 

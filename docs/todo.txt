@@ -3,12 +3,12 @@ To Do
 
  - --------------------
  - this.state.userState = this.userStateUID; !!
+ - this.state.doEvaluate = this.doEvaluate.bind(this); !!
+ - --------------------
  - more widgets: selector, textarea, radio..
  - separate out gui widgets from 'this'
    - separate react render bits ONT from deeper Forest object management ONF/ONP
    - split file
- - state.counter -> state('counter')
-   - which is more consistent with gui.widget('counter'..)
    - state -> state('name.name.even')
    - React cpt refers to state and 'subscribes' to it
      - but what about state('watching.counter')? what if that changes?
