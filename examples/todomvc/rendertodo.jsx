@@ -41,7 +41,7 @@ function renderTodoApp(state, userState){
   );
 }
 
-function renderTodoItem(state,gui){
+function renderTodoItem(state, userState){
   return (
     <li className={classNames({completed: state.completed, editing: state.editing})}>
      {false && Object.keys(state).map((key) => (typeof(state[key]) !== 'function') && <span key={key}> | {key}: {String(state[key])} | </span>)}

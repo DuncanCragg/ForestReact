@@ -9,7 +9,7 @@ function renderGuiStack(state){
     </div>);
 }
 
-function renderFed(state,gui){
+function renderFed(state, userState){
   return (
     <div>
       <hr/>
@@ -17,15 +17,15 @@ function renderFed(state,gui){
       <br/><br/>
       {state.enableCounting===true? 'GO!': '...'}
       <br/><br/>
-      {gui.textField('counter', 'Count')}
-      {gui.button('add','increment')}
+      {userState.textField('counter', 'Count')}
+      {userState.button('add','increment')}
       <br/><br/>
-      {gui.textField('topic', 'Topic')}
-      {gui.button('loadrandompicture', 'Load picture about that')}
+      {userState.textField('topic', 'Topic')}
+      {userState.button('loadrandompicture', 'Load picture about that')}
       <br/><br/>
       {state.loading? 'loading..': ''}
       <br/><br/>
-      {gui.image('image', 'Your random image:')}
+      {userState.image('image', 'Your random image:')}
       <br/>
       <hr/>
       <br/>
