@@ -93,29 +93,6 @@ export default class Forest extends Component {
 
   componentDidMount() { this.doEvaluate(); }
 
-  onRead(name){
-    const value = this.state[name];
-    this.userState[name]=value;
-    return value;
-  }
-
-  onChange = (name, value) => {
-    this.userState[name]=value;
-    this.doEvaluate();
-  }
-
-  KEY_ENTER = 13;
-
-  onKeyDown(name, e){
-    if (e.keyCode !== this.KEY_ENTER){
-      this.userState[name+'-submitted']=false;
-      return;
-    }
-    e.preventDefault();
-    this.userState[name+'-submitted']=true;
-    this.doEvaluate();
-  }
-
   stateAccess(p,m) { const r = ((path, match)=>{
     const uid = this.UID;
     const state = Forest.objects[uid];
@@ -188,6 +165,29 @@ export default class Forest extends Component {
 
   // ------------- Widgets ---------------
 
+  onRead(name){
+    const value = this.state[name];
+    this.userState[name]=value;
+    return value;
+  }
+
+  onChange = (name, value) => {
+    this.userState[name]=value;
+    this.doEvaluate();
+  }
+
+  KEY_ENTER = 13;
+
+  onKeyDown(name, e){
+    if (e.keyCode !== this.KEY_ENTER){
+      this.userState[name+'-submitted']=false;
+      return;
+    }
+    e.preventDefault();
+    this.userState[name+'-submitted']=true;
+    this.doEvaluate();
+  }
+
   button(name, label, className){
     if(this.userState[name]===undefined) this.userState[name] = false;
     return <button className={className} onMouseDown={e => this.onChange(name, true)} onMouseUp={e => this.onChange(name, false)}>{label}</button>;
@@ -217,6 +217,7 @@ export default class Forest extends Component {
     if(this.userState[name]===undefined) this.userState[name] = false;
     return <input className={className} type="checkbox" onChange={e => this.onChange(name, e.target.checked)} checked={this.onRead(name)} />;
   }
+
   // -------------------------------------
 
   render () {
