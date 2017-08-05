@@ -4,8 +4,6 @@ import core from 'forest-core';
 
 export default class Forest extends Component {
 
-  // ---------------- React bits -----------------------
-
   static renderers;
 
   static storeObjects(list, renderers){
@@ -47,47 +45,8 @@ export default class Forest extends Component {
 
   // ------------ ONF/ONP -----------------------
 
-  stateAccess(p,m) { const r = ((path, match)=>{
-    const uid = this.UID;
-    const state = core.objects[uid];
-    if(path==='.') return state;
-    const pathbits = path.split('.');
-    if(pathbits.length==1){
-      if(path === 'Timer') return state.Timer || 0;
-      const val = state[path];
-      if(val == null) return null;
-      if(val.constructor === Array){
-        if(match == null || match.constructor !== Object) return val;
-        return val.filter(v => {
-          if(v.constructor !== String) return false;
-          const o = core.objects[v];
-          if(!o) return false;
-          core.setNotify(o,uid);
-          return Object.keys(match).every(k => o[k] === match[k]);
-        });
-      }
-      return (match == null || val == match)? val: null;
-    }
-    const val = state[pathbits[0]];
-    if(val == null) return null;
-    if(val.constructor !== String) return null;
-    const linkedObject = core.objects[val];
-    if(!linkedObject){
-      if(!core.fetching[val]){
-        core.fetching[val]=true;
-        core.ensureObjectState(val, uid);
-        fetch(val)
-        .then(res => { core.fetching[val]=false; return res.json()})
-        .then(json => core.setObjectState(val, json.data));
-      }
-      return null;
-    }
-    core.setNotify(linkedObject,uid);
-    if(pathbits[1]==='') return linkedObject;
-    return linkedObject[pathbits[1]];
-  })(p,m);
- // if(this.debug) console.log('path',p,'match',m,'=>',r);
-    return r;
+  stateAccess(path, match) {
+    return core.stateAccess(this.UID, path, match);
   }
 
   timerId = null;

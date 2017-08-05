@@ -60,6 +60,48 @@ function setObjectState(uid, state){
   return changed;
 }
 
+function stateAccess(uid,p,m) { const r = ((uid, path, match)=>{
+  const state = objects[uid];
+  if(path==='.') return state;
+  const pathbits = path.split('.');
+  if(pathbits.length==1){
+    if(path === 'Timer') return state.Timer || 0;
+    const val = state[path];
+    if(val == null) return null;
+    if(val.constructor === Array){
+      if(match == null || match.constructor !== Object) return val;
+      return val.filter(v => {
+        if(v.constructor !== String) return false;
+        const o = objects[v];
+        if(!o) return false;
+        setNotify(o,uid);
+        return Object.keys(match).every(k => o[k] === match[k]);
+      });
+    }
+    return (match == null || val == match)? val: null;
+  }
+  const val = state[pathbits[0]];
+  if(val == null) return null;
+  if(val.constructor !== String) return null;
+  const linkedObject = objects[val];
+  if(!linkedObject){
+    if(!fetching[val]){
+      fetching[val]=true;
+      ensureObjectState(val, uid);
+      fetch(val)
+      .then(res => { fetching[val]=false; return res.json()})
+      .then(json => setObjectState(val, json.data));
+    }
+    return null;
+  }
+  setNotify(linkedObject,uid);
+  if(pathbits[1]==='') return linkedObject;
+  return linkedObject[pathbits[1]];
+  })(uid,p,m);
+  // if(this.debug) console.log('UID',uid,'path',p,'match',m,'=>',r);
+  return r;
+}
+
 var fetching = {};
 
 export default {
@@ -68,6 +110,7 @@ export default {
   ensureObjectState,
   setNotify,
   setObjectState,
+  stateAccess,
   fetching,
   objects,
 }
