@@ -12,16 +12,17 @@ Forest.storeObjects(
 );
 
 function evalFed(state){
+  const loadButtonPressed = !state('fetching') && state('userState.loadrandompicture');
   return {
     Timer: 4000,
     enableCounting: state('Timer') === 0? !state('enableCounting'): state('enableCounting'),
     counter: state('watching.counter') || (state('enableCounting')!==false? (!state('adding') && state('userState.add')? state('counter')+1: state('counter')): 0),
     topic: state('userState.topic').toLowerCase(),
-    giphy: ((state('fetching') == null) || (!state('fetching') && state('userState.loadrandompicture')))? 'https://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&tag=' + state('topic'): state('giphy'),
+    giphy: (!state('giphy') || loadButtonPressed)? 'https://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&tag=' + state('topic'): state('giphy'),
     image: state('giphy.fixed_height_small_url') || state('image'),
     loading: !state('giphy.fixed_height_small_url'),
     adding: !!state('userState.add'),
-    fetching: !!state('userState.loadrandompicture')
+    fetching: state('userState.loadrandompicture')
   };
 }
 

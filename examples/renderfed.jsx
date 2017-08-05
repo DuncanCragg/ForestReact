@@ -15,7 +15,7 @@ function renderFed(state, userState){
     <div>
       <hr/>
       <br/><br/>
-      {state('enableCounting')===true? 'GO!': '...'}
+      {state('enableCounting')? 'GO!': '...'}
       <br/><br/>
       {userState.textField({name: 'counter', label: 'Count'})}
       {userState.button({name: 'add', label: 'increment'})}

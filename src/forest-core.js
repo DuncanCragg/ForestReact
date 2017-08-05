@@ -1,4 +1,6 @@
 
+const debug = false;
+
 function makeUID(){
   /*jshint bitwise:false */
   var i, random;
@@ -46,8 +48,6 @@ function ensureObjectState(UID, observer){
 function setNotify(o,uid){
   if(o.Notify.indexOf(uid) === -1) o.Notify.push(uid);
 }
-
-const debug = false;
 
 function setObjectState(uid, state){
   const newState = Object.assign({}, objects[uid], state);
