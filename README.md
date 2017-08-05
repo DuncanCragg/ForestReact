@@ -75,24 +75,25 @@ function evalMin(state){
 }
 ```
 
-An object reads the states around it (userState above, but also peer states and API
+An object reads the states around it (`userState` above, but also peer states and API
 states) 'through' its own state, because in Forest, _the dot `.` can jump across to those
-other objects to read (and then observe) them_. For example, above,
-`state('userState.message')` reads `userState`, which is simply the UID of the userState
-object, then fetches that object and reads its `message` property. It then continues to
-be notified of changes to that object.
+other objects to read (and then observe) them_.
 
-This consistent object graph traversal makes the logic incredibly powerful and simple.
+For example, above, `state('userState.message')` reads `userState`, which is simply the
+UID of the userState object, then fetches that object and reads its `message` property.
+It then continues to be notified of changes to that object.
 
-The fact that Forest doesn't use actions or events means that detecting change is done
-via comparison to previous state, as in the expression `!state('inc') && state('userState.inc')`,
-which detects that the userState `inc` button is `true` (down) while the known state was
-`false` (up). The line `inc: state('userState.inc')` then records the latest state for
-the next time around.
+This consistent object graph traversal combined with the pure functional state
+transformation makes the domain logic simple and powerful.
 
-It can also discover peer component and remote API state in the same way in order to
-determine it's own next state (e.g. `state('selectorpeer.choice')` or
-`state('remote324.choicelist')`).
+The fact that Forest only uses state instead of actions or events means that detecting
+change is done through comparison to previous state. For example, the expression above
+`!state('inc') && state('userState.inc')` detects that the userState `inc` button is
+`true` (down) while the known state was `false` (up). The line 
+`inc: state('userState.inc')` then records the latest state for the next time around.
+
+You can also discover peer component and remote API state in the same way
+(e.g. `state('selectorPeerComponent.choice')` or `state('referenceData.choicelist')`).
 
 ## _"Why is that better?"_
 
