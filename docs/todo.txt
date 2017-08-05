@@ -1,34 +1,34 @@
 To Do
 -----
 
-- --------------------
-- more widgets: selector, textarea, radio.. move to another file
-   - separate out gui widgets from 'this'
-     - gui -> userState('name', ..)
-   - state.counter -> state('counter') again, which is more consistent with gui.widget('counter'..)
-     - state -> state('name.name.even')
-   - React cpt refers to state and 'subscribes' to it, but what about 'watching.counter'? what if that changes?
-     - .. and giphy.url instead of image.. relies on 'own' state subscribing and setting something for render
-- --------------------
-- fetch remote objects:
-   - can have remote URL in any object, without evaluate of course (Notify/render): send user-state over the wire
-      - what if list includes remote, can't use Forest.objects[url]
-   - refresh? after viewed and time rel to cache ttl
-   - check actually fetch()ing a URL!; lastmod/etag?
-   - error on fetch
-   - timeout? don't use fetch!
-- wrap remote with Forest, like WebObjects did?
-   - remote only need Notify and render
-- only look through giphy (url) if button pressed, but then need to look through when it comes in and notify/evaluates.. ?
-   - every view-through fetches means only don't notify when it's not changed .. and giphy always changes so get stuck in loop
-   - giphy: opaque URLs; non-idempotency
-- --------------------
-- empty state first, so deletions can be picked up
-- --------------------
-- any other way to pass thread than setTimeout(1)? setTimeout(0)!!
-- --------------------
-- isomorphism
-- --------------------
+ - --------------------
+ - more widgets: selector, textarea, radio.. move to another file
+ - separate out gui widgets from 'this'
+   - gui -> userState('name', ..)
+ - state.counter -> state('counter') again, which is more consistent with gui.widget('counter'..)
+   - state -> state('name.name.even')
+ - React cpt refers to state and 'subscribes' to it, but what about 'watching.counter'? what if that changes?
+   - .. and giphy.url instead of image.. relies on 'own' state subscribing and setting something for render
+ - --------------------
+ - fetch remote objects:
+    - can have remote URL in any object, without evaluate of course (Notify/render): send user-state over the wire
+       - what if list includes remote, can't use Forest.objects[url]
+    - refresh? after viewed and time rel to cache ttl
+    - check actually fetch()ing a URL!; lastmod/etag?
+    - error on fetch
+    - timeout? don't use fetch!
+ - wrap remote with Forest, like WebObjects did?
+    - remote only need Notify and render
+ - only look through giphy (url) if button pressed, but then need to look through when it comes in and notify/evaluates.. ?
+    - every view-through fetches means only don't notify when it's not changed .. and giphy always changes so get stuck in loop
+    - giphy: opaque URLs; non-idempotency
+ - --------------------
+ - empty state first, so deletions can be picked up
+ - --------------------
+ - any other way to pass thread than setTimeout(1)? setTimeout(0)!!
+ - --------------------
+ - isomorphism
+ - --------------------
 
 
 
