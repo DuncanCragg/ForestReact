@@ -15,7 +15,19 @@ export default class Forest extends Component {
     return uuid;
   }
 
-  static renderers;
+  static difference(object, base) {
+    function changes(object, base) {
+      return _.transform(object, function(result, value, key) {
+        if (!_.isEqual(value, base[key])) {
+          result[key] = (_.isObject(value) && _.isObject(base[key])) ? changes(value, base[key]) : value;
+        }
+      });
+    }
+    return changes(object, base);
+  }
+
+  // --------------- ONF ----------------
+
   static objects = {};
 
   static spawnObject(o){
@@ -33,16 +45,6 @@ export default class Forest extends Component {
     );
   }
 
-  static wrapObject(uid){
-    return <Forest state={Forest.objects[uid]} key={uid}></Forest>
-  }
-
-  static fetching = {};
-
-  static setNotify(o,uid){
-    if(o.Notify.indexOf(uid) === -1) o.Notify.push(uid);
-  }
-
   static ensureObjectState(UID, observer){
     const o = Forest.objects[UID];
     if(o){
@@ -52,15 +54,8 @@ export default class Forest extends Component {
     Forest.objects[UID] = { UID, Notify: [ observer ] };
   }
 
-  static difference(object, base) {
-    function changes(object, base) {
-      return _.transform(object, function(result, value, key) {
-        if (!_.isEqual(value, base[key])) {
-          result[key] = (_.isObject(value) && _.isObject(base[key])) ? changes(value, base[key]) : value;
-        }
-      });
-    }
-    return changes(object, base);
+  static setNotify(o,uid){
+    if(o.Notify.indexOf(uid) === -1) o.Notify.push(uid);
   }
 
   static setObjectState(uid, state){
@@ -74,6 +69,14 @@ export default class Forest extends Component {
     return changed;
   }
 
+  // ---------------- React bits -----------------------
+
+  static renderers;
+
+  static wrapObject(uid){
+    return <Forest state={Forest.objects[uid]} key={uid}></Forest>
+  }
+
   UID;
   userState = {};
 
@@ -81,17 +84,21 @@ export default class Forest extends Component {
     super(props)
     this.state = props.state || {};
     this.UID = this.state.UID;
-    const userStateUID = this.UID + '-1';
+    const userStateUID = this.UID + '-1'; // :o(
     this.userState.UID = userStateUID;
-    this.state['user-state'] = userStateUID; // :0(
     this.userState.Notify = [];
+    Forest.objects[userStateUID] = this.userState; // :o(
+    this.state['user-state'] = userStateUID; // :o(
     this.state.doEvaluate = this.doEvaluate.bind(this);
     this.stateAccess = this.stateAccess.bind(this);
     this.evaluate = this.state.evaluate;
-    Forest.objects[userStateUID] = this.userState;
   }
 
   componentDidMount() { this.doEvaluate(); }
+
+  // ------------ ONF/ONP -----------------------
+
+  static fetching = {};
 
   stateAccess(p,m) { const r = ((path, match)=>{
     const uid = this.UID;
