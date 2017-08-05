@@ -14,12 +14,12 @@ There are no actions, events, messages, commands, calls, queues, streams, etc. i
 Functional Observer, just state observing other state and updating itself. The React
 component state observes other states around it:
 
-`ReactComponentState` =
+`ComponentState` =
 
 #### &nbsp; ƒ(
-&nbsp; &nbsp; `ReactComponentState`,<br/>
+&nbsp; &nbsp; `ComponentState`,<br/>
 &nbsp; &nbsp; `UserEnteredState`,<br/>
-&nbsp; &nbsp; `PeerReactComponentStates`,<br/>
+&nbsp; &nbsp; `PeerComponentStates`,<br/>
 &nbsp; &nbsp; `RemoteJSONAPIStates`<br/>
 #### &nbsp; )
 
@@ -64,7 +64,7 @@ forest.storeObjects(
 
 /* Where all the domain logic goes: pure functional */
 /* transform/reduction of visible state to new component state: */
-/* `componentState = f(componentState, userState)` */
+/* `state = f(state, state.userState)` */
 function evalMin(state){
   const incrementPushed  = !state('inc') && state('userState.inc');
   return Object.assign({},
@@ -83,8 +83,8 @@ For example, above, `state('userState.message')` reads `userState`, which is sim
 UID of the `userState` object, then fetches that object and reads its `message` property.
 It then continues to be notified of changes to that object.
 
-This consistent object graph traversal combined with the pure functional state
-transformation makes the domain logic simple and powerful.
+You can also discover peer component and remote API state in the same way
+(e.g. `state('selectorPeerComponent.choice')` or `state('referenceData.choicelist')`).
 
 The fact that Forest only uses state instead of actions or events means that detecting
 change is done through comparison to previous state. For example, the expression above
@@ -92,16 +92,15 @@ change is done through comparison to previous state. For example, the expression
 `true` (down) while the known state was `false` (up). The line 
 `inc: state('userState.inc')` then records the latest state for the next time around.
 
-You can also discover peer component and remote API state in the same way
-(e.g. `state('selectorPeerComponent.choice')` or `state('referenceData.choicelist')`).
-
 ## _"Why is that better?"_
 
-It's consistent and simple, putting a lot of power into small state reducer or
-transformation functions and expressions - one single dot `.` can give a component
-access to all the state around it, locally and remotely, _and_ subscribe it to that
-state so that it's notified if it changes. All the interactive logic is held in pure
-functions.
+This consistent object graph traversal combined with the pure functional state
+transformation makes the domain logic simple and powerful.
+
+It puts a lot of power into small state reducer or transformation functions and
+expressions - one single dot `.` can give a component access to all the state around it,
+locally and remotely, _and_ subscribe it to that state so that it's notified if it
+changes. All the interactive logic is held in pure functions.
 
 ## Credit
 
