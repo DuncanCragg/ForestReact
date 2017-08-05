@@ -37,14 +37,18 @@ export default class Forest extends Component {
     this.state.react = this;
   }
 
-  componentDidMount() { core.doEvaluate(this.UID); }
+  mounted = false;
+
+  componentDidMount() { this.mounted = true; core.doEvaluate(this.UID); }
+
+  componentWillUnmount() { this.mounted = false; }
 
   stateAccess(path, match) {
     return core.stateAccess(this.UID, path, match);
   }
 
   notify(){
-    this.setState({});
+    if(this.mounted) this.setState({});
   }
 
   onRead(name){
