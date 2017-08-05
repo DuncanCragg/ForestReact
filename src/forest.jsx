@@ -224,7 +224,7 @@ export default class Forest extends Component {
   // -------------------------------------
 
   render () {
-    return Forest.renderers[this.state.is](this.state, this);
+    return Forest.renderers[this.state.is](this.stateAccess, this);
   }
 }
 

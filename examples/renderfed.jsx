@@ -4,18 +4,18 @@ import Forest from 'forest';
 function renderGuiStack(state){
   return (
     <div>
-      <div>{state.name}</div>
-      {state.list.map((uid) => <Forest state={Forest.objects[uid]} key={uid}></Forest>)}
+      <div>{state('name')}</div>
+      {state('list').map((uid) => <Forest state={Forest.objects[uid]} key={uid}></Forest>)}
     </div>);
 }
 
+      //{false && Object.keys(state).map((key) => (typeof(state[key]) !== 'function') && <span key={key}> | {key}: {String(state[key])} | </span>)}
 function renderFed(state, userState){
   return (
     <div>
       <hr/>
-      {Object.keys(state).map((key) => (typeof(state[key]) !== 'function') && <span key={key}> | {key}: {String(state[key])} | </span>)}
       <br/><br/>
-      {state.enableCounting===true? 'GO!': '...'}
+      {state('enableCounting')===true? 'GO!': '...'}
       <br/><br/>
       {userState.textField({name: 'counter', label: 'Count'})}
       {userState.button({name: 'add', label: 'increment'})}
@@ -23,7 +23,7 @@ function renderFed(state, userState){
       {userState.textField({name: 'topic', label: 'Topic'})}
       {userState.button({name: 'loadrandompicture', label: 'Load picture about that'})}
       <br/><br/>
-      {state.loading? 'loading..': ''}
+      {state('loading')? 'loading..': ''}
       <br/><br/>
       {userState.image({name: 'image', label: 'Your random image:'})}
       <br/>
