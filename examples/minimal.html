@@ -53,7 +53,7 @@ function evalMin(state){
     state('Timer') === 0? { enableCounting: !state('enableCounting') }:{},
     !state('enableCounting')? { counter: 0 }:{},
     (state('enableCounting') && incrementPushed)? { counter: state('counter') + 1 }:{},
-    { inc: !!state('userState.inc') },
+    { inc: state('userState.inc') },
     { message: state('userState.message').toLowerCase() }
   );
 }
