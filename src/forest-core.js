@@ -52,15 +52,16 @@ const debug = false;
 function setObjectState(uid, state){
   const newState = Object.assign({}, objects[uid], state);
   const changed = !_.isEqual(objects[uid], newState);
-  if(changed){
-    if(debug) console.log(uid, 'changed: ', difference(objects[uid], newState))
-    objects[uid] = newState;
-    objects[uid].Notify.map(o => setTimeout(objects[o].doEvaluate, 1));
-  }
-  return changed;
+  if(!changed) return null;
+  if(debug) console.log(uid, 'changed: ', difference(objects[uid], newState))
+  objects[uid] = newState;
+  objects[uid].Notify.map(u => setTimeout(doEvaluate.bind(null, u), 1));
+  return newState;
 }
 
-function stateAccess(uid,p,m) { const r = ((uid, path, match)=>{
+var fetching = {};
+
+function stateAccess(u,p,m) { const r = ((uid, path, match)=>{
   const state = objects[uid];
   if(path==='.') return state;
   const pathbits = path.split('.');
@@ -97,12 +98,36 @@ function stateAccess(uid,p,m) { const r = ((uid, path, match)=>{
   setNotify(linkedObject,uid);
   if(pathbits[1]==='') return linkedObject;
   return linkedObject[pathbits[1]];
-  })(uid,p,m);
-  // if(this.debug) console.log('UID',uid,'path',p,'match',m,'=>',r);
+  })(u,p,m);
+  // if(debug) console.log('UID',u,'path',p,'match',m,'=>',r);
   return r;
 }
 
-var fetching = {};
+function checkTimer(o,time){
+  if(time && time > 0 && !o.timerId){
+    o.timerId = setTimeout(() => {
+      objects[o.UID].timerId = null;
+      setObjectState(o.UID, { Timer: 0 });
+      doEvaluate(o.UID);
+    }, time);
+  }
+}
+
+function doEvaluate(uid) {
+  var o = objects[uid];
+  const reactnotify = o.react.notify;
+  if(!o.evaluate) return;
+  for(var i=0; i<4; i++){
+    if(debug) console.log(i, '>>>>>>>>>>>>> ', stateAccess(uid, '.'));
+    if(debug) console.log(i, '>>>>>>>>>>>>> ', stateAccess(uid, 'userState.'));
+    const newState = o.evaluate(stateAccess.bind(null, uid));
+    if(debug) console.log(i, '<<<<<<<<<<<<< new state bits: ', newState);
+    checkTimer(o,newState.Timer);
+    o = setObjectState(uid, newState);
+    if(!o) break;
+  }
+  reactnotify();
+}
 
 export default {
   spawnObject,
@@ -111,6 +136,7 @@ export default {
   setNotify,
   setObjectState,
   stateAccess,
+  doEvaluate,
   fetching,
   objects,
 }
