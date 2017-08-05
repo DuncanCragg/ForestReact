@@ -80,7 +80,7 @@ states) 'through' its own state, because in Forest, _the dot `.` can jump across
 other objects to read (and then observe) them_.
 
 For example, above, `state('userState.message')` reads `userState`, which is simply the
-UID of the userState object, then fetches that object and reads its `message` property.
+UID of the `userState` object, then fetches that object and reads its `message` property.
 It then continues to be notified of changes to that object.
 
 This consistent object graph traversal combined with the pure functional state
@@ -88,7 +88,7 @@ transformation makes the domain logic simple and powerful.
 
 The fact that Forest only uses state instead of actions or events means that detecting
 change is done through comparison to previous state. For example, the expression above
-`!state('inc') && state('userState.inc')` detects that the userState `inc` button is
+`!state('inc') && state('userState.inc')` detects that the `userState` `inc` button is
 `true` (down) while the known state was `false` (up). The line 
 `inc: state('userState.inc')` then records the latest state for the next time around.
 
