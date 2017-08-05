@@ -23,7 +23,7 @@ function renderTodoApp(state,gui){
       <section className="main">
         {gui.checkbox('toggleAll','toggle-all-X')}
         <ul className="todo-list">
-          {shownTodos.map((uid) => <Forest state={Forest.objects[uid]} key={uid}></Forest>)}
+          {shownTodos.map((uid) => Forest.wrapObject(uid))}
         </ul>
       </section>)}
 

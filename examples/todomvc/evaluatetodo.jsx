@@ -8,9 +8,8 @@ Forest.storeObjects(
 );
 
 function evalTodo(state){
-  console.log('>>>>>>>>>>>>> evalTodo', state('.'), state('user-state.'));
   const todoSubmitted = !state('creating') && state('user-state.newTodo-submitted')
-  const r= Object.assign({},
+  return Object.assign({},
     !state('user-state.newTodo-submitted')? { newTodo: state('user-state.newTodo') || '' }:{},
     todoSubmitted?
       { todos: state('todos').concat([Forest.spawnObject(
@@ -25,19 +24,14 @@ function evalTodo(state){
     { clearCompleted: !!state('user-state.clearCompleted') },
     { toggleAll: state('activeTodos') == null || state('activeTodos').length == 0 }
   );
-  console.log('<<<<<<<<<<<<<<<<<<<new state bits: ', r);
-  return r;
 }
 
 function evalTodoItem(state){
-  console.log('>>>>>>>>>>>>> evalTodoItem', state('.'), state('user-state.'));
-  const r= Object.assign({},
+  return Object.assign({},
     { completed: !state('parent.clearCompleted') && !!state('user-state.completed') },
     state('user-state.destroy')? { deleted: true }:{}
     // {editing: {state('app.editing') === state('UID')}}
   );
-  console.log('<<<<<<<<<<<<<<<<<<<new state bits: ', r);
-  return r;
 }
 
 

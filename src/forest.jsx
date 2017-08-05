@@ -25,13 +25,16 @@ export default class Forest extends Component {
   }
 
   static storeObjects(list, renderers){
-    list.map(o => Forest.spawnObject(o));
+    const uids=list.map(state => Forest.spawnObject(state));
     Forest.renderers = renderers;
-    const top = list[0];
     ReactDOM.render(
-      <Forest state={top}></Forest>,
+      this.wrapObject(uids[0]),
       document.getElementById('root')
     );
+  }
+
+  static wrapObject(uid){
+    return <Forest state={Forest.objects[uid]} key={uid}></Forest>
   }
 
   static fetching = {};
@@ -168,10 +171,14 @@ export default class Forest extends Component {
     }
   }
 
+  debug = false;
+
   doEvaluate() {
     if(!this.evaluate) return;
     for(var i=0; i<4; i++){
+      if(this.debug) console.log('>>>>>>>>>>>>> ', stateAccess('.'), stateAccess('user-state.'));
       const newState = this.evaluate(this.stateAccess);
+      if(this.debug) console.log('<<<<<<<<<<<<< new state bits: ', newState);
       this.checkTimer(newState.Timer);
       const changed = Forest.setObjectState(this.UID, newState);
       if(!changed) break;
