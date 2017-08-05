@@ -5,7 +5,7 @@ function pluralize(count, word) {
   return count === 1 ? word : word + 's';
 }
 
-function renderTodoApp(state,gui){
+function renderTodoApp(state, userState){
 
   const numactive    = state.activeTodos && state.activeTodos.length;
   const numcompleted = state.completedTodos && state.completedTodos.length;
@@ -16,12 +16,12 @@ function renderTodoApp(state,gui){
       {false && Object.keys(state).map((key) => (typeof(state[key]) !== 'function') && <span key={key}> | {key}: {String(state[key])} | </span>)}
       <header className="header">
         <h1>todos</h1>
-        {gui.textField('newTodo','','new-todo','What needs to be done?')}
+        {userState.textField('newTodo','','new-todo','What needs to be done?')}
       </header>
 
       {(shownTodos.length!=0) && (
       <section className="main">
-        {gui.checkbox('toggleAll','toggle-all-X')}
+        {userState.checkbox('toggleAll','toggle-all-X')}
         <ul className="todo-list">
           {shownTodos.map((uid) => Forest.wrapObject(uid))}
         </ul>
@@ -35,7 +35,7 @@ function renderTodoApp(state,gui){
           <li><a href="#/active"    className={classNames({selected: state.nowShowing === 'active'   })}>Active</a></li> {' '}
           <li><a href="#/completed" className={classNames({selected: state.nowShowing === 'completed'})}>Completed</a></li>
         </ul>
-        {/* (numcompleted!=0) && */ gui.button('clearCompleted', 'Clear completed', 'clear-completed')}
+        {/* (numcompleted!=0) && */ userState.button('clearCompleted', 'Clear completed', 'clear-completed')}
       </footer>)}
     </div>
   );
@@ -46,11 +46,11 @@ function renderTodoItem(state,gui){
     <li className={classNames({completed: state.completed, editing: state.editing})}>
      {false && Object.keys(state).map((key) => (typeof(state[key]) !== 'function') && <span key={key}> | {key}: {String(state[key])} | </span>)}
       <div className="view">
-        {gui.checkbox('completed', 'toggle')}
+        {userState.checkbox('completed', 'toggle')}
         <label onDoubleClick={this.handleEdit}>{state.title}</label>
-        {gui.button('destroy','','destroy')}
+        {userState.button('destroy','','destroy')}
       </div>
-      {gui.textField('title', '', 'edit')}
+      {userState.textField('title', '', 'edit')}
     </li>
   );
 }
