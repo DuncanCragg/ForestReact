@@ -11,7 +11,7 @@ To Do
    - .. and giphy.url instead of image.. relies on 'own' state subscribing and setting something for render
  - --------------------
  - fetch remote objects:
-    - can have remote URL in any object, without evaluate of course (Notify/render): send user-state over the wire
+    - can have remote URL in any object, without evaluate of course (Notify/render): send userState over the wire
        - what if list includes remote, can't use Forest.objects[url]
     - refresh? after viewed and time rel to cache ttl
     - check actually fetch()ing a URL!; lastmod/etag?

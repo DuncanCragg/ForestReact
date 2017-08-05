@@ -84,7 +84,7 @@ export default class Forest extends Component {
     super(props)
     this.state = props.state || {};
     this.UID = this.state.UID;
-    this.state['user-state'] = Forest.spawnObject(this.userState);
+    this.state['userState'] = Forest.spawnObject(this.userState);
     this.state.doEvaluate = this.doEvaluate.bind(this);
     this.stateAccess = this.stateAccess.bind(this);
     this.evaluate = this.state.evaluate;
@@ -156,7 +156,7 @@ export default class Forest extends Component {
   doEvaluate() {
     if(!this.evaluate) return;
     for(var i=0; i<4; i++){
-      if(this.debug) console.log('>>>>>>>>>>>>> ', stateAccess('.'), stateAccess('user-state.'));
+      if(this.debug) console.log('>>>>>>>>>>>>> ', stateAccess('.'), stateAccess('userState.'));
       const newState = this.evaluate(this.stateAccess);
       if(this.debug) console.log('<<<<<<<<<<<<< new state bits: ', newState);
       this.checkTimer(newState.Timer);

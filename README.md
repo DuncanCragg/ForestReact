@@ -57,9 +57,9 @@ forest.storeObjects(
 
 function evalMin(state){
   return Object.assign({},
-    (!state('inc') && state('user-state.inc'))? { counter: state('counter') + 1 }:{},
-    { inc: !!state('user-state.inc') },
-    { message: state('user-state.message').toLowerCase() }
+    (!state('inc') && state('userState.inc'))? { counter: state('counter') + 1 }:{},
+    { inc: !!state('userState.inc') },
+    { message: state('userState.message').toLowerCase() }
   );
 }
 ```
@@ -70,9 +70,9 @@ Forest, _the dot `.` can jump across to those other objects to observe them_ whi
 the whole process incredibly powerful, consistent and simple.
 
 The fact that Forest doesn't use actions or events means that detecting change is done
-via comparison to previous state, as in the expression `!state('inc') && state('user-state.inc')`,
-which detects that the user-state `inc` button is `true` (down) while the known state
-was `false` (up). The line `inc: !!state('user-state.inc')` then records the latest
+via comparison to previous state, as in the expression `!state('inc') && state('userState.inc')`,
+which detects that the userState `inc` button is `true` (down) while the known state
+was `false` (up). The line `inc: !!state('userState.inc')` then records the latest
 state for the next time around.
 
 It can also discover peer component and remote API state in the same way in order to

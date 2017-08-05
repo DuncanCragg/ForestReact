@@ -8,28 +8,28 @@ Forest.storeObjects(
 );
 
 function evalTodo(state){
-  const todoSubmitted = !state('creating') && state('user-state.newTodo-submitted')
+  const todoSubmitted = !state('creating') && state('userState.newTodo-submitted')
   return Object.assign({},
-    !state('user-state.newTodo-submitted')? { newTodo: state('user-state.newTodo') || '' }:{},
+    !state('userState.newTodo-submitted')? { newTodo: state('userState.newTodo') || '' }:{},
     todoSubmitted?
       { todos: state('todos').concat([Forest.spawnObject(
           { evaluate: evalTodoItem, is: 'todoitem', title: state('newTodo'), completed: false, deleted: false, editing: false, parent: state('UID') }
         )]),
         newTodo: ''
       }:{},
-    { creating: !!state('user-state.newTodo-submitted') },
+    { creating: !!state('userState.newTodo-submitted') },
     !todoSubmitted? { todos: state('todos', {deleted: false})}:{},
     { activeTodos:    state('todos', {completed: false}),
       completedTodos: state('todos', {completed: true}) },
-    { clearCompleted: !!state('user-state.clearCompleted') },
+    { clearCompleted: !!state('userState.clearCompleted') },
     { toggleAll: state('activeTodos') == null || state('activeTodos').length == 0 }
   );
 }
 
 function evalTodoItem(state){
   return Object.assign({},
-    { completed: !state('parent.clearCompleted') && !!state('user-state.completed') },
-    state('user-state.destroy')? { deleted: true }:{}
+    { completed: !state('parent.clearCompleted') && !!state('userState.completed') },
+    state('userState.destroy')? { deleted: true }:{}
     // {editing: {state('app.editing') === state('UID')}}
   );
 }
