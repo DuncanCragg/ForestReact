@@ -84,11 +84,7 @@ export default class Forest extends Component {
     super(props)
     this.state = props.state || {};
     this.UID = this.state.UID;
-    const userStateUID = this.UID + '-1'; // :o(
-    this.userState.UID = userStateUID;
-    this.userState.Notify = [];
-    Forest.objects[userStateUID] = this.userState; // :o(
-    this.state['user-state'] = userStateUID; // :o(
+    this.state['user-state'] = Forest.spawnObject(this.userState);
     this.state.doEvaluate = this.doEvaluate.bind(this);
     this.stateAccess = this.stateAccess.bind(this);
     this.evaluate = this.state.evaluate;
