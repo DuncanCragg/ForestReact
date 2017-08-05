@@ -5,11 +5,11 @@ function renderGuiStack(state){
   return (
     <div>
       <div>{state('name')}</div>
-      {state('list').map((uid) => <Forest state={Forest.objects[uid]} key={uid}></Forest>)}
+      {state('list').map(uid => Forest.wrapObject(uid))}
     </div>);
 }
 
-      //{false && Object.keys(state).map((key) => (typeof(state[key]) !== 'function') && <span key={key}> | {key}: {String(state[key])} | </span>)}
+      //{false && Object.keys(state).map(key => (typeof(state[key]) !== 'function') && <span key={key}> | {key}: {String(state[key])} | </span>)}
 function renderFed(state, userState){
   return (
     <div>

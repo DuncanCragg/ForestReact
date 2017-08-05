@@ -11,7 +11,7 @@ function renderTodoApp(state, userState){
   const numcompleted = state('completedTodos') && state('completedTodos').length;
   const shownTodos = {'all': state('todos'), 'active': state('activeTodos') || [], 'completed': state('completedTodos') || []}[state('nowShowing')];
 
-      //{false && Object.keys(state).map((key) => (typeof(state[key]) !== 'function') && <span key={key}> | {key}: {String(state[key])} | </span>)}
+      //{false && Object.keys(state).map(key => (typeof(state[key]) !== 'function') && <span key={key}> | {key}: {String(state[key])} | </span>)}
   return (
     <div>
       <header className="header">
@@ -23,7 +23,7 @@ function renderTodoApp(state, userState){
       <section className="main">
         {userState.checkbox({name: 'toggleAll', className: 'toggle-all-X'})}
         <ul className="todo-list">
-          {shownTodos.map((uid) => Forest.wrapObject(uid))}
+          {shownTodos.map(uid => Forest.wrapObject(uid))}
         </ul>
       </section>)}
 
@@ -41,7 +41,7 @@ function renderTodoApp(state, userState){
   );
 }
 
-     //{false && Object.keys(state).map((key) => (typeof(state[key]) !== 'function') && <span key={key}> | {key}: {String(state[key])} | </span>)}
+     //{false && Object.keys(state).map(key => (typeof(state[key]) !== 'function') && <span key={key}> | {key}: {String(state[key])} | </span>)}
 function renderTodoItem(state, userState){
   return (
     <li className={classNames({completed: state('completed'), editing: state('editing')})}>
