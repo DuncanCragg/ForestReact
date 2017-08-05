@@ -30,6 +30,9 @@ FOREST (Functional Observer REST) just adds HTTP to that model, via the `RemoteJ
 OK, here's a minimal example:
 
 ```javascript
+/* React render reading from `state` for this object's state */
+/* Also has `userState` for declaring widgets without actions or events! */
+/* If the `name` field matches a `state` field, it reads from there */
 function renderMin(state, userState){
   return (
     <div>
@@ -42,10 +45,14 @@ function renderMin(state, userState){
     </div>);
 }
 
+/* Mapping to above render function from a string matching */
+/* the `is:` property of the backing state object. */
 const renderers = {
   'minimal': renderMin
 };
 
+/* Initial list of state objects */
+/* The first one is taken to be the 'top' state object. */
 forest.storeObjects(
   [{ evaluate: evalMin,
      is: 'minimal',
@@ -55,25 +62,33 @@ forest.storeObjects(
   renderers
 );
 
+/* Where all the domain logic goes: pure functional */
+/* transform/reduction of visible state to new component state: */
+/* `componentState = f(componentState, userState)` */
 function evalMin(state){
+  const incrementPushed  = !state('inc') && state('userState.inc');
   return Object.assign({},
-    (!state('inc') && state('userState.inc'))? { counter: state('counter') + 1 }:{},
-    { inc: !!state('userState.inc') },
+    incrementPushed? { counter: state('counter') + 1 }:{},
+    { inc: state('userState.inc') },
     { message: state('userState.message').toLowerCase() }
   );
 }
 ```
 
-See how, in `evalMin`, the returned component state is a function of previous state and
-user state. It always reads these states around it through its own state, because in
-Forest, _the dot `.` can jump across to those other objects to observe them_ which makes
-the whole process incredibly powerful, consistent and simple.
+An object reads the states around it (userState above, but also peer states and API
+states) 'through' its own state, because in Forest, _the dot `.` can jump across to those
+other objects to read (and then observe) them_. For example, above,
+`state('userState.message')` reads `userState`, which is simply the UID of the userState
+object, then fetches that object and reads its `message` property. It then continues to
+be notified of changes to that object.
+
+This consistent object graph traversal makes the logic incredibly powerful and simple.
 
 The fact that Forest doesn't use actions or events means that detecting change is done
 via comparison to previous state, as in the expression `!state('inc') && state('userState.inc')`,
-which detects that the userState `inc` button is `true` (down) while the known state
-was `false` (up). The line `inc: !!state('userState.inc')` then records the latest
-state for the next time around.
+which detects that the userState `inc` button is `true` (down) while the known state was
+`false` (up). The line `inc: state('userState.inc')` then records the latest state for
+the next time around.
 
 It can also discover peer component and remote API state in the same way in order to
 determine it's own next state (e.g. `state('selectorpeer.choice')` or
