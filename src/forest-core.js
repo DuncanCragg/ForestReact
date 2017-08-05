@@ -132,12 +132,9 @@ function doEvaluate(uid) {
 export default {
   spawnObject,
   storeObjects,
-  ensureObjectState,
-  setNotify,
   setObjectState,
   stateAccess,
   doEvaluate,
-  fetching,
   objects,
 }
 
