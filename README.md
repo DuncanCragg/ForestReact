@@ -88,8 +88,8 @@ You can also discover peer component and remote API state in the same way
 
 The fact that Forest only uses state instead of actions or events means that detecting
 change is done through comparison to previous state. For example, the expression above
-`!state('inc') && state('userState.inc')` detects that the `userState` `inc` button is
-`true` (down) while the known state was `false` (up). The line 
+`incrementPushed = !state('inc') && state('userState.inc')` detects that the `userState`
+`inc` button is `true` (down) while the known state was `false` (up). The line 
 `inc: state('userState.inc')` then records the latest state for the next time around.
 
 ## _"Why is that better?"_
