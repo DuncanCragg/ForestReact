@@ -17,15 +17,15 @@ function renderFed(state, userState){
       <br/><br/>
       {state('enableCounting')? 'GO!': '...'}
       <br/><br/>
-      {userState.textField({name: 'counter', label: 'Count'})}
-      {userState.button({name: 'add', label: 'increment'})}
+      {userState.textField('counter', {label: 'Count'})}
+      {userState.button('add', {label: 'increment'})}
       <br/><br/>
-      {userState.textField({name: 'topic', label: 'Topic'})}
-      {userState.button({name: 'loadrandompicture', label: 'Load picture about that'})}
+      {userState.textField('topic', {label: 'Topic'})}
+      {userState.button('loadrandompicture', {label: 'Load picture about that'})}
       <br/><br/>
       {state('loading')? 'loading..': ''}
       <br/><br/>
-      {userState.image({name: 'image', label: 'Your random image:'})}
+      {userState.image('image', {label: 'Your random image:'})}
       <br/>
       <hr/>
       <br/>

@@ -16,12 +16,12 @@ function renderTodoApp(state, userState){
     <div>
       <header className="header">
         <h1>todos</h1>
-        {userState.textField({name: 'newTodo', className: 'new-todo', placeholder: 'What needs to be done?'})}
+        {userState.textField('newTodo', {className: 'new-todo', placeholder: 'What needs to be done?'})}
       </header>
 
       {(shownTodos.length!=0) && (
       <section className="main">
-        {userState.checkbox({name: 'toggleAll', className: 'toggle-all-X'})}
+        {userState.checkbox('toggleAll', {className: 'toggle-all-X'})}
         <ul className="todo-list">
           {shownTodos.map(uid => Forest.wrapObject(uid))}
         </ul>
@@ -35,7 +35,7 @@ function renderTodoApp(state, userState){
           <li><a href="#/active"    className={classNames({selected: state('nowShowing') === 'active'   })}>Active</a></li> {' '}
           <li><a href="#/completed" className={classNames({selected: state('nowShowing') === 'completed'})}>Completed</a></li>
         </ul>
-        {/* (numcompleted!=0) && */ userState.button({name: 'clearCompleted', label: 'Clear completed', className: 'clear-completed'})}
+        {/* (numcompleted!=0) && */ userState.button('clearCompleted', {label: 'Clear completed', className: 'clear-completed'})}
       </footer>)}
     </div>
   );
@@ -46,11 +46,11 @@ function renderTodoItem(state, userState){
   return (
     <li className={classNames({completed: state('completed'), editing: state('editing')})}>
       <div className="view">
-        {userState.checkbox({name: 'completed', className: 'toggle'})}
+        {userState.checkbox('completed', {className: 'toggle'})}
         <label onDoubleClick={this.handleEdit}>{state('title')}</label>
-        {userState.button({name: 'destroy', className: 'destroy'})}
+        {userState.button('destroy', {className: 'destroy'})}
       </div>
-      {userState.textField({name: 'title', className: 'edit'})}
+      {userState.textField('title', {className: 'edit'})}
     </li>
   );
 }

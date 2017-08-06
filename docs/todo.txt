@@ -3,14 +3,12 @@ To Do
 
  - --------------------
  - this.state.userState = this.userStateUID; !!
- - this.state.doEvaluate = this.doEvaluate.bind(this); !!
  - --------------------
  - more widgets: selector, textarea, radio..
- - separate out gui widgets from 'this'
-   - React cpt refers to state and 'subscribes' to it
-     - but what about state('watching.counter')? what if that changes?
-     - state('giphy.url') instead of state('image')
-     - state('image') relies on 'own' state subscribing and setting something for render
+ - React cpt refers to state and 'subscribes' to it
+   - but what about state('watching.counter')? what if that changes?
+   - state('giphy.url') instead of state('image')
+   - state('image') relies on 'own' state subscribing and setting something for render
    - React cpt is actually the user object, which can observe a top object and anything linked under it
  - --------------------
  - fetch remote objects:

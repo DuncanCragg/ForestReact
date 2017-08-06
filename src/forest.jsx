@@ -72,12 +72,12 @@ export default class Forest extends Component {
     e.preventDefault();
   }
 
-  button({name, label='', className=''}){
+  button(name, {label='', className=''}={}){
     core.setObjectState(this.userStateUID, { [name]: false });
     return <button className={className} onMouseDown={e => this.onChange(name, true)} onMouseUp={e => this.onChange(name, false)}>{label}</button>;
   }
 
-  textField({name, label='', className='', placeholder=''}){
+  textField(name, {label='', className='', placeholder=''}={}){
     core.setObjectState(this.userStateUID, { [name+'-submitted']: false });
     return (
       <span><span>{label}</span>
@@ -92,11 +92,11 @@ export default class Forest extends Component {
     );
   }
 
-  image({name, label='', className=''}){
+  image(name, {label='', className=''}={}){
     return <span>{label} <img className={className} src={this.stateAccess(name)} /></span>;
   }
 
-  checkbox({name, label='', className=''}){
+  checkbox(name, {label='', className=''}={}){
     return <input className={className} type="checkbox" onChange={e => this.onChange(name, e.target.checked)} checked={this.onRead(name)} />;
   }
 
