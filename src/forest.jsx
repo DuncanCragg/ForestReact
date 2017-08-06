@@ -32,9 +32,9 @@ export default class Forest extends Component {
     this.UID = this.state.UID;
     this.userStateUID = core.spawnObject({});
     this.state.userState = this.userStateUID;
+    this.state.react = this;
     this.stateAccess = this.stateAccess.bind(this);
     this.notify = this.notify.bind(this);
-    this.state.react = this;
   }
 
   mounted = false;

@@ -4,23 +4,19 @@ To Do
  - --------------------
  - this.state.userState = this.userStateUID; !!
  - --------------------
- - more widgets: selector, textarea, radio..
- - React cpt refers to state and 'subscribes' to it
-   - but what about state('watching.counter')? what if that changes?
-   - state('giphy.url') instead of state('image')
-   - state('image') relies on 'own' state subscribing and setting something for render
-   - React cpt is actually the user object, which can observe a top object and anything linked under it
+ - more widgets: selector, radio, textarea..
  - --------------------
- - fetch remote objects:
-    - can have remote URL in any object, without evaluate of course (Notify/render): send userState over the wire
-       - what if list includes remote, can't use Forest.objects[url]
-    - refresh? after viewed and time rel to cache ttl
+ - can have remote URL in any object
+    - evaluate / animated remotely
+    - remote only need Notify and render
+    - wrap remote with Forest, like WebObjects did?
+    - send userState over the wire
+ - fetch:
     - check actually fetch()ing a URL!; lastmod/etag?
     - error on fetch
     - timeout? don't use fetch!
- - wrap remote with Forest, like WebObjects did?
-    - remote only need Notify and render
- - only look through giphy (url) if button pressed, but then need to look through when it comes in and notify/evaluates.. ?
+ - refresh? after viewed and time rel to cache ttl
+    - only look through giphy (url) if button pressed, but then need to look through when it comes in and notify/evaluates.. ?
     - every view-through fetches means only don't notify when it's not changed .. and giphy always changes so get stuck in loop
     - giphy: opaque URLs; non-idempotency
  - --------------------
@@ -29,7 +25,13 @@ To Do
  - any other way to pass thread than setTimeout(1)? setTimeout(0)!!
    - need to queue up doEvaluates, not use setTimeout?
  - --------------------
- - isomorphism
+ - isomorphism - server-side only, page composer!
+ - --------------------
+ - React cpt refers to state and 'subscribes' to it
+   - React cpt is actually the user object, which can observe a top object and anything linked under it
+   - state('watching.counter') what if that changes?
+   - state('giphy.url') instead of state('image') - but disappears, so no
+   - state('image') relies on 'own' state subscribing and setting something for render
  - --------------------
 
 
