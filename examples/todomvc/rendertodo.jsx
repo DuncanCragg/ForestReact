@@ -7,11 +7,16 @@ function pluralize(count, word) {
 
 function renderTodoApp(state, userState){
 
-  const numactive    = state('activeTodos') && state('activeTodos').length;
-  const numcompleted = state('completedTodos') && state('completedTodos').length;
-  const shownTodos = {'all': state('todos'), 'active': state('activeTodos') || [], 'completed': state('completedTodos') || []}[state('nowShowing')];
+  const all       = state('todos');
+  const active    = state('activeTodos') || [];
+  const completed = state('completedTodos') || [];
 
-      //{false && Object.keys(state).map(key => (typeof(state[key]) !== 'function') && <span key={key}> | {key}: {String(state[key])} | </span>)}
+  const numactive    = active.length;
+  const numcompleted = completed.length;
+
+  const shownTodos = { all, active, completed }[state('nowShowing')];
+
+  //{false && Object.keys(state).map(key => (typeof(state[key]) !== 'function') && <span key={key}> | {key}: {String(state[key])} | </span>)}
   return (
     <div>
       <header className="header">
