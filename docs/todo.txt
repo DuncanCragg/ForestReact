@@ -2,7 +2,8 @@ To Do
 -----
 
  - --------------------
- - this.state.userState = this.userStateUID; !!
+ - hardwiring from obj to notify react (o.react)
+ - and from react to notify obj (o.userState)
  - --------------------
  - more widgets: selector, radio, textarea..
  - --------------------
@@ -24,6 +25,7 @@ To Do
  - --------------------
  - any other way to pass thread than setTimeout(1)? setTimeout(0)!!
    - need to queue up doEvaluates, not use setTimeout?
+   - only call doEvaluate if not already signalled
  - --------------------
  - isomorphism - server-side only, page composer!
  - --------------------
