@@ -13,16 +13,18 @@ Forest.storeObjects(
 
 function evalFed(state){
   const loadButtonPressed = !state('fetching') && state('userState.loadrandompicture');
-  return {
-    Timer: 4000,
-    enableCounting: state('Timer') === 0? !state('enableCounting'): state('enableCounting'),
-    counter: state('watching.counter') || (state('enableCounting')!==false? (!state('adding') && state('userState.add')? state('counter')+1: state('counter')): 0),
-    topic: state('userState.topic').toLowerCase(),
-    giphy: (!state('giphy') || loadButtonPressed)? 'https://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&tag=' + state('topic'): state('giphy'),
-    image: state('giphy.fixed_height_small_url') || state('image'),
-    loading: !state('giphy.fixed_height_small_url'),
-    adding: !!state('userState.add'),
-    fetching: state('userState.loadrandompicture')
-  };
+  const addButtonPressed  = !state('adding') && state('userState.add')
+  return Object.assign({},
+    state('Timer') === 0                   && { Timer:    2000, enableCounting: !state('enableCounting') },
+    addButtonPressed                       && { counter:  state('counter')+1 },
+   !state('enableCounting')                && { counter:  0 },
+    state('watching')                      && { counter:  state('watching.counter') },
+    true                                   && { topic:    state('userState.topic').toLowerCase() },
+  (!state('giphy') || loadButtonPressed)   && { giphy:   'https://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&tag=' + state('topic') },
+    state('giphy.fixed_height_small_url')  && { image:    state('giphy.fixed_height_small_url') },
+    true                                   && { loading: !state('giphy.fixed_height_small_url') },
+    true                                   && { adding:   state('userState.add') },
+    true                                   && { fetching: state('userState.loadrandompicture') }
+  );
 }
 
