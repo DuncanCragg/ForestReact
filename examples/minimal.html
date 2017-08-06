@@ -46,16 +46,13 @@ forest.storeObjects(
 );
 
 function evalMin(state){
-
   const incrementPushed  = !state('inc') && state('userState.inc');
-
   return Object.assign({},
-    state('Timer') === 0? { Timer: 2000 }:{},
-    state('Timer') === 0? { enableCounting: !state('enableCounting') }:{},
-    !state('enableCounting')? { counter: 0 }:{},
-    (state('enableCounting') && incrementPushed)? { counter: state('counter') + 1 }:{},
-    { inc: state('userState.inc') },
-    { message: state('userState.message').toLowerCase() }
+    state('Timer') === 0    && { Timer: 2000, enableCounting: !state('enableCounting') },
+    incrementPushed         && { counter: state('counter') + 1 },
+   !state('enableCounting') && { counter: 0 },
+    true                    && { inc: state('userState.inc') },
+    true                    && { message: state('userState.message').toLowerCase() }
   );
 }
 
