@@ -3,7 +3,8 @@
 
 A React-based, Javascript implementation of the ideas of
 [FOREST](https://link.springer.com/chapter/10.1007/978-1-4419-8303-9_7) -
-"Functional Observer REST" - replacing Redux and Reselect in your dynamic Web pages.
+"Functional Observer REST" - replacing Redux, Reselect and Redux Saga in
+your dynamic Web pages.
 
 
 ## _"Functional Observer REST?"_
@@ -26,8 +27,8 @@ component state observes other states around it:
 
 FOREST (Functional Observer REST) just adds HTTP to that model, via the `RemoteJSONAPIStates` above.
 
-This simple model replaces all the complexity of Redux and Reselect with a highly declarative, visible
-set of state transformation functions, per component.
+This simple model replaces all the complexity of Redux, Reselect and Redux Saga with a
+highly declarative, visible set of state transformation functions, per component.
 
 ## _"Sounds very academic! Show me the code!!"_
 
