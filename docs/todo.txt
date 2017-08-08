@@ -1,6 +1,8 @@
 To Do
 -----
 
+ - move numactive, numcompleted, shownTodos logic into evaluate (render is just show/hide/iterate no logic)
+ - 
  - --------------------
  - more widgets: selector, radio, textarea..
  - --------------------
