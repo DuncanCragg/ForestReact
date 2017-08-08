@@ -36,7 +36,7 @@ OK, here's a minimal example:
 ```javascript
 /* React render reading from `state` for this object's state */
 /* Also has `userState` for declaring widgets without actions or events! */
-/* If the `name` field matches a `state` field, it reads from there */
+/* If the first, name arg matches a `state` fieldname, it reads from there */
 function renderMin(state, userState){
   return (
     <div>
