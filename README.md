@@ -99,8 +99,9 @@ change is done through comparison to previous state. For example, the expression
 
 ## _"Why is that better?"_
 
-This consistent object graph traversal combined with the pure functional state
-transformation makes the domain logic simple and powerful.
+This consistent object graph traversal for all state (component, peer component, user
+input, remote data), combined with the pure functional state transformation makes the
+domain logic simple and powerful.
 
 It puts a lot of power into small state reducer or transformation functions and
 expressions - one single dot `.` can give a component access to all the state around it,
