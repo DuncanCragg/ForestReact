@@ -74,8 +74,8 @@ function evalMin(state){
   const incrementPushed  = !state('inc') && state('userState.inc');
   return Object.assign({},
     incrementPushed && { counter: state('counter') + 1 },
-    true            && { inc: state('userState.inc') },
-    true            && { message: state('userState.message').toLowerCase() }
+    true            && { message: state('userState.message').toLowerCase() },
+    true            && { inc: state('userState.inc') }
   );
 }
 ```
