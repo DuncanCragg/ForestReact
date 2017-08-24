@@ -42,10 +42,10 @@ function renderMin(state, userState){
   return (
     <div>
       <hr/>
+      {userState.textField('message')}
+      <br/><br/>
       <span>Count: {state('counter')}</span>&nbsp;&nbsp;&nbsp;
       {userState.button('inc', {label: 'increment'})}
-      <br/><br/>
-      {userState.textField('message')}
       <br/><br/><hr/><br/>
     </div>);
 }
@@ -61,8 +61,8 @@ const renderers = {
 forest.storeObjects(
   [{ evaluate: evalMin,
      is: 'minimal',
-     counter: 17,
-     message: 'Hello World!'
+     message: 'Hello World!',
+     counter: 17
   }],
   renderers
 );
