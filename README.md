@@ -113,5 +113,11 @@ changes. All the interactive logic is held in pure functions.
 Thanks to my Tes colleague, [Federico 'framp' Rampazzo](https://github.com/framp), for
 the inspiration, example and base code from [Storry](https://github.com/framp/storry)!
 
+## Similar
+
+The [Eve Language](http://witheve.com/) is one of the closest examples I've found of
+a similar approach. The [Red Language](http://www.red-lang.org/) also has a number of
+aspects in common.
+
 
 
