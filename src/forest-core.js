@@ -1,5 +1,5 @@
 
-const debug = false;
+const debug = true;
 
 function makeUID(){
   /*jshint bitwise:false */

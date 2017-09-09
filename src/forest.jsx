@@ -97,7 +97,7 @@ export default class Forest extends Component {
   }
 
   checkbox(name, {label='', className=''}={}){
-    return <input className={className} type="checkbox" onChange={e => this.onChange(name, e.target.checked)} checked={this.onRead(name)} />;
+    return <div><input className={className} type="checkbox" onChange={e => this.onChange(name, e.target.checked)} checked={this.onRead(name)} /><span>{label}</span></div>;
   }
 
   render () {

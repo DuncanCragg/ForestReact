@@ -25,6 +25,8 @@ function renderMin(state, userState){
       {userState.button('inc', {label: 'increment'})}
       <br/><br/>
       {userState.textField('message')}
+      <br/><br/>
+      {userState.checkbox('allowuppercase', {label: 'Allow upper case'})}
       <br/><br/><hr/><br/>
     </div>);
 }
@@ -40,7 +42,8 @@ forest.storeObjects(
      is: 'minimal',
      enableCounting: true,
      counter: 17,
-     message: 'Hello World!'
+     message: 'Hello World!',
+     allowuppercase: true
   }],
   renderers
 );
@@ -52,7 +55,8 @@ function evalMin(state){
     incrementPushed         && { counter: state('counter') + 1 },
    !state('enableCounting') && { counter: 0 },
     true                    && { inc: state('userState.inc') },
-    true                    && { message: state('userState.message').toLowerCase() }
+    true                    && { message: state('allowuppercase')? state('userState.message'): state('userState.message').toLowerCase() },
+    true                    && { allowuppercase: state('userState.allowuppercase') }
   );
 }
 
