@@ -1,5 +1,7 @@
 
-import Forest from 'forest';
+import Forest from '../forest';
+import React from 'react';
+import classNames from 'classnames';
 
 function pluralize(count, word) {
   return count === 1 ? word : word + 's';

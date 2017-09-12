@@ -1,6 +1,6 @@
 
-import Forest from 'forest';
-import renderers from 'rendertodo';
+import Forest from '../forest';
+import renderers from './rendertodo';
 
 Forest.storeObjects(
   [{ evaluate: evalTodo, is: 'todoapp', newTodo: '', nowShowing: 'all', todos: [] }],
