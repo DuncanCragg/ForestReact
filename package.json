@@ -18,21 +18,27 @@
   "homepage": "https://github.com/DuncanCragg/forestjs#readme",
   "scripts": {
     "build": "babel src examples --out-dir lib --presets es2015 --plugins add-module-exports,transform-react-jsx,transform-class-properties",
+    "webpack": "webpack --config webpack.config.js",
     "lint": "standard \"src/**/*.jsx\"",
     "propublish": "npm run clean && npm run lint && npm run build",
     "clean": "rm -rf lib"
   },
   "dependencies": {
-    "todomvc-app-css": "^2.0.0",
-    "classnames": "^2.1.5"
+    "classnames": "^2.1.5",
+    "lodash": "^4.17.4",
+    "react": "^15.6.1",
+    "react-dom": "^15.6.1",
+    "superagent": "^3.6.0",
+    "todomvc-app-css": "^2.0.0"
   },
   "devDependencies": {
     "babel-cli": "^6.24.1",
     "babel-plugin-add-module-exports": "^0.2.1",
-    "babel-plugin-transform-react-jsx": "^6.24.1",
     "babel-plugin-transform-class-properties": "^6.24.1",
+    "babel-plugin-transform-react-jsx": "^6.24.1",
     "babel-preset-env": "^1.4.0",
     "babel-preset-es2015": "^6.24.1",
-    "standard": "^10.0.2"
+    "standard": "^10.0.2",
+    "webpack": "^3.5.6"
   }
 }

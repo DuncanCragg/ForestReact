@@ -1,6 +1,6 @@
 
-import Forest from 'forest';
-import renderers from 'renderfed';
+import Forest from './forest';
+import renderers from './renderfed';
 
 Forest.storeObjects(
   [
@@ -21,8 +21,9 @@ function evalFed(state){
     state('watching')                      && { counter:  state('watching.counter') },
     true                                   && { topic:    state('userState.topic').toLowerCase() },
   (!state('giphy') || loadButtonPressed)   && { giphy:   'https://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&tag=' + state('topic') },
-    state('giphy.fixed_height_small_url')  && { image:    state('giphy.fixed_height_small_url') },
-    true                                   && { loading: !state('giphy.fixed_height_small_url') },
+    state('giphy.data')                    && { gdata:    state('giphy.data') },
+    true                                   && { loading: !state('giphy.data') },
+    state('gdata')                         && { image:    state('gdata.fixed_height_small_url') },
     true                                   && { adding:   state('userState.add') },
     true                                   && { fetching: state('userState.loadrandompicture') }
   );

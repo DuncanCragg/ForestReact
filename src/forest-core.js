@@ -1,4 +1,7 @@
 
+import _ from 'lodash';
+import sa from 'superagent';
+
 const debug = true;
 
 function makeUID(){
@@ -56,6 +59,7 @@ function setObjectState(uid, state){
   if(debug) console.log(uid, 'changed: ', difference(objects[uid], newState))
   objects[uid] = newState;
   objects[uid].Notify.map(u => setTimeout(doEvaluate.bind(null, u), 1));
+  if(objects[uid].Notifying) doPost(objects[uid]);
   return newState;
 }
 
@@ -83,15 +87,20 @@ function stateAccess(u,p,m) { const r = ((uid, path, match)=>{
   }
   const val = state[pathbits[0]];
   if(val == null) return null;
-  if(val.constructor !== String) return null;
+  if(val.constructor !== String){
+    if(val.constructor === Object){
+      if(pathbits[1]) return val[pathbits[1]];
+      else return null;
+    }
+    else return null;
+  }
   const linkedObject = objects[val];
   if(!linkedObject){
-    if(!fetching[val]){
-      fetching[val]=true;
-      ensureObjectState(val, uid);
-      fetch(val)
-      .then(res => { fetching[val]=false; return res.json()})
-      .then(json => setObjectState(val, json.data));
+    const url=val;
+    if(!fetching[url]){
+      fetching[url]=true;
+      ensureObjectState(url, uid);
+      doGet(url);
     }
     return null;
   }
@@ -101,6 +110,20 @@ function stateAccess(u,p,m) { const r = ((uid, path, match)=>{
   })(u,p,m);
   // if(debug) console.log('UID',u,'path',p,'match',m,'=>',r);
   return r;
+}
+
+function doGet(url){
+  fetch(url)
+    .then(res => { fetching[url]=false; return res.json()})
+    .then(json => setObjectState(url, json));
+}
+
+function doPost(o){
+  const data = _.pick(o, 'moderated');
+  return sa.post(o.Notifying)
+    .timeout({ response: 9000, deadline: 10000 })
+    .send(data)
+    .then(x => x);
 }
 
 function checkTimer(o,time){
@@ -116,7 +139,7 @@ function checkTimer(o,time){
 function doEvaluate(uid) {
   var o = objects[uid];
   const reactnotify = o.react.notify;
-  if(!o.evaluate) return;
+  if(!o.evaluate || typeof o.evaluate !== 'function') { console.error('no evaluate function!', o); return; }
   for(var i=0; i<4; i++){
     if(debug) console.log(i, '>>>>>>>>>>>>> ', stateAccess(uid, '.'));
     if(debug) console.log(i, '>>>>>>>>>>>>> ', stateAccess(uid, 'userState.'));

@@ -1,5 +1,6 @@
 
-import Forest from 'forest';
+import Forest from './forest';
+import React from 'react';
 
 function renderGuiStack(state){
   return (

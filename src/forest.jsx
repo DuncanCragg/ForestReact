@@ -1,18 +1,30 @@
 
-import { Component } from 'React';
-import core from 'forest-core';
+import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
+import { renderToString } from 'react-dom/server';
+
+import core from './forest-core';
 
 export default class Forest extends Component {
 
   static renderers;
 
-  static storeObjects(list, renderers){
+  static storeObjects(list, renderers, rootId = 'root'){
     const uids = core.storeObjects(list);
     Forest.renderers = renderers;
-    ReactDOM.render(
-      Forest.wrapObject(uids[0]),
-      document.getElementById('root')
-    );
+    return new Promise((resolve, reject) => {
+      ReactDOM.render(
+        Forest.wrapObject(uids[0]),
+        document.getElementById(rootId),
+        (err) => err ? reject(err) : resolve()
+      );
+    });
+  }
+
+  static storeObjectsToString(list, renderers){
+    const uids = core.storeObjects(list);
+    Forest.renderers = renderers;
+    return renderToString(Forest.wrapObject(uids[0]));
   }
 
   static wrapObject(uid){
