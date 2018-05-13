@@ -27,6 +27,12 @@ export default class Forest extends Component {
     return renderToString(Forest.wrapObject(uids[0]));
   }
 
+  static storeObjectsInComponent(list, renderers){
+    const uids = core.storeObjects(list);
+    Forest.renderers = renderers;
+    return Forest.wrapObject(uids[0]);
+  }
+
   static wrapObject(uid){
     return <Forest state={core.objects[uid]} key={uid}></Forest>
   }
