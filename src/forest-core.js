@@ -2,7 +2,7 @@
 import _ from 'lodash';
 import sa from 'superagent';
 
-const debug = true;
+const debug = false;
 
 function makeUID(){
   /*jshint bitwise:false */
