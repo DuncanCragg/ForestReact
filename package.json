@@ -1,13 +1,18 @@
 {
-  "name": "Forest",
+  "name": "forest-react",
   "version": "0.0.1",
-  "description": "Functional Observer REST",
+  "description": "Simple, powerful alternative to Redux, Reselect, Sagas, etc",
   "author": "Duncan Cragg <forest@cilux.org> (http://duncan-cragg.org)",
   "license": "MIT",
   "keywords": [
     "forest",
-    "redux"
+    "forestjs",
+    "react",
+    "reactnative"
   ],
+  "engines": {
+    "node": ">=8.6.0"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/DuncanCragg/forestjs.git"
@@ -16,6 +21,11 @@
     "url": "https://github.com/DuncanCragg/forestjs/issues"
   },
   "homepage": "https://github.com/DuncanCragg/forestjs#readme",
+  "main": "lib/forest.js",
+  "files": [
+    "lib/",
+    "src/"
+  ],
   "scripts": {
     "build": "babel src examples --out-dir lib --presets es2015 --plugins add-module-exports,transform-react-jsx,transform-class-properties",
     "webpack": "webpack --config webpack.config.js",
