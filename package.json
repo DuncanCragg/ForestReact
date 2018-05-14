@@ -6,7 +6,7 @@
   "license": "MIT",
   "keywords": [
     "forest",
-    "forestjs",
+    "forestreact",
     "react",
     "reactnative"
   ],
@@ -15,12 +15,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/DuncanCragg/forestjs.git"
+    "url": "git+https://github.com/DuncanCragg/forestreact.git"
   },
   "bugs": {
-    "url": "https://github.com/DuncanCragg/forestjs/issues"
+    "url": "https://github.com/DuncanCragg/forestreact/issues"
   },
-  "homepage": "https://github.com/DuncanCragg/forestjs#readme",
+  "homepage": "https://github.com/DuncanCragg/forestreact#readme",
   "main": "lib/forest.js",
   "files": [
     "lib/",
