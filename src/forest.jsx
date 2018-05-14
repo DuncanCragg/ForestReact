@@ -1,5 +1,6 @@
 
 import React, { Component } from 'react';
+import { Text, TouchableHighlight } from 'react-native';
 import ReactDOM from 'react-dom';
 import { renderToString } from 'react-dom/server';
 
@@ -93,6 +94,18 @@ export default class Forest extends Component {
   button(name, {label='', className=''}={}){
 //  core.setObjectState(this.userStateUID, { [name]: false });
     return <button className={className} onMouseDown={e => this.onChange(name, true)} onMouseUp={e => this.onChange(name, false)}>{label}</button>;
+  }
+
+  Button(name, {label='', className='', style=null}={}){
+    return <TouchableHighlight
+             delayPressIn={0}
+             delayLongPress={800}
+             onPressIn={() => this.onChange(name, true)}
+             onLongPress={() => this.onChange(name, true)}
+             onPressOut={() => this.onChange(name, false)}
+           >
+             <Text style={style}>{label}</Text>
+           </TouchableHighlight>
   }
 
   textField(name, {label='', className='', placeholder=''}={}){
