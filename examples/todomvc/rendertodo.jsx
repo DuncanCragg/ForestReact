@@ -1,6 +1,6 @@
 
-import Forest from '../forest';
 import React from 'react';
+import Forest from '../forest';
 import classNames from 'classnames';
 
 function pluralize(count, word) {
