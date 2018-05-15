@@ -159,7 +159,7 @@ export default class Forest extends Component {
   }
 
   render () {
-    return Forest.renderers[this.stateAccess('is')](this.stateAccess, this);
+    return Forest.renderers[this.object('is')](this.object, this);
   }
 }
 
