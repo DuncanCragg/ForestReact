@@ -65,7 +65,7 @@ function setObjectState(uid, state){
 
 var fetching = {};
 
-function stateAccess(u,p,m) { const r = ((uid, path, match)=>{
+function object(u,p,m) { const r = ((uid, path, match)=>{
   const state = objects[uid];
   if(path==='.') return state;
   const pathbits = path.split('.');
@@ -141,9 +141,9 @@ function doEvaluate(uid) {
   const reactnotify = o.react.notify;
   if(!o.evaluate || typeof o.evaluate !== 'function') { console.error('no evaluate function!', o); return; }
   for(var i=0; i<4; i++){
-    if(debug) console.log(i, '>>>>>>>>>>>>> ', stateAccess(uid, '.'));
-    if(debug) console.log(i, '>>>>>>>>>>>>> ', stateAccess(uid, 'userState.'));
-    const newState = o.evaluate(stateAccess.bind(null, uid));
+    if(debug) console.log(i, '>>>>>>>>>>>>> ', object(uid, '.'));
+    if(debug) console.log(i, '>>>>>>>>>>>>> ', object(uid, 'userState.'));
+    const newState = o.evaluate(object.bind(null, uid));
     if(debug) console.log(i, '<<<<<<<<<<<<< new state bits: ', newState);
     checkTimer(o,newState.Timer);
     o = setObjectState(uid, newState);
@@ -156,7 +156,7 @@ export default {
   spawnObject,
   storeObjects,
   setObjectState,
-  stateAccess,
+  object,
   doEvaluate,
   objects,
 }

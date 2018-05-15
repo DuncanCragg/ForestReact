@@ -78,7 +78,7 @@ export default class Forest extends Component {
     this.userStateUID = core.spawnObject({});
     this.state.userState = this.userStateUID;  // hardwiring from obj to react
     this.state.react = this;                   //        --- " ---
-    this.stateAccess = this.stateAccess.bind(this);
+    this.object = this.object.bind(this);
     this.notify = this.notify.bind(this);
   }
 
@@ -88,8 +88,8 @@ export default class Forest extends Component {
 
   componentWillUnmount() { this.mounted = false; }
 
-  stateAccess(path, match) {
-    return core.stateAccess(this.UID, path, match);
+  object(path, match) {
+    return core.object(this.UID, path, match);
   }
 
   notify(){
@@ -97,7 +97,7 @@ export default class Forest extends Component {
   }
 
   onRead(name){
-    const value = this.stateAccess(name);
+    const value = this.object(name);
     core.setObjectState(this.userStateUID, { [name]: value });
     return value;
   }
@@ -150,7 +150,7 @@ export default class Forest extends Component {
   }
 
   image(name, {label='', className=''}={}){
-    return <span>{label} <img className={className} src={this.stateAccess(name)} /></span>;
+    return <span>{label} <img className={className} src={this.object(name)} /></span>;
   }
 
   checkbox(name, {label='', className=''}={}){
