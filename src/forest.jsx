@@ -10,6 +10,21 @@ export default class Forest extends Component {
 
   static renderers;
 
+  static cacheObjects(list, renderers){
+    Forest.renderers = renderers;
+    return core.storeObjects(list);
+  }
+
+  static renderDOM(Cpt, rootId = 'root'){
+    return new Promise((resolve, reject) => {
+      ReactDOM.render(
+        Cpt,
+        document.getElementById(rootId),
+        (err) => err ? reject(err) : resolve()
+      );
+    });
+  }
+
   static storeObjects(list, renderers, rootId = 'root'){
     const uids = core.storeObjects(list);
     Forest.renderers = renderers;
@@ -35,7 +50,7 @@ export default class Forest extends Component {
   }
 
   static wrapObject(uid){
-    return <Forest state={core.objects[uid]} key={uid}></Forest>
+    return <Forest uid={uid} key={uid}></Forest>
   }
 
   static spawnObject(o){
@@ -47,8 +62,19 @@ export default class Forest extends Component {
 
   constructor(props) {
     super(props)
-    this.state = props.state || {};
-    this.UID = this.state.UID;
+    if(props.state){
+      this.state = props.state;
+      this.UID = this.state.UID;
+    }
+    else
+    if(props.uid){
+      this.state = core.objects[props.uid];
+      this.UID = props.uid;
+    }
+    else{
+      this.state = {};
+      this.UID = undefined;
+    }
     this.userStateUID = core.spawnObject({});
     this.state.userState = this.userStateUID;  // hardwiring from obj to react
     this.state.react = this;                   //        --- " ---
