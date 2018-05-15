@@ -62,11 +62,6 @@ export default class Forest extends Component {
 
   constructor(props) {
     super(props)
-    if(props.state){
-      this.state = props.state;
-      this.UID = this.state.UID;
-    }
-    else
     if(props.uid){
       this.state = core.objects[props.uid];
       this.UID = props.uid;

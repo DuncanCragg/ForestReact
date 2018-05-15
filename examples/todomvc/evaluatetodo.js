@@ -12,35 +12,35 @@ const uids = Forest.cacheObjects(
   }]
 );
 
-function evalTodo(state){
-  const todoSubmitted = !state('creating') && state('userState.newTodo-submitted')
+function evalTodo(object){
+  const todoSubmitted = !object('creating') && object('userState.newTodo-submitted')
   return Object.assign({},
-   !state('userState.newTodo-submitted')  && { newTodo: state('userState.newTodo') },
+   !object('userState.newTodo-submitted') && { newTodo: object('userState.newTodo') },
     todoSubmitted                         && { newTodo: '',
-                                               todos: state('todos').concat([Forest.spawnObject(
+                                               todos: object('todos').concat([Forest.spawnObject(
                                                  { evaluate: evalTodoItem,
                                                    is: 'todoitem',
-                                                   title: state('newTodo'),
+                                                   title: object('newTodo'),
                                                    completed: false,
                                                    deleted: false,
                                                    editing: false,
-                                                   parent: state('UID')
+                                                   parent: object('UID')
                                                  })])
                                              },
-   !todoSubmitted                         && { todos: state('todos', {deleted: false})},
-    true                                  && { activeTodos:    state('todos', {completed: false}),
-                                               completedTodos: state('todos', {completed: true}) },
-    true                                  && { clearCompleted: state('userState.clearCompleted') },
-    true                                  && { toggleAll: state('activeTodos') == null || state('activeTodos').length == 0 },
-    true                                  && { creating: state('userState.newTodo-submitted') },
+   !todoSubmitted                         && { todos: object('todos', {deleted: false})},
+    true                                  && { activeTodos:    object('todos', {completed: false}),
+                                               completedTodos: object('todos', {completed: true}) },
+    true                                  && { clearCompleted: object('userState.clearCompleted') },
+    true                                  && { toggleAll: object('activeTodos') == null || object('activeTodos').length == 0 },
+    true                                  && { creating: object('userState.newTodo-submitted') },
   );
 }
 
-function evalTodoItem(state){
+function evalTodoItem(object){
   return Object.assign({},
-    true                       && { completed: !state('parent.clearCompleted') && state('userState.completed') },
-    state('userState.destroy') && { deleted: true }
- // true                       && { editing: state('parent.editing') === state('UID') }
+    true                        && { completed: !object('parent.clearCompleted') && object('userState.completed') },
+    object('userState.destroy') && { deleted: true }
+ // true                        && { editing: object('parent.editing') === object('UID') }
   );
 }
 

@@ -36,7 +36,7 @@ function spawnObject(o){
 }
 
 function storeObjects(list){
-  return list.map(state => spawnObject(state));
+  return list.map(o => spawnObject(o));
 }
 
 function ensureObjectState(UID, observer){
@@ -52,8 +52,8 @@ function setNotify(o,uid){
   if(o.Notify.indexOf(uid) === -1) o.Notify.push(uid);
 }
 
-function setObjectState(uid, state){
-  const newState = Object.assign({}, objects[uid], state);
+function setObjectState(uid, update){
+  const newState = Object.assign({}, objects[uid], update);
   const changed = !_.isEqual(objects[uid], newState);
   if(!changed) return null;
   if(debug) console.log(uid, 'changed: ', difference(objects[uid], newState))
@@ -66,12 +66,12 @@ function setObjectState(uid, state){
 var fetching = {};
 
 function object(u,p,m) { const r = ((uid, path, match)=>{
-  const state = objects[uid];
-  if(path==='.') return state;
+  const o = objects[uid];
+  if(path==='.') return o;
   const pathbits = path.split('.');
   if(pathbits.length==1){
-    if(path === 'Timer') return state.Timer || 0;
-    const val = state[path];
+    if(path === 'Timer') return o.Timer || 0;
+    const val = o[path];
     if(val == null) return null;
     if(val.constructor === Array){
       if(match == null || match.constructor !== Object) return val;
@@ -85,7 +85,7 @@ function object(u,p,m) { const r = ((uid, path, match)=>{
     }
     return (match == null || val == match)? val: null;
   }
-  const val = state[pathbits[0]];
+  const val = o[pathbits[0]];
   if(val == null) return null;
   if(val.constructor !== String){
     if(val.constructor === Object){
