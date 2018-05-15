@@ -1,10 +1,15 @@
 
+import React from 'react';
 import Forest from '../forest';
-import renderers from './rendertodo';
+import TodoApp from './rendertodo';
 
-Forest.storeObjects(
-  [{ evaluate: evalTodo, is: 'todoapp', newTodo: '', nowShowing: 'all', todos: [] }],
-  renderers
+const uids = Forest.cacheObjects(
+  [{ evaluate: evalTodo,
+     is: 'todoapp',
+     newTodo: '',
+     nowShowing: 'all',
+     todos: []
+  }]
 );
 
 function evalTodo(state){
@@ -39,4 +44,5 @@ function evalTodoItem(state){
   );
 }
 
+Forest.renderDOM(<TodoApp uid={uids[0]} key={uids[0]} />);
 
