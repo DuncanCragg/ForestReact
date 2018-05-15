@@ -8,10 +8,7 @@ import core from './forest-core';
 
 export default class Forest extends Component {
 
-  static renderers;
-
-  static cacheObjects(list, renderers){
-    Forest.renderers = renderers;
+  static cacheObjects(list){
     return core.storeObjects(list);
   }
 
@@ -23,34 +20,6 @@ export default class Forest extends Component {
         (err) => err ? reject(err) : resolve()
       );
     });
-  }
-
-  static storeObjects(list, renderers, rootId = 'root'){
-    const uids = core.storeObjects(list);
-    Forest.renderers = renderers;
-    return new Promise((resolve, reject) => {
-      ReactDOM.render(
-        Forest.wrapObject(uids[0]),
-        document.getElementById(rootId),
-        (err) => err ? reject(err) : resolve()
-      );
-    });
-  }
-
-  static storeObjectsToString(list, renderers){
-    const uids = core.storeObjects(list);
-    Forest.renderers = renderers;
-    return renderToString(Forest.wrapObject(uids[0]));
-  }
-
-  static storeObjectsInComponent(list, renderers){
-    const uids = core.storeObjects(list);
-    Forest.renderers = renderers;
-    return Forest.wrapObject(uids[0]);
-  }
-
-  static wrapObject(uid){
-    return <Forest uid={uid} key={uid}></Forest>
   }
 
   static spawnObject(o){
@@ -151,10 +120,6 @@ export default class Forest extends Component {
   checkbox(name, {label='', className=''}={}){
     return label ? <div><input className={className} type="checkbox" onChange={e => this.onChange(name, e.target.checked)} checked={this.onRead(name)} /><span>{label}</span></div>:
                         <input className={className} type="checkbox" onChange={e => this.onChange(name, e.target.checked)} checked={this.onRead(name)} />;
-  }
-
-  render () {
-    return Forest.renderers[this.object('is')](this.object, this);
   }
 }
 
