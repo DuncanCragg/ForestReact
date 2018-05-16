@@ -29,6 +29,10 @@ function difference(a, b) {
 
 const objects = {};
 
+function cacheAndStoreObject(o){
+  objects[o.UID] = o;
+}
+
 function dumpCache(){
   console.log("---------cache-------");
   Object.keys(objects).map(k => console.log(objects[k]));
@@ -37,7 +41,8 @@ function dumpCache(){
 
 function spawnObject(o){
   const UID = o.UID || makeUID();
-  objects[UID] = Object.assign(o, { UID, Notify: [] });
+  const Notify = o.Notify || [];
+  cacheAndStoreObject(Object.assign({ UID, Notify }, o));
   return UID;
 }
 
@@ -51,7 +56,7 @@ function ensureObjectState(UID, observer){
     setNotify(o,observer);
     return;
   }
-  objects[UID] = { UID, Notify: [ observer ] };
+  cacheAndStoreObject({ UID, Notify: [ observer ] });
 }
 
 function setNotify(o,uid){
@@ -63,7 +68,7 @@ function setObjectState(uid, update){
   const changed = !_.isEqual(objects[uid], newState);
   if(!changed) return null;
   if(debug) console.log(uid, 'changed: ', difference(objects[uid], newState))
-  objects[uid] = newState;
+  cacheAndStoreObject(newState);
   objects[uid].Notify.map(u => setTimeout(doEvaluate.bind(null, u), 1));
   if(objects[uid].Notifying) doPost(objects[uid]);
   return newState;
