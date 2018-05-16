@@ -129,7 +129,7 @@ function doGet(url){
     .then(json => setObjectState(url, json));
 }
 
-const localProps = ['Notifying', 'Timer', 'evaluate', 'react', 'userState', 'timerId'];
+const localProps = ['Notifying', 'Timer', 'TimerId', 'Evaluator', 'ReactNotify', 'userState'];
 
 function doPost(o){
   const data = _.omit(o, localProps);
@@ -140,9 +140,9 @@ function doPost(o){
 }
 
 function checkTimer(o,time){
-  if(time && time > 0 && !o.timerId){
-    o.timerId = setTimeout(() => {
-      objects[o.UID].timerId = null;
+  if(time && time > 0 && !o.TimerId){
+    o.TimerId = setTimeout(() => {
+      objects[o.UID].TimerId = null;
       setObjectState(o.UID, { Timer: 0 });
       doEvaluate(o.UID);
     }, time);
