@@ -1,31 +1,32 @@
 
 import Forest from './forest';
-import renderers from './renderfed';
+import GuiStack from './renderfed';
 
-Forest.storeObjects(
+const uids = Forest.storeObjects(
   [
-    { UID: 'uid-1',                    is: 'guistack',   name: 'Forest App', list: ['uid-3', 'uid-2'] },
-    { UID: 'uid-2', evaluate: evalFed, is: 'fedexample', counter: 42, topic: 'banana', watching: 'uid-3' },
-    { UID: 'uid-3', evaluate: evalFed, is: 'fedexample', counter: 99, topic: 'mango' }
-  ],
-  renderers
+    { UID: 'uid-1',                     is: 'guistack',   name: 'Forest App', list: ['uid-3', 'uid-2'] },
+    { UID: 'uid-2', Evaluator: evalFed, is: 'fedexample', counter: 42, topic: 'banana', watching: 'uid-3' },
+    { UID: 'uid-3', Evaluator: evalFed, is: 'fedexample', counter: 99, topic: 'mango' }
+  ]
 );
 
-function evalFed(state){
-  const loadButtonPressed = !state('fetching') && state('userState.loadrandompicture');
-  const addButtonPressed  = !state('adding') && state('userState.add')
+function evalFed(object){
+  const loadButtonPressed = !object('fetching') && object('userState.loadrandompicture');
+  const addButtonPressed  = !object('adding') && object('userState.add')
   return Object.assign({},
-    state('Timer') === 0                   && { Timer:    2000, enableCounting: !state('enableCounting') },
-    addButtonPressed                       && { counter:  state('counter')+1 },
-   !state('enableCounting')                && { counter:  0 },
-    state('watching')                      && { counter:  state('watching.counter') },
-    true                                   && { topic:    state('userState.topic').toLowerCase() },
-  (!state('giphy') || loadButtonPressed)   && { giphy:   'https://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&tag=' + state('topic') },
-    state('giphy.data')                    && { gdata:    state('giphy.data') },
-    true                                   && { loading: !state('giphy.data') },
-    state('gdata')                         && { image:    state('gdata.fixed_height_small_url') },
-    true                                   && { adding:   state('userState.add') },
-    true                                   && { fetching: state('userState.loadrandompicture') }
+    object('Timer') === 0                  && { Timer:    2000, enableCounting: !object('enableCounting') },
+    addButtonPressed                       && { counter:  object('counter')+1 },
+   !object('enableCounting')               && { counter:  0 },
+    object('watching')                     && { counter:  object('watching.counter') },
+    true                                   && { topic:    object('userState.topic').toLowerCase() },
+  (!object('giphy') || loadButtonPressed)  && { giphy:   'https://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&tag=' + object('topic') },
+    object('giphy.data')                   && { gdata:    object('giphy.data') },
+    true                                   && { loading: !object('giphy.data') },
+    object('gdata')                        && { image:    object('gdata.fixed_height_small_url') },
+    true                                   && { adding:   object('userState.add') },
+    true                                   && { fetching: object('userState.loadrandompicture') }
   );
 }
+
+Forest.renderDOM(<GuiStack uid={uids[0]} />);
 

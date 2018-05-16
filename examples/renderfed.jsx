@@ -2,39 +2,40 @@
 import Forest from './forest';
 import React from 'react';
 
-function renderGuiStack(state){
-  return (
-    <div>
-      <div>{state('name')}</div>
-      {state('list').map(uid => Forest.wrapObject(uid))}
-    </div>);
+class GuiStack extends Forest {
+  render(){
+    return (
+      <div>
+        <div>{this.object('name')}</div>
+        {this.object('list').map(uid => <Fed uid={uid} key={uid} />)}
+      </div>);
+  }
 }
 
-      //{false && Object.keys(state).map(key => (typeof(state[key]) !== 'function') && <span key={key}> | {key}: {String(state[key])} | </span>)}
-function renderFed(state, userState){
-  return (
-    <div>
-      <hr/>
-      <br/><br/>
-      {state('enableCounting')? 'GO!': '...'}
-      <br/><br/>
-      {userState.textField('counter', {label: 'Count'})}
-      {userState.button('add', {label: 'increment'})}
-      <br/><br/>
-      {userState.textField('topic', {label: 'Topic'})}
-      {userState.button('loadrandompicture', {label: 'Load picture about that'})}
-      <br/><br/>
-      {state('loading')? 'loading..': ''}
-      <br/><br/>
-      {userState.image('image', {label: 'Your random image:'})}
-      <br/>
-      <hr/>
-      <br/>
-    </div>);
+class Fed extends Forest {
+  //{false && Object.keys(this.object).map(key => (typeof(this.object[key]) !== 'function') && <span key={key}> | {key}: {String(this.object[key])} | </span>)}
+  render(){
+    return (
+      <div>
+        <hr/>
+        <br/><br/>
+        {this.object('enableCounting')? 'GO!': '...'}
+        <br/><br/>
+        {this.textField('counter', {label: 'Count'})}
+        {this.button('add', {label: 'increment'})}
+        <br/><br/>
+        {this.textField('topic', {label: 'Topic'})}
+        {this.button('loadrandompicture', {label: 'Load picture about that'})}
+        <br/><br/>
+        {this.object('loading')? 'loading..': ''}
+        <br/><br/>
+        {this.image('image', {label: 'Your random image:'})}
+        <br/>
+        <hr/>
+        <br/>
+      </div>);
+  }
 }
 
-export default {
-  'guistack':   renderGuiStack,
-  'fedexample': renderFed
-};
+export default GuiStack;
 
