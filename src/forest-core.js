@@ -29,8 +29,13 @@ function difference(a, b) {
 
 const objects = {};
 
+let persist = null;
+
+function setPersistence(f){ persist = f; }
+
 function cacheAndStoreObject(o){
   objects[o.UID] = o;
+  if(persist) persist(o); // async persistence at the moment
 }
 
 function dumpCache(){
@@ -44,6 +49,10 @@ function spawnObject(o){
   const Notify = o.Notify || [];
   cacheAndStoreObject(Object.assign({ UID, Notify }, o));
   return UID;
+}
+
+function storeObject(o){
+  return spawnObject(o);
 }
 
 function storeObjects(list){
@@ -167,10 +176,12 @@ function doEvaluate(uid) {
 
 export default {
   spawnObject,
+  storeObject,
   storeObjects,
   setObjectState,
   object,
   doEvaluate,
   objects,
+  setPersistence,
 }
 
