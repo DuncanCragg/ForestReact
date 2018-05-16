@@ -118,8 +118,10 @@ function doGet(url){
     .then(json => setObjectState(url, json));
 }
 
+const localProps = ['Notifying', 'Timer', 'evaluate', 'react', 'userState', 'timerId'];
+
 function doPost(o){
-  const data = _.pick(o, 'moderated');
+  const data = _.omit(o, localProps);
   return sa.post(o.Notifying)
     .timeout({ response: 9000, deadline: 10000 })
     .send(data)
