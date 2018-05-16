@@ -29,6 +29,12 @@ function difference(a, b) {
 
 const objects = {};
 
+function dumpCache(){
+  console.log("---------cache-------");
+  Object.keys(objects).map(k => console.log(objects[k]));
+  console.log("---------------------");
+}
+
 function spawnObject(o){
   const UID = o.UID || makeUID();
   objects[UID] = Object.assign(o, { UID, Notify: [] });
