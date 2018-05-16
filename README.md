@@ -59,7 +59,7 @@ const renderers = {
 /* Initial list of state objects */
 /* The first one is taken to be the 'top' state object. */
 forest.storeObjects(
-  [{ evaluate: evalMin,
+  [{ Evaluator: evalMin,
      is: 'minimal',
      message: 'Hello World!',
      counter: 17

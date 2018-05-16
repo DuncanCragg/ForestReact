@@ -4,7 +4,7 @@ import Forest from '../forest';
 import TodoApp from './rendertodo';
 
 const uids = Forest.cacheObjects(
-  [{ evaluate: evalTodo,
+  [{ Evaluator: evalTodo,
      is: 'todoapp',
      newTodo: '',
      nowShowing: 'all',
@@ -18,7 +18,7 @@ function evalTodo(object){
    !object('userState.newTodo-submitted') && { newTodo: object('userState.newTodo') },
     todoSubmitted                         && { newTodo: '',
                                                todos: object('todos').concat([Forest.spawnObject(
-                                                 { evaluate: evalTodoItem,
+                                                 { Evaluator: evalTodoItem,
                                                    is: 'todoitem',
                                                    title: object('newTodo'),
                                                    completed: false,

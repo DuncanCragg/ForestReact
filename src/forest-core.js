@@ -141,11 +141,11 @@ function checkTimer(o,time){
 function doEvaluate(uid) {
   var o = objects[uid];
   const reactnotify = o.react.notify;
-  if(!o.evaluate || typeof o.evaluate !== 'function') { console.error('no evaluate function!', o); return; }
+  if(!o.Evaluator || typeof o.Evaluator !== 'function') { console.error('no Evaluator function!', o); return; }
   for(var i=0; i<4; i++){
     if(debug) console.log(i, '>>>>>>>>>>>>> ', object(uid, '.'));
     if(debug) console.log(i, '>>>>>>>>>>>>> ', object(uid, 'userState.'));
-    const newState = o.evaluate(object.bind(null, uid));
+    const newState = o.Evaluator(object.bind(null, uid));
     if(debug) console.log(i, '<<<<<<<<<<<<< new state bits: ', newState);
     checkTimer(o,newState.Timer);
     o = setObjectState(uid, newState);
