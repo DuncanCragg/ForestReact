@@ -140,7 +140,7 @@ function checkTimer(o,time){
 
 function doEvaluate(uid) {
   var o = objects[uid];
-  const reactnotify = o.react.notify;
+  const reactnotify = o.ReactNotify;
   if(!o.Evaluator || typeof o.Evaluator !== 'function') { console.error('no Evaluator function!', o); return; }
   for(var i=0; i<4; i++){
     if(debug) console.log(i, '>>>>>>>>>>>>> ', object(uid, '.'));
