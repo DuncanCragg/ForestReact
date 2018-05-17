@@ -161,8 +161,8 @@ function checkTimer(o,time){
 
 function doEvaluate(uid) {
   var o = objects[uid];
+  if(!o || !o.Evaluator || typeof o.Evaluator !== 'function') return;
   const reactnotify = o.ReactNotify;
-  if(!o.Evaluator || typeof o.Evaluator !== 'function') return;
   for(var i=0; i<4; i++){
     if(debug) console.log(i, '>>>>>>>>>>>>> ', object(uid, '.'));
     if(debug) console.log(i, '>>>>>>>>>>>>> ', object(uid, 'userState.'));
