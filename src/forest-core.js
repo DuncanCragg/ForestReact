@@ -53,7 +53,21 @@ function spawnObject(o){
 }
 
 function storeObject(o){
-  return spawnObject(o);
+  if(!o.UID)    return;
+  if(!o.Notify) o.Notify = [];
+  cacheAndStoreObject(o);
+  notifyObservers(o);
+}
+
+function notifyObservers(o){
+  o.Notify.map(uid => setTimeout(
+    ()=>{
+      const n = objects[uid];
+      if(!n) return;
+      n.Alerted=[o.UID];
+      doEvaluate(uid);
+      delete n.Alerted;
+    }, 1));
 }
 
 function storeObjects(list){
@@ -79,7 +93,7 @@ function setObjectState(uid, update){
   if(!changed) return null;
   if(debug) console.log(uid, 'changed: ', difference(objects[uid], newState))
   cacheAndStoreObject(newState);
-  objects[uid].Notify.map(u => setTimeout(doEvaluate.bind(null, u), 1));
+  notifyObservers(objects[uid]);
   if(objects[uid].Notifying) doPost(objects[uid]);
   return newState;
 }

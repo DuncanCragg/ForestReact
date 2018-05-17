@@ -49,6 +49,18 @@ app.post('/cache-notify',
   }
 );
 
+app.post('/temphrlistchangeme',
+  log,
+  CORS,
+  (req, res, next) => {
+    const o=req.body;
+    if(!o || !o.UID) next();
+    core.storeObject((o.Notify && o.Notify.length)? o: Object.assign(o, { Notify: ['temphrlistchangeme'] }));
+    res.json({ });
+    next();
+  }
+);
+
 const PORT = 8080;
 
 let forestdb;
