@@ -59,17 +59,6 @@ function storeObject(o){
   notifyObservers(o);
 }
 
-function notifyObservers(o){
-  o.Notify.map(uid => setTimeout(
-    ()=>{
-      const n = objects[uid];
-      if(!n) return;
-      n.Alerted=[o.UID];
-      doEvaluate(uid);
-      delete n.Alerted;
-    }, 1));
-}
-
 function storeObjects(list){
   return list.map(o => spawnObject(o));
 }
@@ -85,6 +74,17 @@ function ensureObjectState(UID, observer){
 
 function setNotify(o,uid){
   if(o.Notify.indexOf(uid) === -1) o.Notify.push(uid);
+}
+
+function notifyObservers(o){
+  o.Notify.map(uid => setTimeout(
+    ()=>{
+      const n = objects[uid];
+      if(!n) return;
+      n.Alerted=[o.UID];
+      doEvaluate(uid);
+      delete n.Alerted;
+    }, 1));
 }
 
 function setObjectState(uid, update){
