@@ -48,6 +48,7 @@ function spawnObject(o){
   const UID = o.UID || makeUID();
   const Notify = o.Notify || [];
   cacheAndStoreObject(Object.assign({ UID, Notify }, o));
+  doEvaluate(UID);
   return UID;
 }
 
@@ -161,7 +162,7 @@ function checkTimer(o,time){
 function doEvaluate(uid) {
   var o = objects[uid];
   const reactnotify = o.ReactNotify;
-  if(!o.Evaluator || typeof o.Evaluator !== 'function') { console.error('no Evaluator function!', o); return; }
+  if(!o.Evaluator || typeof o.Evaluator !== 'function') return;
   for(var i=0; i<4; i++){
     if(debug) console.log(i, '>>>>>>>>>>>>> ', object(uid, '.'));
     if(debug) console.log(i, '>>>>>>>>>>>>> ', object(uid, 'userState.'));
@@ -171,7 +172,7 @@ function doEvaluate(uid) {
     o = setObjectState(uid, newState);
     if(!o) break;
   }
-  reactnotify();
+  if(reactnotify) reactnotify();
 }
 
 export default {
