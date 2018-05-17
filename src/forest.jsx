@@ -9,7 +9,7 @@ import core from './forest-core';
 export default class Forest extends Component {
 
   static cacheObjects(list){
-    return core.storeObjects(list);
+    return core.cacheObjects(list);
   }
 
   static renderDOM(Cpt, rootId = 'root'){

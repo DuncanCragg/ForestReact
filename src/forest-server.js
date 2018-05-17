@@ -85,6 +85,7 @@ function persist(o){
 core.setPersistence(persist);
 
 export default {
+  cacheObjects: core.cacheObjects,
 }
 
 

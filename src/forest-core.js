@@ -59,7 +59,7 @@ function storeObject(o){
   notifyObservers(o);
 }
 
-function storeObjects(list){
+function cacheObjects(list){
   return list.map(o => spawnObject(o));
 }
 
@@ -192,7 +192,7 @@ function doEvaluate(uid) {
 export default {
   spawnObject,
   storeObject,
-  storeObjects,
+  cacheObjects,
   setObjectState,
   object,
   doEvaluate,
