@@ -44,6 +44,7 @@ app.post('/cache-notify',
   CORS,
   (req, res, next) => {
     core.storeObject(req.body);
+    res.json({ });
     next();
   }
 );
