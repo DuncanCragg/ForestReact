@@ -44,7 +44,6 @@ app.post('/cache-notify',
   CORS,
   (req, res, next) => {
     core.storeObject(req.body);
-    res.json({ banana: 'http://localhost:8080/'});
     next();
   }
 );
