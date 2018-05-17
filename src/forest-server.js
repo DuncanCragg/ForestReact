@@ -67,7 +67,6 @@ function updateObject(o){
 }
 
 function persist(o){
-  console.log('persist:', o);
   return updateObject(o);
 }
 
