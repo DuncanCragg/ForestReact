@@ -94,6 +94,7 @@ core.setPersistence(persist);
 export default {
   init,
   cacheObjects: core.cacheObjects,
+  spawnObject:  core.spawnObject,
 }
 
 

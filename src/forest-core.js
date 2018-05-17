@@ -81,7 +81,7 @@ function notifyObservers(o){
     ()=>{
       const n = objects[uid];
       if(!n) return;
-      n.Alerted=[o.UID];
+      n.Alerted=o.UID;
       doEvaluate(uid);
       delete n.Alerted;
     }, 1));
