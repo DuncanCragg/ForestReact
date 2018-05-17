@@ -2,7 +2,7 @@
 import Forest from './forest';
 import GuiStack from './renderfed';
 
-const uids = Forest.storeObjects(
+const uids = Forest.cacheObjects(
   [
     { UID: 'uid-1',                     is: 'guistack',   name: 'Forest App', list: ['uid-3', 'uid-2'] },
     { UID: 'uid-2', Evaluator: evalFed, is: 'fedexample', counter: 42, topic: 'banana', watching: 'uid-3' },
