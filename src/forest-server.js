@@ -61,14 +61,21 @@ app.post('/temphrlistchangeme',
   }
 );
 
-const PORT = 8080;
-
 let forestdb;
 
-mongodb.MongoClient.connect('mongodb://localhost:27017/').then((client) => {
-  forestdb = client.db('forest');
-  app.listen(PORT, ()=>{ console.log(`Server started on port ${PORT}`); });
-})
+function init(port){
+  return new Promise((resolve, reject) => {
+    mongodb.MongoClient.connect('mongodb://localhost:27017/')
+    .then((client) => {
+      forestdb = client.db('forest');
+      app.listen(port, ()=>{
+        console.log(`Server started on port ${port}`);
+        resolve();
+      }).on('error', (err) => reject(err));
+    })
+    .catch((err) => reject(err));
+  });
+}
 
 function updateObject(o){
   const collectionName = o.is;
@@ -85,6 +92,7 @@ function persist(o){
 core.setPersistence(persist);
 
 export default {
+  init,
   cacheObjects: core.cacheObjects,
 }
 
