@@ -1,6 +1,5 @@
 
 import _ from 'lodash';
-import sa from 'superagent';
 
 const debug = false;
 
@@ -30,8 +29,11 @@ function difference(a, b) {
 const objects = {};
 
 let persist = null;
+let network = null;
 
 function setPersistence(f){ persist = f; }
+
+function setNetwork(n){ network = n; }
 
 function cacheAndStoreObject(o){
   objects[o.UID] = o;
@@ -94,7 +96,7 @@ function setObjectState(uid, update){
   if(debug) console.log(uid, 'changed: ', difference(objects[uid], newState))
   cacheAndStoreObject(newState);
   notifyObservers(objects[uid]);
-  if(objects[uid].Notifying) doPost(objects[uid]);
+  if(objects[uid].Notifying) network && network.doPost(objects[uid]);
   return newState;
 }
 
@@ -135,7 +137,7 @@ function object(u,p,m) { const r = ((uid, path, match)=>{
     if(!fetching[url]){
       fetching[url]=true;
       ensureObjectState(url, uid);
-      doGet(url);
+      network && network.doGet(url);
     }
     return null;
   }
@@ -145,22 +147,6 @@ function object(u,p,m) { const r = ((uid, path, match)=>{
   })(u,p,m);
   // if(debug) console.log('UID',u,'path',p,'match',m,'=>',r);
   return r;
-}
-
-function doGet(url){
-  fetch(url)
-    .then(res => { fetching[url]=false; return res.json()})
-    .then(json => setObjectState(url, json));
-}
-
-const localProps = ['Notifying', 'Timer', 'TimerId', 'Evaluator', 'ReactNotify', 'userState'];
-
-function doPost(o){
-  const data = _.omit(o, localProps);
-  return sa.post(o.Notifying)
-    .timeout({ response: 9000, deadline: 10000 })
-    .send(data)
-    .then(x => x);
 }
 
 function checkTimer(o,time){
@@ -198,5 +184,6 @@ export default {
   doEvaluate,
   objects,
   setPersistence,
+  setNetwork,
 }
 

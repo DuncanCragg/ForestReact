@@ -3,8 +3,31 @@ import React, { Component } from 'react';
 import { Text, TouchableHighlight } from 'react-native';
 import ReactDOM from 'react-dom';
 import { renderToString } from 'react-dom/server';
+import sa from 'superagent';
 
 import core from './forest-core';
+
+
+function doGet(url){
+  fetch(url)
+    .then(res => { fetching[url]=false; return res.json()})
+    .then(json => setObjectState(url, json));
+}
+
+const localProps = ['Notifying', 'Timer', 'TimerId', 'Evaluator', 'ReactNotify', 'userState'];
+
+function doPost(o){
+  const data = _.omit(o, localProps);
+  const uid = o.Notifying;
+  return sa.post(uid)
+    .timeout({ response: 9000, deadline: 10000 })
+    .send(data)
+    .then(x => x)
+    .catch(e => console.error(e));
+}
+
+core.setNetwork({ doGet, doPost });
+
 
 export default class Forest extends Component {
 
