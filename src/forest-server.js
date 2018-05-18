@@ -43,6 +43,8 @@ app.get('/',
   },
 );
 
+const uid2notify = {};
+const notify2ws = {};
 
 app.post('/*',
   log,
@@ -50,6 +52,7 @@ app.post('/*',
   (req, res, next) => {
     const o=req.body;
     if(!o || !o.UID) next();
+    uid2notify[o.UID] = req.headers.notify;
     const path = req.originalUrl.substring(1);
     const Notify = (path==='notify')? null: [path];
     const addNotify = !(o.Notify && o.Notify.length) && Notify;
@@ -58,10 +61,6 @@ app.post('/*',
     next();
   }
 );
-
-const wss = new WebSocket.Server({ port: 8081 });
-
-const wsconns = {};
 
 function isURL(uid){
   return /^https?:\/\//.test(uid);
@@ -78,19 +77,28 @@ function doPost(o){
     console.log('not posting to peer yet');
   }
   else{
-    const ws = wsconns[uid];
+    const notifyUID = uid2notify[uid];
+    const ws = notify2ws[notifyUID];
     if(!ws) return;
     ws.send(JSON.stringify(data));
   }
 }
 
+const wss = new WebSocket.Server({ port: 8081 });
+
 wss.on('connection', (ws) => {
-
+  let initialising = true;
   ws.on('message', (data) => {
-    console.log('received: %s', data);
+    if(initialising){
+      notify2ws[data]=ws;
+      initialising=false;
+      console.log('initialised:', data);
+    }
+    else{
+      const o = JSON.parse(data);
+      console.log('ws incoming json', o);
+    }
   });
-
-  ws.send('something');
 });
 
 core.setNetwork({ doGet, doPost });
