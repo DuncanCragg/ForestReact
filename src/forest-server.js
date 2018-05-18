@@ -6,6 +6,8 @@ import mongodb from 'mongodb';
 import core from './forest-core';
 
 
+// --------------------------------
+
 const log = (req, res, next) => {
   console.log(req.method, req.originalUrl, '\n', req.body);
   next();
@@ -74,22 +76,9 @@ wss.on('connection', (ws) => {
 });
 
 
+// --------------------------------
 
 let forestdb;
-
-function init(port){
-  return new Promise((resolve, reject) => {
-    mongodb.MongoClient.connect('mongodb://localhost:27017/')
-    .then((client) => {
-      forestdb = client.db('forest');
-      app.listen(port, ()=>{
-        console.log(`Server started on port ${port}`);
-        resolve();
-      }).on('error', (err) => reject(err));
-    })
-    .catch((err) => reject(err));
-  });
-}
 
 function updateObject(o){
   const collectionName = o.is;
@@ -104,6 +93,22 @@ function persist(o){
 }
 
 core.setPersistence(persist);
+
+// --------------------------------
+
+function init(port){
+  return new Promise((resolve, reject) => {
+    mongodb.MongoClient.connect('mongodb://localhost:27017/')
+    .then((client) => {
+      forestdb = client.db('forest');
+      app.listen(port, ()=>{
+        console.log(`Server started on port ${port}`);
+        resolve();
+      }).on('error', (err) => reject(err));
+    })
+    .catch((err) => reject(err));
+  });
+}
 
 export default {
   init,
