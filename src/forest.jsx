@@ -26,6 +26,17 @@ function doPost(o){
     .catch(e => console.error(e));
 }
 
+const ws = new WebSocket('ws://localhost:8081');
+
+ws.addEventListener('open', (event) => {
+  console.log('ws open');
+  ws.send('ehelooo!');
+});
+
+ws.addEventListener('message', (event) => {
+  console.log('Message from server ', event.data);
+});
+
 core.setNetwork({ doGet, doPost });
 
 

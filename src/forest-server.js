@@ -1,5 +1,6 @@
 
 import express from 'express';
+import WebSocket from 'ws';
 import bodyParser from 'body-parser';
 import mongodb from 'mongodb';
 import core from './forest-core';
@@ -60,6 +61,19 @@ app.post('/temphrlistchangeme',
     next();
   }
 );
+
+const wss = new WebSocket.Server({ port: 8081 });
+
+wss.on('connection', (ws) => {
+
+  ws.on('message', (data) => {
+    console.log('received: %s', data);
+  });
+
+  ws.send('something');
+});
+
+
 
 let forestdb;
 
