@@ -3,6 +3,8 @@ import _ from 'lodash';
 
 const debug = false;
 
+const localProps = ['Notifying', 'Timer', 'TimerId', 'Evaluator', 'ReactNotify', 'userState'];
+
 function makeUID(){
   /*jshint bitwise:false */
   var i, random;
@@ -185,5 +187,6 @@ export default {
   objects,
   setPersistence,
   setNetwork,
+  localProps,
 }
 

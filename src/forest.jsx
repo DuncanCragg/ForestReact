@@ -14,10 +14,8 @@ function doGet(url){
     .then(json => setObjectState(url, json));
 }
 
-const localProps = ['Notifying', 'Timer', 'TimerId', 'Evaluator', 'ReactNotify', 'userState'];
-
 function doPost(o){
-  const data = _.omit(o, localProps);
+  const data = _.omit(o, core.localProps);
   const uid = o.Notifying;
   return sa.post(uid)
     .timeout({ response: 9000, deadline: 10000 })
