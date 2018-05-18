@@ -1,4 +1,5 @@
 
+import _ from 'lodash';
 import express from 'express';
 import WebSocket from 'ws';
 import bodyParser from 'body-parser';
@@ -66,6 +67,29 @@ app.post('/temphrlistchangeme',
 
 const wss = new WebSocket.Server({ port: 8081 });
 
+const wsconns = {};
+
+function isURL(uid){
+  return /^https?:\/\//.test(uid);
+}
+
+function doGet(url){
+  console.log('not getting from peer yet');
+}
+
+function doPost(o){
+  const data = _.omit(o, core.localProps);
+  const uid = o.Notifying;
+  if(isURL(uid)){
+    console.log('not posting to peer yet');
+  }
+  else{
+    const ws = wsconns[uid];
+    if(!ws) return;
+    ws.send(JSON.stringify(data));
+  }
+}
+
 wss.on('connection', (ws) => {
 
   ws.on('message', (data) => {
@@ -75,6 +99,7 @@ wss.on('connection', (ws) => {
   ws.send('something');
 });
 
+core.setNetwork({ doGet, doPost });
 
 // --------------------------------
 
