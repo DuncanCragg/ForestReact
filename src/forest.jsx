@@ -28,13 +28,18 @@ function doPost(o){
 
 const ws = new WebSocket('ws://localhost:8081');
 
-ws.addEventListener('open', (event) => {
-  ws.send(notifyUID);
-});
+ws.onopen = () => {
+  console.log('on open');
+  ws.send(JSON.stringify({ notifyUID }));
+};
 
-ws.addEventListener('message', (event) => {
-  console.log('Message from server ', event.data);
-});
+ws.onmessage = (message) => {
+  console.log('on message', message.data);
+  const json = JSON.parse(message.data);
+};
+
+ws.onerror = (error) => {
+};
 
 core.setNetwork({ doGet, doPost });
 

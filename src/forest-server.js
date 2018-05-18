@@ -87,15 +87,13 @@ function doPost(o){
 const wss = new WebSocket.Server({ port: 8081 });
 
 wss.on('connection', (ws) => {
-  let initialising = true;
   ws.on('message', (data) => {
-    if(initialising){
-      notify2ws[data]=ws;
-      initialising=false;
-      console.log('initialised:', data);
+    const o = JSON.parse(data);
+    if(o.notifyUID){
+      notify2ws[o.notifyUID]=ws;
+      console.log('initialised:', o);
     }
     else{
-      const o = JSON.parse(data);
       console.log('ws incoming json', o);
     }
   });
