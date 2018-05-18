@@ -43,23 +43,17 @@ app.get('/',
   },
 );
 
-app.post('/cache-notify',
-  log,
-  CORS,
-  (req, res, next) => {
-    core.storeObject(req.body);
-    res.json({ });
-    next();
-  }
-);
 
-app.post('/temphrlistchangeme',
+app.post('/*',
   log,
   CORS,
   (req, res, next) => {
     const o=req.body;
     if(!o || !o.UID) next();
-    core.storeObject((o.Notify && o.Notify.length)? o: Object.assign(o, { Notify: ['temphrlistchangeme'] }));
+    const path = req.originalUrl.substring(1);
+    const Notify = (path==='notify')? null: [path];
+    const addNotify = !(o.Notify && o.Notify.length) && Notify;
+    core.storeObject(!addNotify? o: Object.assign(o, { Notify }));
     res.json({ });
     next();
   }
