@@ -178,6 +178,7 @@ function doEvaluate(uid) {
 }
 
 export default {
+  makeUID,
   spawnObject,
   storeObject,
   cacheObjects,

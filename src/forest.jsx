@@ -7,6 +7,7 @@ import sa from 'superagent';
 
 import core from './forest-core';
 
+const notifyUID = core.makeUID();
 
 function doGet(url){
   fetch(url)
@@ -19,6 +20,7 @@ function doPost(o){
   const uid = o.Notifying;
   return sa.post(uid)
     .timeout({ response: 9000, deadline: 10000 })
+    .set('Notify', notifyUID)
     .send(data)
     .then(x => x)
     .catch(e => console.error(e));
@@ -27,8 +29,7 @@ function doPost(o){
 const ws = new WebSocket('ws://localhost:8081');
 
 ws.addEventListener('open', (event) => {
-  console.log('ws open');
-  ws.send('ehelooo!');
+  ws.send(notifyUID);
 });
 
 ws.addEventListener('message', (event) => {
