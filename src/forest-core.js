@@ -143,7 +143,8 @@ function object(u,p,m) { const r = ((uid, path, match)=>{
     if(!fetching[url]){
       fetching[url]=true;
       ensureObjectState(url, uid);
-      network && network.doGet(url);
+          network && network.doGet(url)
+           .then(json => { fetching[url]=false; setObjectState(url, json) });
     }
     return null;
   }

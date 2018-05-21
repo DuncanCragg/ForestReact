@@ -9,9 +9,7 @@ import core from './forest-core';
 const notifyUID = core.makeUID();
 
 function doGet(url){
-  fetch(url)
-    .then(res => { fetching[url]=false; return res.json()})
-    .then(json => setObjectState(url, json));
+  return fetch(url).then(res => res.json());
 }
 
 function doPost(o){

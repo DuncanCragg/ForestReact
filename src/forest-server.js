@@ -63,7 +63,7 @@ app.post('/*',
 );
 
 function doGet(url){
-  console.log('not getting from peer yet');
+  return fetch(url).then(res => res.json());
 }
 
 function doPost(o){
