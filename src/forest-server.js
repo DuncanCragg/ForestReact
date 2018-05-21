@@ -67,8 +67,9 @@ function doGet(url){
 }
 
 function doPost(o){
-  const data = _.omit(o, core.localProps);
   const uid = o.Notifying;
+  o.Notify.unshift(uid);
+  const data = _.omit(o, core.localProps);
   if(core.isURL(uid)){
     console.log('not posting to peer yet');
   }

@@ -32,6 +32,11 @@ ws.onopen = () => {
 ws.onmessage = (message) => {
   console.log('on message', message.data);
   const json = JSON.parse(message.data);
+  if(json.UID){
+    const o = core.objects[json.UID]
+    if(o) core.setObjectState(json.UID, json)
+    else core.storeObject(json);
+  }
 };
 
 ws.onerror = (error) => {
