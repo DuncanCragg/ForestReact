@@ -62,10 +62,6 @@ app.post('/*',
   }
 );
 
-function isURL(uid){
-  return /^https?:\/\//.test(uid);
-}
-
 function doGet(url){
   console.log('not getting from peer yet');
 }
@@ -73,7 +69,7 @@ function doGet(url){
 function doPost(o){
   const data = _.omit(o, core.localProps);
   const uid = o.Notifying;
-  if(isURL(uid)){
+  if(core.isURL(uid)){
     console.log('not posting to peer yet');
   }
   else{

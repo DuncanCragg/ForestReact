@@ -102,6 +102,10 @@ function setObjectState(uid, update){
   return newState;
 }
 
+function isURL(uid){
+  return /^https?:\/\//.test(uid);
+}
+
 var fetching = {};
 
 function object(u,p,m) { const r = ((uid, path, match)=>{
@@ -189,5 +193,6 @@ export default {
   setPersistence,
   setNetwork,
   localProps,
+  isURL,
 }
 
