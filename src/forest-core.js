@@ -3,7 +3,7 @@ import _ from 'lodash';
 
 const debug = false;
 
-const localProps = ['Notifying', 'Timer', 'TimerId', 'Evaluator', 'ReactNotify', 'userState'];
+const localProps = ['Notifying', 'Alerted', 'Timer', 'TimerId', 'Evaluator', 'ReactNotify', 'userState'];
 
 function makeUID(){
   /*jshint bitwise:false */
