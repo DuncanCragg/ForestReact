@@ -128,31 +128,33 @@ function object(u,p,m) { const r = ((uid, path, match)=>{
     }
     return (match == null || val == match)? val: null;
   }
-  const val = o[pathbits[0]];
-  if(val == null) return null;
-  if(val.constructor !== String){
+  let c=o;
+  for(var i=0; i<pathbits.length; i++){
+    if(pathbits[i]==='') return c;
+    const val = c[pathbits[i]];
+    if(val == null) return null;
     if(val.constructor === Object){
-      if(pathbits[1]) return val[pathbits[1]];
+      if(pathbits[i+1]) return val[pathbits[i+1]];
       else return null;
     }
-    else return null;
-  }
-  const linkedObject = objects[val];
-  if(!linkedObject){
-    const url=val;
-    if(!fetching[url]){
-      fetching[url]=true;
-      ensureObjectState(url, uid);
+    if(i==pathbits.length-1) return val;
+    c = objects[val];
+    if(!c){
+      if(isURL(val)){
+        const url=val;
+        if(!fetching[url]){
+          fetching[url]=true;
+          ensureObjectState(url, uid);
           network && network.doGet(url)
            .then(json => { fetching[url]=false; setObjectState(url, json) });
+        }
+        return null;
+      }
     }
-    return null;
+    setNotify(c,uid);
   }
-  setNotify(linkedObject,uid);
-  if(pathbits[1]==='') return linkedObject;
-  return linkedObject[pathbits[1]];
   })(u,p,m);
-  // if(debug) console.log('UID',u,'path',p,'match',m,'=>',r);
+  // if(debug) console.log('object',objects[u],'path',p,'match',m,'=>',r);
   return r;
 }
 
