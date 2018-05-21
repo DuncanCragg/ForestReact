@@ -2,8 +2,7 @@
 import React, { Component } from 'react';
 import { Text, TouchableHighlight } from 'react-native';
 import ReactDOM from 'react-dom';
-import { renderToString } from 'react-dom/server';
-import sa from 'superagent';
+import superagent from 'superagent';
 
 import core from './forest-core';
 
@@ -18,7 +17,7 @@ function doGet(url){
 function doPost(o){
   const data = _.omit(o, core.localProps);
   const uid = o.Notifying;
-  return sa.post(uid)
+  return superagent.post(uid)
     .timeout({ response: 9000, deadline: 10000 })
     .set('Notify', notifyUID)
     .send(data)
@@ -29,7 +28,6 @@ function doPost(o){
 const ws = new WebSocket('ws://localhost:8081');
 
 ws.onopen = () => {
-  console.log('on open');
   ws.send(JSON.stringify({ notifyUID }));
 };
 
