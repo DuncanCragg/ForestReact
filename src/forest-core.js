@@ -67,13 +67,14 @@ function cacheObjects(list){
   return list.map(o => spawnObject(o));
 }
 
-function ensureObjectState(UID, observer){
-  const o = objects[UID];
+function ensureObjectState(uid, observer){
+  const o = objects[uid];
   if(o){
     setNotify(o,observer);
-    return;
+    return o;
   }
   cacheAndStoreObject({ UID, Notify: [ observer ] });
+  return null;
 }
 
 function setNotify(o,uid){
@@ -133,25 +134,22 @@ function object(u,p,m) { const r = ((uid, path, match)=>{
     if(pathbits[i]==='') return c;
     const val = c[pathbits[i]];
     if(val == null) return null;
-    if(val.constructor === Object){
-      if(pathbits[i+1]) return val[pathbits[i+1]];
-      else return null;
-    }
     if(i==pathbits.length-1) return val;
-    c = objects[val];
-    if(!c){
-      if(isURL(val)){
-        const url=val;
-        if(!fetching[url]){
-          fetching[url]=true;
-          ensureObjectState(url, uid);
-          network && network.doGet(url)
-           .then(json => { fetching[url]=false; setObjectState(url, json) });
+    if(val.constructor === Object){ c = val; continue; }
+    if(val.constructor === String){
+      c = ensureObjectState(val, uid);
+      if(!c){
+        if(isURL(val)){
+          const url=val;
+          if(!fetching[url]){
+            fetching[url]=true;
+            network && network.doGet(url)
+             .then(json => { fetching[url]=false; setObjectState(url, json) });
+          }
         }
         return null;
       }
     }
-    setNotify(c,uid);
   }
   })(u,p,m);
   // if(debug) console.log('object',objects[u],'path',p,'match',m,'=>',r);
