@@ -114,7 +114,23 @@ function persist(o){
   return updateObject(o);
 }
 
+function toMongoProp(key, val){
+  if(key==='time' && val.length===3 && val[1]==='..'){
+    return { $gt: val[0], $lt: val[2] };
+  }
+  return val;
+}
+
+function toMongo(scope, match){
+  return Object.assign({}, ...Object.keys(match).map(k => ({[k]: toMongoProp(k,match[k])})));
+}
+
 function query(collectionName, scope, match){
+  return forestdb.collection(collectionName)
+    .find(toMongo(scope, match))
+    .toArray()
+    .then(r => r.map(o => o.UID))
+    .catch(e => console.error(e));
 }
 
 core.setPersistence({ persist, query });

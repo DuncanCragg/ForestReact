@@ -109,8 +109,19 @@ function isURL(uid){
 
 var fetching = {};
 
+function cacheQuery(o, path, match){
+  if(!persistence) return new Promise();
+  const scope = o.list;
+  if(scope.includes('local') || scope.includes('remote')){
+    const is = o.is.split(' ')[0];
+    return persistence.query(is, scope, match);
+  }
+  return new Promise();
+}
+
 function object(u,p,m) { const r = ((uid, path, match)=>{
   const o = objects[uid];
+  if(o.is.indexOf('cache list') !== -1 && path === 'list' && match) return cacheQuery(o, path, match);
   if(path==='.') return o;
   const pathbits = path.split('.');
   if(pathbits.length==1){
