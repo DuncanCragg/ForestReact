@@ -28,8 +28,8 @@ core.setNetwork({ doGet, doPost });
 
 export default class Forest extends Component {
 
-  static wsInit(port){
-    const ws = new WebSocket(`ws://localhost:${port}`);
+  static wsInit(host,port){
+    const ws = new WebSocket(`ws://${host}:${port}`);
     
     ws.onopen = () => {
       ws.send(JSON.stringify({ notifyUID }));
