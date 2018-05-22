@@ -30,16 +30,16 @@ function difference(a, b) {
 
 const objects = {};
 
-let persist = null;
+let persistence = null;
 let network = null;
 
-function setPersistence(f){ persist = f; }
+function setPersistence(p){ persistence = p; }
 
 function setNetwork(n){ network = n; }
 
 function cacheAndStoreObject(o){
   objects[o.UID] = o;
-  if(persist) persist(o); // async persistence at the moment
+  if(persistence) persistence.persist(o); // async persistence at the moment
 }
 
 function dumpCache(){

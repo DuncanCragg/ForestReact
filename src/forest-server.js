@@ -114,7 +114,10 @@ function persist(o){
   return updateObject(o);
 }
 
-core.setPersistence(persist);
+function query(collectionName, scope, match){
+}
+
+core.setPersistence({ persist, query });
 
 // --------------------------------
 
