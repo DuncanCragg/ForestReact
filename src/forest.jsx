@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { Text, TouchableHighlight } from 'react-native';
 import ReactDOM from 'react-dom';
 import superagent from 'superagent';
+import _ from 'lodash';
 
 import core from './forest-core';
 
