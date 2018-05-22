@@ -38,7 +38,7 @@ app.get('/',
   log,
   CORS,
   (req, res, next) => {
-    res.json({ mango: 'http://localhost:8080/banana/' });
+    res.json({ mango: 'http://localhost:8180/banana/' });
     next();
   },
 );
@@ -81,20 +81,21 @@ function doPost(o){
   }
 }
 
-const wss = new WebSocket.Server({ port: 8081 });
-
-wss.on('connection', (ws) => {
-  ws.on('message', (data) => {
-    const o = JSON.parse(data);
-    if(o.notifyUID){
-      notify2ws[o.notifyUID]=ws;
-      console.log('initialised:', o);
-    }
-    else{
-      console.log('ws incoming json', o);
-    }
+function wsInit(config){
+  const wss = new WebSocket.Server(config);
+  wss.on('connection', (ws) => {
+    ws.on('message', (data) => {
+      const o = JSON.parse(data);
+      if(o.notifyUID){
+        notify2ws[o.notifyUID]=ws;
+        console.log('initialised:', o);
+      }
+      else{
+        console.log('ws incoming json', o);
+      }
+    });
   });
-});
+}
 
 core.setNetwork({ doGet, doPost });
 
@@ -137,13 +138,14 @@ core.setPersistence({ persist, query });
 
 // --------------------------------
 
-function init(port){
+function init(port, wsPort){
   return new Promise((resolve, reject) => {
     mongodb.MongoClient.connect('mongodb://localhost:27017/')
     .then((client) => {
       forestdb = client.db('forest');
       app.listen(port, ()=>{
         console.log(`Server started on port ${port}`);
+        wsInit({ port: wsPort });
         resolve();
       }).on('error', (err) => reject(err));
     })

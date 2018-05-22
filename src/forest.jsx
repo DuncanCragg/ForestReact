@@ -24,29 +24,30 @@ function doPost(o){
     .catch(e => console.error(e));
 }
 
-const ws = new WebSocket('ws://localhost:8081');
-
-ws.onopen = () => {
-  ws.send(JSON.stringify({ notifyUID }));
-};
-
-ws.onmessage = (message) => {
-  console.log('on message', message.data);
-  const json = JSON.parse(message.data);
-  if(json.UID){
-    const o = core.objects[json.UID]
-    if(o) core.setObjectState(json.UID, json)
-    else core.storeObject(json);
-  }
-};
-
-ws.onerror = (error) => {
-};
-
 core.setNetwork({ doGet, doPost });
 
-
 export default class Forest extends Component {
+
+  static wsInit(port){
+    const ws = new WebSocket(`ws://localhost:${port}`);
+    
+    ws.onopen = () => {
+      ws.send(JSON.stringify({ notifyUID }));
+    };
+    
+    ws.onmessage = (message) => {
+      console.log('on message', message.data);
+      const json = JSON.parse(message.data);
+      if(json.UID){
+        const o = core.objects[json.UID]
+        if(o) core.setObjectState(json.UID, json)
+        else core.storeObject(json);
+      }
+    };
+    
+    ws.onerror = (error) => {
+    };
+  }
 
   static cacheObjects(list){
     return core.cacheObjects(list);
