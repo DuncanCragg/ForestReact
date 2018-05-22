@@ -177,6 +177,15 @@ function checkTimer(o,time){
   }
 }
 
+function setPromiseState(uid, o, p){
+  p.then(newState => {
+    if(debug) console.log('<<<<<<<<<<<<< new state bits: ', newState);
+    checkTimer(o,newState.Timer);
+    setObjectState(uid, newState);
+  });
+  return {};
+}
+
 function doEvaluate(uid) {
   var o = objects[uid];
   if(!o || !o.Evaluator || typeof o.Evaluator !== 'function') return;
@@ -184,7 +193,13 @@ function doEvaluate(uid) {
   for(var i=0; i<4; i++){
     if(debug) console.log(i, '>>>>>>>>>>>>> ', object(uid, '.'));
     if(debug) console.log(i, '>>>>>>>>>>>>> ', object(uid, 'userState.'));
-    const newState = o.Evaluator(object.bind(null, uid));
+    const evalout = o.Evaluator(object.bind(null, uid));
+    if(!evalout){ console.error('no eval output for', uid, o); return; }
+    let newState;
+    if(evalout.constructor === Array){
+      newState = Object.assign({}, ...(evalout.map(x => (x && x.constructor === Promise)? setPromiseState(uid,o,x): (x || {}))))
+    }
+    else newState = evalout;
     if(debug) console.log(i, '<<<<<<<<<<<<< new state bits: ', newState);
     checkTimer(o,newState.Timer);
     o = setObjectState(uid, newState);
