@@ -111,7 +111,7 @@ export default class Forest extends Component {
     return value;
   }
 
-  onChange = (name, value) => {
+  onChange(name, value){
     core.setObjectState(this.userStateUID, { [name]: value });
   }
 
