@@ -66,18 +66,20 @@ function doGet(url){
   return fetch(url).then(res => res.json());
 }
 
+const pendingWSpackets = {};
+
 function doPost(o){
   const uid = o.Notifying;
-  o.Notify.unshift(uid);
-  const data = _.omit(o, core.localProps);
   if(core.isURL(uid)){
     console.log('not posting to peer yet');
   }
   else{
+    o.Notify.unshift(uid);
+    const packet = JSON.stringify(_.omit(o, core.localProps));
     const notifyUID = uid2notify[uid];
-    const ws = notify2ws[notifyUID];
-    if(!ws) return;
-    ws.send(JSON.stringify(data));
+    if(!pendingWSpackets[notifyUID]) pendingWSpackets[notifyUID] = [];
+    pendingWSpackets[notifyUID].push(packet);
+    wsFlush(notifyUID);
   }
 }
 
@@ -87,14 +89,27 @@ function wsInit(config){
     ws.on('message', (data) => {
       const o = JSON.parse(data);
       if(o.notifyUID){
+        console.log('ws init:', o);
         notify2ws[o.notifyUID]=ws;
-        console.log('initialised:', o);
+        wsFlush(o.notifyUID);
       }
       else{
-        console.log('ws incoming json', o);
+        console.log('ws incoming json:', o);
       }
     });
   });
+}
+
+function wsFlush(notifyUID){
+  const ws = notify2ws[notifyUID];
+  if(!ws){
+    console.log('websocket not found', notifyUID);
+    return;
+  }
+  let packet;
+  while((packet=(pendingWSpackets[notifyUID]||[]).shift())){
+    ws.send(packet);
+  }
 }
 
 core.setNetwork({ doGet, doPost });
