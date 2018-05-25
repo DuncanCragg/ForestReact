@@ -186,14 +186,14 @@ function setPromiseState(uid, o, p){
   return {};
 }
 
-function doEvaluate(uid) {
+function doEvaluate(uid, params) {
   var o = objects[uid];
   if(!o || !o.Evaluator || typeof o.Evaluator !== 'function') return;
   const reactnotify = o.ReactNotify;
   for(var i=0; i<4; i++){
     if(debug) console.log(i, '>>>>>>>>>>>>> ', object(uid, '.'));
     if(debug) console.log(i, '>>>>>>>>>>>>> ', object(uid, 'userState.'));
-    const evalout = o.Evaluator(object.bind(null, uid));
+    const evalout = o.Evaluator(object.bind(null, uid), params);
     if(!evalout){ console.error('no eval output for', uid, o); return; }
     let newState;
     if(evalout.constructor === Array){
@@ -208,6 +208,10 @@ function doEvaluate(uid) {
   if(reactnotify) reactnotify();
 }
 
+function runEvaluator(uid, params){
+  doEvaluate(uid, params);
+}
+
 export default {
   makeUID,
   spawnObject,
@@ -216,6 +220,7 @@ export default {
   setObjectState,
   object,
   doEvaluate,
+  runEvaluator,
   objects,
   setPersistence,
   setNetwork,

@@ -67,6 +67,10 @@ export default class Forest extends Component {
     return core.spawnObject(o);
   }
 
+  static runEvaluator(uid, params){
+    core.runEvaluator(uid, params);
+  }
+
   UID;
   userStateUID;
 
