@@ -141,11 +141,15 @@ function toMongo(scope, match){
   return Object.assign({}, ...Object.keys(match).map(k => ({[k]: toMongoProp(k,match[k])})));
 }
 
-function query(collectionName, scope, match){
+function getInlineVals(o, inline){
+  return Object.assign({}, ...inline.map(k => o[k] && { [k]: o[k] }), { More: o.UID })
+}
+
+function query(collectionName, scope, query){
   return forestdb.collection(collectionName)
-    .find(toMongo(scope, match))
+    .find(toMongo(scope, query.match))
     .toArray()
-    .then(r => r.map(o => o.UID))
+    .then(r => r.map(o => query.inline? getInlineVals(o, query.inline): o.UID))
     .catch(e => console.error(e));
 }
 

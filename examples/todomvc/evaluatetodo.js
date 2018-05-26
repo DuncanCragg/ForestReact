@@ -27,9 +27,9 @@ function evalTodo(object){
                                                    parent: object('UID')
                                                  })])
                                              },
-   !todoSubmitted                         && { todos: object('todos', {deleted: false})},
-    true                                  && { activeTodos:    object('todos', {completed: false}),
-                                               completedTodos: object('todos', {completed: true}) },
+   !todoSubmitted                         && { todos:          object('todos', { match: { deleted:   false }})},
+    true                                  && { activeTodos:    object('todos', { match: { completed: false }}),
+                                               completedTodos: object('todos', { match: { completed: true  }})},
     true                                  && { clearCompleted: object('userState.clearCompleted') },
     true                                  && { toggleAll: object('activeTodos') == null || object('activeTodos').length == 0 },
     true                                  && { creating: object('userState.newTodo-submitted') },

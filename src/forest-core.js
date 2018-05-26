@@ -114,7 +114,7 @@ function cacheQuery(o, path, query){
   const scope = o.list;
   if(scope.includes('local') || scope.includes('remote')){
     const is = o.is.split(' ')[0];
-    return persistence.query(is, scope, query.match);
+    return persistence.query(is, scope, query);
   }
   return new Promise();
 }
