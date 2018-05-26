@@ -109,19 +109,20 @@ function isURL(uid){
 
 var fetching = {};
 
-function cacheQuery(o, path, match){
+function cacheQuery(o, path, query){
   if(!persistence) return new Promise();
   const scope = o.list;
   if(scope.includes('local') || scope.includes('remote')){
     const is = o.is.split(' ')[0];
-    return persistence.query(is, scope, match);
+    return persistence.query(is, scope, query.match);
   }
   return new Promise();
 }
 
-function object(u,p,m) { const r = ((uid, path, match)=>{
+function object(u,p,q) { const r = ((uid, path, query)=>{
   const o = objects[uid];
-  if(o.is.indexOf('cache list') !== -1 && path === 'list' && match) return cacheQuery(o, path, match);
+  const hasMatch = (query && query.constructor === Object && query.match)
+  if(o.is.indexOf('cache list') !== -1 && path === 'list' && hasMatch) return cacheQuery(o, path, query);
   if(path==='.') return o;
   const pathbits = path.split('.');
   if(pathbits.length==1){
@@ -129,16 +130,15 @@ function object(u,p,m) { const r = ((uid, path, match)=>{
     const val = o[path];
     if(val == null) return null;
     if(val.constructor === Array){
-      if(match == null || match.constructor !== Object) return val;
-      return val.filter(v => {
+      return !hasMatch? val: val.filter(v => {
         if(v.constructor !== String) return false;
         const o = objects[v];
         if(!o) return false;
         setNotify(o,uid);
-        return Object.keys(match).every(k => o[k] === match[k]);
+        return Object.keys(query.match).every(k => o[k] === query.match[k]);
       });
     }
-    return (match == null || val == match)? val: null;
+    return (!hasMatch || val == query.match)? val: null;
   }
   let c=o;
   for(var i=0; i<pathbits.length; i++){
@@ -162,8 +162,8 @@ function object(u,p,m) { const r = ((uid, path, match)=>{
       }
     }
   }
-  })(u,p,m);
-  // if(debug) console.log('object',objects[u],'path',p,'match',m,'=>',r);
+  })(u,p,q);
+  // if(debug) console.log('object',objects[u],'path',p,'query',q,'=>',r);
   return r;
 }
 
