@@ -131,7 +131,7 @@ function persist(o){
 }
 
 function toMongoProp(key, val){
-  if(key==='time' && val.length===3 && val[1]==='..'){
+  if(val.length===3 && val[1]==='..'){
     return { $gt: val[0], $lt: val[2] };
   }
   return val;
