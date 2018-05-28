@@ -3,6 +3,8 @@ import _ from 'lodash';
 
 const debug = false;
 
+const notifyUID = makeUID();
+
 const localProps = ['Notifying', 'Alerted', 'Timer', 'TimerId', 'Evaluator', 'ReactNotify', 'userState'];
 
 function makeUID(){
@@ -213,6 +215,7 @@ function runEvaluator(uid, params){
 }
 
 export default {
+  notifyUID,
   makeUID,
   spawnObject,
   storeObject,

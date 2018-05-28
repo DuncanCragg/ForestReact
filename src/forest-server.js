@@ -87,14 +87,15 @@ function wsInit(config){
   const wss = new WebSocket.Server(config);
   wss.on('connection', (ws) => {
     ws.on('message', (data) => {
-      const o = JSON.parse(data);
-      if(o.notifyUID){
-        console.log('ws init:', o);
-        notify2ws[o.notifyUID]=ws;
-        wsFlush(o.notifyUID);
+      const json = JSON.parse(data);
+      if(json.notifyUID){
+        console.log('ws init:', json);
+        notify2ws[json.notifyUID]=ws;
+        ws.send(JSON.stringify({ notifyUID: core.notifyUID }));
+        wsFlush(json.notifyUID);
       }
       else{
-        console.log('ws incoming json:', o);
+        console.log('ws incoming json:', json);
       }
     });
   });

@@ -5,7 +5,8 @@ import superagent from 'superagent';
 import _ from 'lodash';
 import core from './forest-core';
 
-const notifyUID = core.makeUID();
+const uid2notify = {};
+const notify2ws = {};
 
 function doGet(url){
   return fetch(url).then(res => res.json());
@@ -16,7 +17,7 @@ function doPost(o){
   const uid = o.Notifying;
   return superagent.post(uid)
     .timeout({ response: 9000, deadline: 10000 })
-    .set('Notify', notifyUID)
+    .set('Notify', core.notifyUID)
     .send(data)
     .then(x => x)
     .catch(e => console.error(e));
@@ -30,13 +31,18 @@ export default class ForestCommon extends Component {
     const ws = new WebSocket(`ws://${host}:${port}`);
 
     ws.onopen = () => {
-      ws.send(JSON.stringify({ notifyUID }));
+      ws.send(JSON.stringify({ notifyUID: core.notifyUID }));
     };
 
     ws.onmessage = (message) => {
-      console.log('on message', message.data);
       const json = JSON.parse(message.data);
+      if(json.notifyUID){
+        console.log('ws init:', json);
+        notify2ws[json.notifyUID]=ws;
+      }
+      else
       if(json.UID){
+        console.log('ws incoming object:', json);
         const o = core.objects[json.UID]
         if(o) core.setObjectState(json.UID, json)
         else core.storeObject(json);
