@@ -67,8 +67,8 @@ function cacheObjects(list){
   return list.map(o => spawnObject(o));
 }
 
-function ensureObjectState(uid, observer){
-  const o = objects[uid];
+function ensureObjectState(UID, observer){
+  const o = objects[UID];
   if(o){
     setNotify(o,observer);
     return o;

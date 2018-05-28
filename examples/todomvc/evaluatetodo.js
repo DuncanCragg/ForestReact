@@ -1,6 +1,6 @@
 
 import React from 'react';
-import Forest from '../forest-web';
+import Forest from '../forest-common';
 import TodoApp from './rendertodo';
 
 const uids = Forest.cacheObjects(

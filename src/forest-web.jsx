@@ -25,7 +25,7 @@ export default class Forest extends ForestCommon {
                    type="text"
                    onChange={e => this.onChange(name, e.target.value)}
                    onKeyDown={e => this.onKeyDown(name, e)}
-                   value={this.onRead(name)}
+                   value={this.onRead(name)||''}
                    placeholder={placeholder}
                    autoFocus={true} />
       </span>
@@ -37,8 +37,8 @@ export default class Forest extends ForestCommon {
   }
 
   checkbox(name, {label='', className=''}={}){
-    return label ? <div><input className={className} type="checkbox" onChange={e => this.onChange(name, e.target.checked)} checked={this.onRead(name)} /><span>{label}</span></div>:
-                        <input className={className} type="checkbox" onChange={e => this.onChange(name, e.target.checked)} checked={this.onRead(name)} />;
+    return label ? <div><input className={className} type="checkbox" onChange={e => this.onChange(name, e.target.checked)} checked={!!this.onRead(name)} /><span>{label}</span></div>:
+                        <input className={className} type="checkbox" onChange={e => this.onChange(name, e.target.checked)} checked={!!this.onRead(name)} />;
   }
 }
 

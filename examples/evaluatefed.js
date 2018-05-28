@@ -1,5 +1,6 @@
 
-import Forest from './forest-web';
+import React from 'react';
+import Forest from './forest-common';
 import GuiStack from './renderfed';
 
 const uids = Forest.cacheObjects(
@@ -18,7 +19,7 @@ function evalFed(object){
     addButtonPressed                       && { counter:  object('counter')+1 },
    !object('enableCounting')               && { counter:  0 },
     object('watching')                     && { counter:  object('watching.counter') },
-    true                                   && { topic:    object('userState.topic').toLowerCase() },
+    object('userState.topic')              && { topic:    object('userState.topic').toLowerCase() },
   (!object('giphy') || loadButtonPressed)  && { giphy:   'https://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&tag=' + object('topic') },
     object('giphy.data')                   && { gdata:    object('giphy.data') },
     true                                   && { loading: !object('giphy.data') },
