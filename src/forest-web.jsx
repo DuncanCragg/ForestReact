@@ -1,6 +1,5 @@
 
 import React, { Component } from 'react';
-import { Text, TouchableHighlight } from 'react-native';
 import ReactDOM from 'react-dom';
 import superagent from 'superagent';
 import _ from 'lodash';
@@ -30,11 +29,11 @@ export default class Forest extends Component {
 
   static wsInit(host,port){
     const ws = new WebSocket(`ws://${host}:${port}`);
-    
+
     ws.onopen = () => {
       ws.send(JSON.stringify({ notifyUID }));
     };
-    
+
     ws.onmessage = (message) => {
       console.log('on message', message.data);
       const json = JSON.parse(message.data);
@@ -44,7 +43,7 @@ export default class Forest extends Component {
         else core.storeObject(json);
       }
     };
-    
+
     ws.onerror = (error) => {
     };
   }
@@ -129,18 +128,6 @@ export default class Forest extends Component {
   button(name, {label='', className=''}={}){
 //  core.setObjectState(this.userStateUID, { [name]: false });
     return <button className={className} onMouseDown={e => this.onChange(name, true)} onMouseUp={e => this.onChange(name, false)}>{label}</button>;
-  }
-
-  Button(name, {label='', className='', style=null}={}){
-    return <TouchableHighlight
-             delayPressIn={0}
-             delayLongPress={800}
-             onPressIn={() => this.onChange(name, true)}
-             onLongPress={() => this.onChange(name, true)}
-             onPressOut={() => this.onChange(name, false)}
-           >
-             <Text style={style}>{label}</Text>
-           </TouchableHighlight>
   }
 
   textField(name, {label='', className='', placeholder=''}={}){

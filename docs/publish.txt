@@ -1,6 +1,5 @@
 npm run build && npm run webpack
 test todo
-npm run build
 git gui
 npm version patch
 git push
