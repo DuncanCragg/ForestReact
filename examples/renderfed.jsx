@@ -1,5 +1,5 @@
 
-import Forest from './forest';
+import Forest from './forest-web';
 import React from 'react';
 
 class GuiStack extends Forest {

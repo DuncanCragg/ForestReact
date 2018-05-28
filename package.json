@@ -21,7 +21,7 @@
     "url": "https://github.com/DuncanCragg/forestreact/issues"
   },
   "homepage": "https://github.com/DuncanCragg/forestreact#readme",
-  "main": "lib/forest.js",
+  "main": "lib/forest-web.js",
   "files": [
     "lib/",
     "src/"

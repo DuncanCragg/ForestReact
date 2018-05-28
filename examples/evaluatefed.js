@@ -1,5 +1,5 @@
 
-import Forest from './forest';
+import Forest from './forest-web';
 import GuiStack from './renderfed';
 
 const uids = Forest.cacheObjects(
