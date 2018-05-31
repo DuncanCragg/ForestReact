@@ -120,7 +120,10 @@ core.setNetwork({ doGet, doPost });
 let forestdb;
 
 function updateObject(o){
-  const collectionName = o.is;
+  if(!o.is) return;
+  const collectionName = (o.is.constructor===String)? o.is:
+                        ((o.is.constructor===Array)? o.is.join('-'): null);
+  if(!collectionName) return;
   return forestdb.collection(collectionName)
     .update({ UID: o.UID }, o, { upsert: true })
     .then((result) => { console.log(`updated ${o.UID} in ${collectionName}`); })
@@ -146,8 +149,8 @@ function getInlineVals(o, inline){
   return Object.assign({}, ...inline.map(k => o[k] && { [k]: o[k] }), { More: o.UID })
 }
 
-function query(collectionName, scope, query){
-  return forestdb.collection(collectionName)
+function query(is, scope, query){
+  return forestdb.collection(is.join('-'))
     .find(toMongo(scope, query.match))
     .toArray()
     .then(r => r.map(o => query.inline? getInlineVals(o, query.inline): o.UID))

@@ -111,20 +111,22 @@ function isURL(uid){
 
 var fetching = {};
 
+const isQueryableCacheListLabels = ['queryable', 'cache', 'list'];
+
 function cacheQuery(o, path, query){
   if(!persistence) return new Promise();
   const scope = o.list;
   if(scope.includes('local') || scope.includes('remote')){
-    const is = o.is.split(' ')[0];
-    return persistence.query(is, scope, query);
+    return persistence.query(o.is.filter(s => !isQueryableCacheListLabels.includes(s)), scope, query);
   }
   return new Promise();
 }
 
 function object(u,p,q) { const r = ((uid, path, query)=>{
   const o = objects[uid];
-  const hasMatch = (query && query.constructor === Object && query.match)
-  if(o.is.indexOf('cache list') !== -1 && path === 'list' && hasMatch) return cacheQuery(o, path, query);
+  const isQueryableCacheList = o.is && o.is.constructor===Array && isQueryableCacheListLabels.every(s => o.is.includes(s));
+  const hasMatch = query && query.constructor===Object && query.match
+  if(path==='list' && isQueryableCacheList && hasMatch) return cacheQuery(o, path, query);
   if(path==='.') return o;
   const pathbits = path.split('.');
   if(pathbits.length==1){
