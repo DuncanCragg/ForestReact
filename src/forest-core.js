@@ -41,7 +41,7 @@ function setNetwork(n){ network = n; }
 
 function cacheAndStoreObject(o){
   objects[o.UID] = o;
-  if(persistence) persistence.persist(o); // async persistence at the moment
+  if(persistence) persistence.persist(o);
 }
 
 function dumpCache(){

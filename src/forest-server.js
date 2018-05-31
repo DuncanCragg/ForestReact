@@ -119,19 +119,21 @@ core.setNetwork({ doGet, doPost });
 
 let forestdb;
 
-function updateObject(o){
-  if(!o.is) return;
+function saveObject(o){
+  if(!o.is) return Promise.resolve();
   const collectionName = (o.is.constructor===String)? o.is:
                         ((o.is.constructor===Array)? o.is.join('-'): null);
-  if(!collectionName) return;
+  if(!collectionName) return Promise.resolve();
   return forestdb.collection(collectionName)
     .update({ UID: o.UID }, o, { upsert: true })
-    .then((result) => { console.log(`updated ${o.UID} in ${collectionName}`); })
-    .catch((err) => { console.log(err, `Failed to insert ${o.UID} in ${collectionName}`); });
+    .then((result) => { console.log(`updated ${o.UID} in ${collectionName}`); return result.result })
+    .catch((err) => { console.log(err, `Failed to insert ${o.UID} in ${collectionName}`); return err });
 }
 
+const toSave = {};
+
 function persist(o){
-  return updateObject(o);
+  toSave[o.UID]=o.UID;
 }
 
 function toMongoProp(key, val){
@@ -157,22 +159,37 @@ function query(is, scope, query){
     .catch(e => console.error(e));
 }
 
+function persistenceFlush(){
+  return Promise.all(Object.keys(toSave).map(uid=>{
+    const o=core.objects[uid]
+    delete toSave[uid];
+    return saveObject(o);
+  }))
+}
+
+function persistenceInit(mongoHostPort, saveInterval){
+  return mongodb.MongoClient.connect(mongoHostPort)
+    .then((client) => {
+      forestdb = client.db('forest');
+      setInterval(()=>{ persistenceFlush().then((a)=> (a.length && console.log(a)))}, saveInterval)
+    });
+}
+
 core.setPersistence({ persist, query });
 
 // --------------------------------
 
-function init(port, wsPort){
+function init({httpPort, wsPort, mongoHostPort, saveInterval}){
   return new Promise((resolve, reject) => {
-    mongodb.MongoClient.connect('mongodb://localhost:27017/')
-    .then((client) => {
-      forestdb = client.db('forest');
-      app.listen(port, ()=>{
-        console.log(`Server started on port ${port}`);
-        wsInit({ port: wsPort });
-        resolve();
-      }).on('error', (err) => reject(err));
-    })
-    .catch((err) => reject(err));
+    persistenceInit(mongoHostPort, saveInterval)
+      .then(() => {
+        app.listen(httpPort, ()=>{
+          console.log(`Server started on port ${httpPort}`);
+          wsInit({ port: wsPort });
+          resolve();
+        }).on('error', (err) => reject(err));
+      })
+      .catch((err) => reject(err));
   });
 }
 
