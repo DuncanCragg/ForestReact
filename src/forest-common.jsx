@@ -43,7 +43,7 @@ export default class ForestCommon extends Component {
       else
       if(json.UID){
         console.log('ws incoming object:', json);
-        const o = core.objects[json.UID]
+        const o = core.getObject(json.UID)
         if(o) core.setObjectState(json.UID, json)
         else core.storeObject(json);
       }
@@ -75,13 +75,17 @@ export default class ForestCommon extends Component {
     core.runEvaluator(uid, params);
   }
 
+  static getObject(uid){
+    return core.getObject(uid);
+  }
+
   UID;
   userStateUID;
 
   constructor(props) {
     super(props)
     if(props.uid){
-      this.state = core.objects[props.uid];
+      this.state = core.getObject(props.uid);
       this.UID = props.uid;
     }
     else{

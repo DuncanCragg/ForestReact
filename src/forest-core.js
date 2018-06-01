@@ -32,6 +32,10 @@ function difference(a, b) {
 
 const objects = {};
 
+function getObject(uid){
+  return objects[uid]
+}
+
 let persistence = null;
 let network = null;
 
@@ -226,7 +230,7 @@ export default {
   object,
   doEvaluate,
   runEvaluator,
-  objects,
+  getObject,
   setPersistence,
   setNetwork,
   localProps,
