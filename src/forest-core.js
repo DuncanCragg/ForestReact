@@ -115,14 +115,14 @@ function setObjectState(uid, update){
   if(!uid) return null
   const o=objects[uid]
   if(!o) return null;
-  const newState = Object.assign({}, o, update);
-  const changed = !_.isEqual(o, newState);
+  const p = Object.assign({}, o, update);
+  const changed = !_.isEqual(o, p);
   if(!changed) return null;
-  if(debug) console.log(uid, 'changed: ', difference(o, newState))
-  cacheAndStoreObject(newState);
-  notifyObservers(o);
-  if(o.Notifying) network && network.doPost(o);
-  return newState;
+  if(debug) console.log(uid, 'changed: ', difference(o, p))
+  cacheAndStoreObject(p);
+  notifyObservers(p);
+  if(p.Notifying) network && network.doPost(p);
+  return p;
 }
 
 function isURL(uid){

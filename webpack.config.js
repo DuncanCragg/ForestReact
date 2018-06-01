@@ -1,9 +1,12 @@
 const path = require('path');
 
 module.exports = {
-  entry: './lib/todomvc/evaluatetodo.js',
+  entry: {
+    todo: './lib/todomvc/evaluatetodo.js',
+    fed: './lib/evaluatefed.js',
+  },
   output: {
-    filename: 'todobundle.js',
-    path: path.resolve(__dirname, 'lib')
+    path: path.resolve(__dirname, 'lib'),
+    filename: '[name]bundle.js',
   }
 };
