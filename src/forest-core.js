@@ -45,7 +45,7 @@ function setNetwork(n){ network = n; }
 
 function cacheAndStoreObject(o){
   objects[o.UID] = o;
-  if(persistence) persistence.persist(o);
+  if(persistence && persistence.persist) persistence.persist(o);
 }
 
 function dumpCache(){
@@ -73,6 +73,8 @@ function cacheObjects(list){
   return list.map(o => spawnObject(o));
 }
 
+var fetching = {};
+
 function ensureObjectState(UID, observer){
   const o = objects[UID];
   if(o){
@@ -80,6 +82,14 @@ function ensureObjectState(UID, observer){
     return o;
   }
   cacheAndStoreObject({ UID, Notify: [ observer ] });
+  if(isURL(UID)){
+    const url=UID;
+    if(!fetching[url]){
+      fetching[url]=true;
+      network && network.doGet(url)
+       .then(json => { fetching[url]=false; setObjectState(url, json) });
+    }
+  }
   return null;
 }
 
@@ -112,8 +122,6 @@ function setObjectState(uid, update){
 function isURL(uid){
   return /^https?:\/\//.test(uid);
 }
-
-var fetching = {};
 
 const isQueryableCacheListLabels = ['queryable', 'cache', 'list'];
 
@@ -157,17 +165,7 @@ function object(u,p,q) { const r = ((uid, path, query)=>{
     if(val.constructor === Object){ c = val; continue; }
     if(val.constructor === String){
       c = ensureObjectState(val, uid);
-      if(!c){
-        if(isURL(val)){
-          const url=val;
-          if(!fetching[url]){
-            fetching[url]=true;
-            network && network.doGet(url)
-             .then(json => { fetching[url]=false; setObjectState(url, json) });
-          }
-        }
-        return null;
-      }
+      if(!c) return null;
     }
   }
   })(u,p,q);
