@@ -231,7 +231,6 @@ export default {
   cacheObjects,
   setObjectState,
   object,
-  doEvaluate,
   runEvaluator,
   getObject,
   setPersistence,

@@ -101,7 +101,7 @@ export default class ForestCommon extends Component {
 
   mounted = false;
 
-  componentDidMount() { this.mounted = true; core.doEvaluate(this.UID); }
+  componentDidMount() { this.mounted = true; core.runEvaluator(this.UID); }
 
   componentWillUnmount() { this.mounted = false; }
 
