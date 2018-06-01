@@ -1,11 +1,23 @@
 
 import React, { Component } from 'react';
-import { Text, TouchableHighlight } from 'react-native';
+import { Text, TouchableHighlight, AsyncStorage } from 'react-native';
 import ReactDOM from 'react-dom';
 import superagent from 'superagent';
 import _ from 'lodash';
 import core from './forest-core';
 import ForestCommon from './forest-common';
+
+function persist(o){
+  return AsyncStorage.setItem(o.UID, JSON.stringify(o));
+}
+
+function fetch(uid){
+  return AsyncStorage.getItem(uid).then(s=>JSON.parse(s))
+}
+
+function query(is, scope, query){ }
+
+core.setPersistence({ persist, fetch, query });
 
 export default class Forest extends ForestCommon {
 
