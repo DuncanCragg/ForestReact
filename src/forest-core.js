@@ -33,7 +33,12 @@ function difference(a, b) {
 const objects = {};
 
 function getObject(uid){
-  return objects[uid]
+  const o = objects[uid]
+  if(o || !(persistence && persistence.fetch)) return Promise.resolve(o)
+  return persistence.fetch(uid).then(o=>{
+    objects[uid] = o;
+    return o
+  })
 }
 
 let persistence = null;
@@ -98,14 +103,12 @@ function setNotify(o,uid){
 }
 
 function notifyObservers(o){
-  o.Notify.map(uid => setTimeout(
-    ()=>{
-      const n = objects[uid];
-      if(!n) return;
-      n.Alerted=o.UID;
-      doEvaluate(uid);
-      delete n.Alerted;
-    }, 1));
+  o.Notify.map(uid => getObject(uid).then(n=>{
+    if(!n) return;
+    n.Alerted=o.UID;
+    doEvaluate(uid);
+    delete n.Alerted;
+  }));
 }
 
 function setObjectState(uid, update){
@@ -220,7 +223,7 @@ function doEvaluate(uid, params) {
 }
 
 function runEvaluator(uid, params){
-  doEvaluate(uid, params);
+  getObject(uid).then(()=>doEvaluate(uid, params));
 }
 
 export default {

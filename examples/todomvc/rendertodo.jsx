@@ -10,6 +10,7 @@ function pluralize(count, word) {
 class TodoApp extends Forest {
   render(){
     const all       = this.object('todos');
+    if(!all) return null;
     const active    = this.object('activeTodos') || [];
     const completed = this.object('completedTodos') || [];
 

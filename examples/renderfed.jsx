@@ -4,6 +4,7 @@ import React from 'react';
 
 class GuiStack extends Forest {
   render(){
+    if(!this.object('list')) return null;
     return (
       <div>
         <div>{this.object('name')}</div>

@@ -43,9 +43,10 @@ export default class ForestCommon extends Component {
       else
       if(json.UID){
         console.log('ws incoming object:', json);
-        const o = core.getObject(json.UID)
-        if(o) core.setObjectState(json.UID, json)
-        else core.storeObject(json);
+        core.getObject(json.UID).then(o=>{
+          if(o) core.setObjectState(json.UID, json)
+          else core.storeObject(json);
+        })
       }
     };
 
@@ -84,24 +85,22 @@ export default class ForestCommon extends Component {
 
   constructor(props) {
     super(props)
-    if(props.uid){
-      this.state = core.getObject(props.uid);
+    core.getObject(props.uid).then(o=>{
+      this.state = o;
       this.UID = props.uid;
-    }
-    else{
-      this.state = {};
-      this.UID = undefined;
-    }
-    this.userStateUID = core.spawnObject({ 'is': ['user', 'state'] });
-    this.state.userState = this.userStateUID;  // hardwiring from obj to react
-    this.object = this.object.bind(this);
-    this.notify = this.notify.bind(this);
-    this.state.ReactNotify = this.notify;      // hardwiring from obj to react
+      this.userStateUID = core.spawnObject({ 'is': ['user', 'state'] });
+      this.state.userState = this.userStateUID;  // hardwiring from obj to react
+      this.object = this.object.bind(this);
+      this.notify = this.notify.bind(this);
+      this.state.ReactNotify = this.notify;      // hardwiring from obj to react
+      core.runEvaluator(this.UID)
+      this.notify()
+    })
   }
 
   mounted = false;
 
-  componentDidMount() { this.mounted = true; core.runEvaluator(this.UID); }
+  componentDidMount() { this.mounted = true; }
 
   componentWillUnmount() { this.mounted = false; }
 

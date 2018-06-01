@@ -161,9 +161,10 @@ function query(is, scope, query){
 
 function persistenceFlush(){
   return Promise.all(Object.keys(toSave).map(uid=>{
-    const o=core.getObject(uid)
-    delete toSave[uid];
-    return saveObject(o);
+    return core.getObject(uid).then(o=>{
+      delete toSave[uid];
+      return saveObject(o);
+    })
   }))
 }
 
