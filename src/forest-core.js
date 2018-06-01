@@ -109,13 +109,16 @@ function notifyObservers(o){
 }
 
 function setObjectState(uid, update){
-  const newState = Object.assign({}, objects[uid], update);
-  const changed = !_.isEqual(objects[uid], newState);
+  if(!uid) return null
+  const o=objects[uid]
+  if(!o) return null;
+  const newState = Object.assign({}, o, update);
+  const changed = !_.isEqual(o, newState);
   if(!changed) return null;
-  if(debug) console.log(uid, 'changed: ', difference(objects[uid], newState))
+  if(debug) console.log(uid, 'changed: ', difference(o, newState))
   cacheAndStoreObject(newState);
-  notifyObservers(objects[uid]);
-  if(objects[uid].Notifying) network && network.doPost(objects[uid]);
+  notifyObservers(o);
+  if(o.Notifying) network && network.doPost(o);
   return newState;
 }
 
@@ -135,7 +138,9 @@ function cacheQuery(o, path, query){
 }
 
 function object(u,p,q) { const r = ((uid, path, query)=>{
+  if(!uid || !path) return null;
   const o = objects[uid];
+  if(!o) return null;
   const isQueryableCacheList = o.is && o.is.constructor===Array && isQueryableCacheListLabels.every(s => o.is.includes(s));
   const hasMatch = query && query.constructor===Object && query.match
   if(path==='list' && isQueryableCacheList && hasMatch) return cacheQuery(o, path, query);
