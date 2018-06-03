@@ -80,21 +80,27 @@ function cacheObjects(list){
 
 var fetching = {};
 
-function ensureObjectState(UID, observer){
+function ensureObjectState(UID, obsuid){
   const o = objects[UID];
   if(o){
-    setNotify(o,observer);
+    setNotify(o,obsuid);
     return o;
   }
-  cacheAndStoreObject({ UID, Notify: [ observer ] });
-  if(isURL(UID)){
-    const url=UID;
-    if(!fetching[url]){
-      fetching[url]=true;
-      network && network.doGet(url)
-       .then(json => { fetching[url]=false; setObjectState(url, json) });
+  getObject(UID).then(o=>{
+    if(o){
+      setNotify(o,obsuid);
+      notifyObservers(o);
     }
-  }
+    else if(isURL(UID)){
+      cacheAndStoreObject({ UID, Notify: [ obsuid ] });
+      const url=UID;
+      if(!fetching[url]){
+        fetching[url]=true;
+        network && network.doGet(url)
+         .then(json => { fetching[url]=false; setObjectState(url, json) });
+      }
+    }
+  })
   return null;
 }
 
