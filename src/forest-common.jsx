@@ -73,7 +73,7 @@ export default class ForestCommon extends Component {
   }
 
   static runEvaluator(uid, params){
-    core.runEvaluator(uid, params);
+    return core.runEvaluator(uid, params);
   }
 
   static getObject(uid){

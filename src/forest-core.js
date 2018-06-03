@@ -202,13 +202,13 @@ function setPromiseState(uid, o, p){
 
 function doEvaluate(uid, params) {
   var o = objects[uid];
-  if(!o || !o.Evaluator || typeof o.Evaluator !== 'function') return;
+  if(!o || !o.Evaluator || typeof o.Evaluator !== 'function') return o;
   const reactnotify = o.ReactNotify;
   for(var i=0; i<4; i++){
     if(debug) console.log(i, '>>>>>>>>>>>>> ', object(uid, '.'));
     if(debug) console.log(i, '>>>>>>>>>>>>> ', object(uid, 'userState.'));
     const evalout = o.Evaluator(object.bind(null, uid), params);
-    if(!evalout){ console.error('no eval output for', uid, o); return; }
+    if(!evalout){ console.error('no eval output for', uid, o); return o; }
     let newState;
     if(evalout.constructor === Array){
       newState = Object.assign({}, ...(evalout.map(x => (x && x.constructor === Promise)? setPromiseState(uid,o,x): (x || {}))))
@@ -220,10 +220,11 @@ function doEvaluate(uid, params) {
     if(!o) break;
   }
   if(reactnotify) reactnotify();
+  return o;
 }
 
 function runEvaluator(uid, params){
-  getObject(uid).then(()=>doEvaluate(uid, params));
+  return getObject(uid).then(()=>doEvaluate(uid, params));
 }
 
 export default {
