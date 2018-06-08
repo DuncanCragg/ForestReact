@@ -54,9 +54,8 @@ app.post('/*',
     if(!o || !o.UID) next();
     uid2notify[o.UID] = req.headers.notify;
     const path = req.originalUrl.substring(1);
-    const Notify = (path==='notify')? null: [path];
-    const addNotify = !(o.Notify && o.Notify.length) && Notify;
-    core.storeObject(!addNotify? o: Object.assign(o, { Notify }));
+    const Notify = ((path==='notify')? []: [path]).concat(o.Notify || []);
+    core.storeObject(Object.assign(o, { Notify }));
     res.json({ });
     next();
   }
