@@ -1,9 +1,12 @@
+
 npm run build && npm run webpack
-test todo
+# test todo and fed
 git gui
+
 npm version patch
 git push
 git push origin v0.0.6
 gitk
-quit editor
+
+#quit editor
 npm publish
