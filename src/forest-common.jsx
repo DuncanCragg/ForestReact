@@ -27,7 +27,10 @@ core.setNetwork({ doGet, doPost });
 
 export default class ForestCommon extends Component {
 
+  static wsRetry=1000
+
   static wsInit(host,port){
+
     const ws = new WebSocket(`ws://${host}:${port}`);
 
     ws.onopen = () => {
@@ -50,7 +53,12 @@ export default class ForestCommon extends Component {
       }
     };
 
-    ws.onerror = (error) => {
+    ws.onerror = (e) => {
+      setTimeout(()=>{
+        this.wsInit(host, port)
+        this.wsRetry=Math.min(Math.floor(this.wsRetry*1.5), 10000)
+        console.log('retry WebSocket in..', this.wsRetry/1000)
+      }, this.wsRetry);
     };
   }
 
