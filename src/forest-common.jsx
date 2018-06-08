@@ -9,18 +9,20 @@ const uid2notify = {};
 const notify2ws = {};
 
 function doGet(url){
-  return fetch(url).then(res => res.json());
+  return fetch(url)
+    .then(res => res.json())
+    .catch(e => console.error('doGet', e));
 }
 
 function doPost(o){
   const data = _.omit(o, core.localProps);
-  const uid = o.Notifying;
-  return superagent.post(uid)
+  const url = o.Notifying;
+  return superagent.post(url)
     .timeout({ response: 9000, deadline: 10000 })
     .set('Notify', core.notifyUID)
     .send(data)
     .then(x => x)
-    .catch(e => console.error(e));
+    .catch(e => console.error('doPost',e,url,data));
 }
 
 core.setNetwork({ doGet, doPost });
