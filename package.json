@@ -22,10 +22,7 @@
   },
   "homepage": "https://github.com/DuncanCragg/forestreact#readme",
   "main": "lib/forest-web.js",
-  "files": [
-    "lib/",
-    "src/"
-  ],
+  "files": [ "lib/" ],
   "scripts": {
     "build": "babel src examples --out-dir lib --presets es2015 --plugins add-module-exports,transform-react-jsx,transform-class-properties",
     "webpack": "webpack --config webpack.config.js",
