@@ -155,27 +155,34 @@ function object(u,p,q) { const r = ((uid, path, query)=>{
   if(path==='list' && isQueryableCacheList && hasMatch) return cacheQuery(o, path, query);
   if(path==='.') return o;
   const pathbits = path.split('.');
-  if(pathbits.length==1){
-    if(path === 'Timer') return o.Timer || 0;
-    const val = o[path];
-    if(val == null) return null;
-    if(val.constructor === Array){
-      return !hasMatch? val: val.filter(v => {
-        if(v.constructor !== String) return false;
-        const o = objects[v];
-        if(!o) return false;
-        setNotify(o,uid);
-        return Object.keys(query.match).every(k => o[k] === query.match[k]);
-      });
-    }
-    return (!hasMatch || val == query.match)? val: null;
-  }
   let c=o;
   for(var i=0; i<pathbits.length; i++){
     if(pathbits[i]==='') return c;
+    if(pathbits[i]==='Timer') return c.Timer || 0;
     const val = c[pathbits[i]];
     if(val == null) return null;
-    if(i==pathbits.length-1) return val;
+    if(i==pathbits.length-1){
+      if(!hasMatch) return val;
+      if(val.constructor === Array){
+        if(query.match.constructor===Array){
+          return (query.match.length===val.length && query.match.every((q,j) => q==val[j]) && val) || null;
+        }
+        return val.filter(v => {
+          if(v===query.match) return true;
+          if(v.constructor === String){
+            const o = objects[v];
+            if(!o) return false;
+            setNotify(o,uid);
+            return Object.keys(query.match).every(k => o[k] === query.match[k]);
+          }
+          if(v.constructor===Object){
+            return Object.keys(query.match).every(k => v[k] === query.match[k]);
+          }
+          return false;
+        });
+      }
+      return val==query.match? val: null;
+    }
     if(val.constructor === Object){ c = val; continue; }
     if(val.constructor === String){
       c = ensureObjectState(val, uid);
