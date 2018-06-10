@@ -89,7 +89,7 @@ function ensureObjectState(UID, obsuid){
   getObject(UID).then(o=>{
     if(o){
       setNotify(o,obsuid);
-      notifyObservers(o);
+      //notifyObservers(o);
     }
     else if(isURL(UID)){
       cacheAndStoreObject({ UID, Notify: [ obsuid ] });
@@ -105,7 +105,10 @@ function ensureObjectState(UID, obsuid){
 }
 
 function setNotify(o,uid){
-  if(o.Notify.indexOf(uid) === -1) o.Notify.push(uid);
+  if(o.Notify.indexOf(uid) === -1){
+    o.Notify.push(uid);
+    cacheAndStoreObject(o)
+  }
 }
 
 function notifyObservers(o){
@@ -170,6 +173,7 @@ function object(u,p,q) { const r = ((uid, path, query)=>{
         return val.filter(v => {
           if(v===query.match) return true;
           if(v.constructor === String){
+            // TODO: ensureObjectState?
             const o = objects[v];
             if(!o) return false;
             setNotify(o,uid);
