@@ -32,7 +32,8 @@ function difference(a, b) {
 
 const objects = {};
 
-function getObject(uid){
+function getObject(u){
+  const uid=toUID(u);
   const o = objects[uid]
   if(o || !(persistence && persistence.fetch)) return Promise.resolve(o)
   return persistence.fetch(uid).then(o=>{
@@ -112,10 +113,10 @@ function setNotify(o,uid){
 }
 
 function notifyObservers(o){
-  o.Notify.map(uid => getObject(uid).then(n=>{
+  o.Notify.map(u => getObject(u).then(n=>{
     if(!n) return;
     n.Alerted=o.UID;
-    doEvaluate(uid);
+    doEvaluate(toUID(u));
     delete n.Alerted;
   }));
 }
@@ -136,6 +137,13 @@ function setObjectState(uid, update){
 
 function isURL(uid){
   return /^https?:\/\//.test(uid);
+}
+
+function toUID(u){
+  if(!isURL(u)) return u;
+  const s=u.indexOf('uid-');
+  if(s=== -1) return u;
+  return u.substring(s);
 }
 
 const isQueryableCacheListLabels = ['queryable', 'cache', 'list'];
