@@ -6,6 +6,8 @@ import bodyParser from 'body-parser';
 import mongodb from 'mongodb';
 import core from './forest-core';
 
+let serverHost=null;
+let serverPort=0;
 
 // --------------------------------
 
@@ -34,12 +36,20 @@ app.options("/*",
   }
 );
 
-app.get('/',
+function prefixUIDs(o){
+  const s = JSON.stringify(_.omit(o, core.localProps));
+  return s.replace(/uid-/g, 'http://${serverHost}:${serverPort}/uid-')
+}
+
+app.get('/*',
   log,
   CORS,
   (req, res, next) => {
-    res.json({ mango: 'http://localhost:8180/banana/' });
-    next();
+    const uid = req.originalUrl.substring(1);
+    core.getObject(uid)
+      .then(o => res.json(JSON.parse(prefixUIDs(o))))
+      .then(()=>next())
+      .catch(e => console.error(e));
   },
 );
 
@@ -76,7 +86,7 @@ function doPost(o){
   }
   else{
     o.Notify.unshift(uid);
-    const packet = JSON.stringify(_.omit(o, core.localProps));
+    const packet = prefixUIDs(o)
     const notifyUID = uid2notify[uid];
     if(!pendingWSpackets[notifyUID]) pendingWSpackets[notifyUID] = [];
     pendingWSpackets[notifyUID].push(packet);
@@ -181,7 +191,8 @@ core.setPersistence({ persist, query });
 
 // --------------------------------
 
-function init({httpPort, wsPort, mongoHostPort, saveInterval}){
+function init({httpHost, httpPort, wsPort, mongoHostPort, saveInterval}){
+  serverHost=httpHost; serverPort=httpPort;
   return new Promise((resolve, reject) => {
     persistenceInit(mongoHostPort, saveInterval)
       .then(() => {
