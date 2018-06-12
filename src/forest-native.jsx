@@ -8,7 +8,7 @@ import core from './forest-core';
 import ForestCommon from './forest-common';
 
 function persist(o){
-  return AsyncStorage.setItem(o.UID, JSON.stringify(o));
+  return AsyncStorage.setItem(core.toUID(o.UID), JSON.stringify(o));
 }
 
 function fetch(uid){

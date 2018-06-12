@@ -259,6 +259,7 @@ function runEvaluator(uid, params){
 export default {
   notifyUID,
   makeUID,
+  toUID,
   spawnObject,
   storeObject,
   cacheObjects,

@@ -144,7 +144,7 @@ function saveObject(o){
 const toSave = {};
 
 function persist(o){
-  toSave[o.UID]=o.UID;
+  toSave[core.toUID(o.UID)]=true;
 }
 
 function toMongoProp(key, val){
