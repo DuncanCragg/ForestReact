@@ -11,8 +11,14 @@ let serverPort=0;
 
 // --------------------------------
 
-const log = (req, res, next) => {
-  console.log(req.method, req.originalUrl, '\n', req.body);
+const logRequest = (req, res, next) => {
+  if(req.method==='POST') console.log(req.method, req.originalUrl, '\n', req.body);
+  else                    console.log(req.method, req.originalUrl);
+  next();
+};
+
+const logResponse = (req, res, next) => {
+  console.log(res.statusCode)
   next();
 };
 
@@ -29,11 +35,12 @@ const app = express();
 app.use(bodyParser.json());
 
 app.options("/*",
-  log,
+  logRequest,
   CORS,
   (req, res, next) => {
     res.sendStatus(200);
-  }
+  },
+  logResponse,
 );
 
 function prefixUIDs(o){
@@ -42,7 +49,7 @@ function prefixUIDs(o){
 }
 
 app.get('/*',
-  log,
+  logRequest,
   CORS,
   (req, res, next) => {
     const uid = req.originalUrl.substring(1);
@@ -51,13 +58,14 @@ app.get('/*',
       .then(()=>next())
       .catch(e => console.error(e));
   },
+  logResponse,
 );
 
 const uid2notify = {};
 const notify2ws = {};
 
 app.post('/*',
-  log,
+  logRequest,
   CORS,
   (req, res, next) => {
     const o=req.body;
@@ -68,7 +76,8 @@ app.post('/*',
     core.storeObject(Object.assign(o, { Notify }));
     res.json({ });
     next();
-  }
+  },
+  logResponse,
 );
 
 function doGet(url){
