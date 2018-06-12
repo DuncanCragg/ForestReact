@@ -39,6 +39,10 @@ function setNetwork(n){ network = n; }
 
 const objects = {};
 
+function getCachedObject(u){
+  return objects[toUID(u)]
+}
+
 function getObject(u){
   const uid=toUID(u);
   const o = objects[uid]
@@ -50,7 +54,7 @@ function getObject(u){
 }
 
 function cacheAndPersist(o){
-  objects[o.UID] = o;
+  objects[toUID(o.UID)]=o;
   if(persistence && persistence.persist) persistence.persist(o);
 }
 
@@ -82,7 +86,7 @@ function cacheObjects(list){
 var fetching = {};
 
 function ensureObjectState(u, obsuid){
-  const o = objects[u];
+  const o = getCachedObject(u);
   if(o){
     setNotify(o,obsuid);
     return o;
@@ -123,7 +127,7 @@ function notifyObservers(o){
 
 function setObjectState(uid, update){
   if(!uid) return null
-  const o=objects[uid]
+  const o=getCachedObject(uid)
   if(!o) return null;
   const p = Object.assign({}, o, update);
   const changed = !_.isEqual(o, p);
@@ -159,7 +163,7 @@ function cacheQuery(o, path, query){
 
 function object(u,p,q) { const r = ((uid, path, query)=>{
   if(!uid || !path) return null;
-  const o = objects[uid];
+  const o=getCachedObject(uid)
   if(!o) return null;
   const isQueryableCacheList = o.is && o.is.constructor===Array && isQueryableCacheListLabels.every(s => o.is.includes(s));
   const hasMatch = query && query.constructor===Object && query.match
@@ -182,7 +186,7 @@ function object(u,p,q) { const r = ((uid, path, query)=>{
           if(v===query.match) return true;
           if(v.constructor === String){
             // TODO: ensureObjectState?
-            const o = objects[v];
+            const o=getCachedObject(v)
             if(!o) return false;
             setNotify(o,uid);
             return Object.keys(query.match).every(k => o[k] === query.match[k]);
@@ -202,14 +206,14 @@ function object(u,p,q) { const r = ((uid, path, query)=>{
     }
   }
   })(u,p,q);
-  // if(debug) console.log('object',objects[u],'path',p,'query',q,'=>',r);
+  // if(debug) console.log('object',getCachedObject(u),'path',p,'query',q,'=>',r);
   return r;
 }
 
 function checkTimer(o,time){
   if(time && time > 0 && !o.TimerId){
     o.TimerId = setTimeout(() => {
-      objects[o.UID].TimerId = null;
+      getCachedObject(o.UID).TimerId = null;
       setObjectState(o.UID, { Timer: 0 });
       doEvaluate(o.UID);
     }, time);
@@ -226,7 +230,7 @@ function setPromiseState(uid, o, p){
 }
 
 function doEvaluate(uid, params) {
-  var o = objects[uid];
+  var o = getCachedObject(uid);
   if(!o || !o.Evaluator || typeof o.Evaluator !== 'function') return o;
   const reactnotify = o.ReactNotify;
   for(var i=0; i<4; i++){
