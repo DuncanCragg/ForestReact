@@ -17,7 +17,7 @@ function evalTodo(object){
   return Object.assign({},
    !object('userState.newTodo-submitted') && { newTodo: object('userState.newTodo')|| '' },
     todoSubmitted                         && { newTodo: '',
-                                               todos: object('todos').concat([Forest.spawnObject(
+                                               todos: (object('todos')||[]).concat([Forest.spawnObject(
                                                  { Evaluator: evalTodoItem,
                                                    is: 'todoitem',
                                                    title: object('newTodo'),
