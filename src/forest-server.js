@@ -173,6 +173,10 @@ function getInlineVals(o, inline){
   return Object.assign({}, ...inline.map(k => o[k] && { [k]: o[k] }), { More: o.UID })
 }
 
+function fetch(uid){
+  return Promise.resolve({ fix: 'me' })
+}
+
 function query(is, scope, query){
   return forestdb.collection(is.join('-'))
     .find(toMongo(scope, query.match))
@@ -198,7 +202,7 @@ function persistenceInit(mongoHostPort, saveInterval){
     });
 }
 
-core.setPersistence({ persist, query });
+core.setPersistence({ persist, fetch, query });
 
 // --------------------------------
 
