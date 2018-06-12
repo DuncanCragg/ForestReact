@@ -181,24 +181,25 @@ function object(u,p,q) { const r = ((uid, path, query)=>{
       if(!hasMatch) return val;
       if(val.constructor === Array){
         if(query.match.constructor===Array){
-          return (query.match.length===val.length && query.match.every((q,j) => q==val[j]) && val) || null;
+          return (query.match.length <= val.length && query.match.every(q => val.find(v=>valMatch(q,v))) && val) || null;
         }
-        return val.filter(v => {
-          if(v===query.match) return true;
+        const r = val.filter(v => {
+          if(valMatch(v, query.match)) return true;
           if(v.constructor === String){
             // TODO: ensureObjectState?
             const o=getCachedObject(v)
             if(!o) return false;
             setNotify(o,uid);
-            return Object.keys(query.match).every(k => o[k] === query.match[k]);
+            return Object.keys(query.match).every(k => valMatch(o[k], query.match[k]));
           }
           if(v.constructor===Object){
-            return Object.keys(query.match).every(k => v[k] === query.match[k]);
+            return Object.keys(query.match).every(k => valMatch(v[k],query.match[k]));
           }
           return false;
         });
+        return (r.length && r) || null;
       }
-      return val==query.match? val: null;
+      return valMatch(val,query.match)? val: null;
     }
     if(val.constructor === Object){ c = val; continue; }
     if(val.constructor === String){
@@ -209,6 +210,10 @@ function object(u,p,q) { const r = ((uid, path, query)=>{
   })(u,p,q);
   // if(debug) console.log('object',getCachedObject(u),'path',p,'query',q,'=>',r);
   return r;
+}
+
+function valMatch(a, b){
+  return a == b || ((isURL(a) || isURL(b)) && toUID(a) === toUID(b));
 }
 
 function checkTimer(o,time){
