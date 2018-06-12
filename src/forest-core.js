@@ -81,20 +81,20 @@ function cacheObjects(list){
 
 var fetching = {};
 
-function ensureObjectState(UID, obsuid){
-  const o = objects[UID];
+function ensureObjectState(u, obsuid){
+  const o = objects[u];
   if(o){
     setNotify(o,obsuid);
     return o;
   }
-  getObject(UID).then(o=>{
+  getObject(u).then(o=>{
     if(o){
       setNotify(o,obsuid);
       //notifyObservers(o);
     }
-    else if(isURL(UID)){
-      cacheAndPersist({ UID, Notify: [ obsuid ] });
-      const url=UID;
+    else if(isURL(u)){
+      const url=u;
+      cacheAndPersist({ UID: url, Notify: [ obsuid ] });
       if(!fetching[url]){
         fetching[url]=true;
         network && network.doGet(url)
