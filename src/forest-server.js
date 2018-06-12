@@ -12,6 +12,7 @@ let serverPort=0;
 // --------------------------------
 
 const logRequest = (req, res, next) => {
+  console.log('---------------------------->');
   if(req.method==='POST') console.log(req.method, req.originalUrl, '\n', req.body);
   else                    console.log(req.method, req.originalUrl);
   next();
@@ -19,6 +20,7 @@ const logRequest = (req, res, next) => {
 
 const logResponse = (req, res, next) => {
   console.log(res.statusCode)
+  console.log('<----------------------------');
   next();
 };
 
