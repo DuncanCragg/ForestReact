@@ -30,6 +30,13 @@ function difference(a, b) {
   return changes(a, b);
 }
 
+let persistence = null;
+let network = null;
+
+function setPersistence(p){ persistence = p; }
+
+function setNetwork(n){ network = n; }
+
 const objects = {};
 
 function getObject(u){
@@ -41,13 +48,6 @@ function getObject(u){
     return o
   })
 }
-
-let persistence = null;
-let network = null;
-
-function setPersistence(p){ persistence = p; }
-
-function setNetwork(n){ network = n; }
 
 function cacheAndPersist(o){
   objects[o.UID] = o;
