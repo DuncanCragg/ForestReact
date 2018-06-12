@@ -3,11 +3,11 @@ import _ from 'lodash';
 
 const debug = false;
 
-const notifyUID = makeUID();
+const notifyUID = makeUID(true);
 
 const localProps = ['Notifying', 'Alerted', 'Timer', 'TimerId', 'Evaluator', 'ReactNotify', 'userState'];
 
-function makeUID(){
+function makeUID(notify){
   /*jshint bitwise:false */
   var i, random;
   var uuid = '';
@@ -16,7 +16,7 @@ function makeUID(){
     if (i === 8 || i === 12 || i === 16 || i === 20) uuid += '-';
     uuid += (i === 12 ? 4 : (i === 16 ? (random & 3 | 8) : random)).toString(16);
   }
-  return 'uid-' + uuid;
+  return (!notify? 'uid-': 'nfy-') + uuid;
 }
 
 function difference(a, b) {
@@ -142,6 +142,10 @@ function setObjectState(uid, update){
 
 function isURL(uid){
   return /^https?:\/\//.test(uid);
+}
+
+function isNotify(u){
+  return /^nfy-/.test(u);
 }
 
 function toUID(u){
