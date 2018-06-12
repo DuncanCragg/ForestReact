@@ -88,6 +88,7 @@ var fetching = {};
 function ensureObjectState(u, obsuid){
   const o = getCachedObject(u);
   if(o){
+    // if(isURL(u) && o.timeSinceFetched < ..){ // and below after getObject
     setNotify(o,obsuid);
     return o;
   }
