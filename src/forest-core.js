@@ -49,7 +49,7 @@ function setPersistence(p){ persistence = p; }
 
 function setNetwork(n){ network = n; }
 
-function cacheAndStoreObject(o){
+function cacheAndPersist(o){
   objects[o.UID] = o;
   if(persistence && persistence.persist) persistence.persist(o);
 }
@@ -63,7 +63,7 @@ function dumpCache(){
 function spawnObject(o){
   const UID = o.UID || makeUID();
   const Notify = o.Notify || [];
-  cacheAndStoreObject(Object.assign({ UID, Notify }, o));
+  cacheAndPersist(Object.assign({ UID, Notify }, o));
   doEvaluate(UID);
   return UID;
 }
@@ -71,7 +71,7 @@ function spawnObject(o){
 function storeObject(o){
   if(!o.UID)    return;
   if(!o.Notify) o.Notify = [];
-  cacheAndStoreObject(o);
+  cacheAndPersist(o);
   notifyObservers(o);
 }
 
@@ -93,7 +93,7 @@ function ensureObjectState(UID, obsuid){
       //notifyObservers(o);
     }
     else if(isURL(UID)){
-      cacheAndStoreObject({ UID, Notify: [ obsuid ] });
+      cacheAndPersist({ UID, Notify: [ obsuid ] });
       const url=UID;
       if(!fetching[url]){
         fetching[url]=true;
@@ -108,7 +108,7 @@ function ensureObjectState(UID, obsuid){
 function setNotify(o,uid){
   if(o.Notify.indexOf(uid) === -1){
     o.Notify.push(uid);
-    cacheAndStoreObject(o)
+    cacheAndPersist(o)
   }
 }
 
@@ -129,7 +129,7 @@ function setObjectState(uid, update){
   const changed = !_.isEqual(o, p);
   if(!changed) return null;
   if(debug) console.log(uid, 'changed: ', difference(o, p))
-  cacheAndStoreObject(p);
+  cacheAndPersist(p);
   notifyObservers(p);
   if(p.Notifying) network && network.doPost(p);
   return p;
