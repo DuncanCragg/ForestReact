@@ -9,9 +9,11 @@ const uid2notify = {};
 const notify2ws = {};
 
 function doGet(url){
-  return fetch(url)
-    .then(res => res.json())
-    .catch(e => console.error('doGet', e));
+  return superagent.get(url)
+    .timeout({ response: 9000, deadline: 10000 })
+    .set('Notify', core.notifyUID)
+    .then(x => x.body)
+    .catch(e => console.error('doGet',e,url));
 }
 
 function doPost(o){
@@ -21,7 +23,7 @@ function doPost(o){
     .timeout({ response: 9000, deadline: 10000 })
     .set('Notify', core.notifyUID)
     .send(data)
-    .then(x => x)
+    .then(x => x.body)
     .catch(e => console.error('doPost',e,url,data));
 }
 
