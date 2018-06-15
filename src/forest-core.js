@@ -140,8 +140,12 @@ function setObjectState(uid, update){
   return p;
 }
 
-function isURL(uid){
-  return /^https?:\/\//.test(uid);
+function isUID(u){
+  return /^uid-/.test(u);
+}
+
+function isURL(u){
+  return /^https?:\/\//.test(u);
 }
 
 function isNotify(u){
