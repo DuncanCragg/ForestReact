@@ -274,7 +274,6 @@ function runEvaluator(uid, params){
 
 export default {
   notifyUID,
-  makeUID,
   toUID,
   spawnObject,
   storeObject,
@@ -287,5 +286,6 @@ export default {
   setNetwork,
   localProps,
   isURL,
+  isNotify,
 }
 

@@ -63,7 +63,6 @@ app.get('/*',
   logResponse,
 );
 
-const uid2notify = {};
 const notify2ws = {};
 
 app.post('/*',
@@ -72,10 +71,10 @@ app.post('/*',
   (req, res, next) => {
     const o=req.body;
     if(!o || !o.UID) next();
-    uid2notify[o.UID] = req.headers.notify;
+    const notify = req.headers.notify;
     const path = req.originalUrl.substring(1);
     const Notify = ((path==='notify')? []: [path]).concat(o.Notify || []);
-    core.storeObject(Object.assign(o, { Notify }));
+    core.storeObject(Object.assign(o, { Notify, Remote: notify }));
     res.json({ });
     next();
   },
@@ -95,7 +94,7 @@ function doPost(o, u){
     console.log('not posting to peer yet:', u);
   }
   else{
-    const notifyUID = uid2notify[uid];
+    const notifyUID = core.isNotify(u)? u: o.Remote;
     if(!pendingWSpackets[notifyUID]) pendingWSpackets[notifyUID] = [];
     pendingWSpackets[notifyUID].push(prefixUIDs(o));
     wsFlush(notifyUID);
