@@ -16,7 +16,7 @@ function makeUID(notify){
     if (i === 8 || i === 12 || i === 16 || i === 20) uuid += '-';
     uuid += (i === 12 ? 4 : (i === 16 ? (random & 3 | 8) : random)).toString(16);
   }
-  return (!notify? 'uid-': 'nfy-') + uuid;
+  return (!notify? 'uid-': 'ntf-') + uuid;
 }
 
 function difference(a, b) {
@@ -145,7 +145,7 @@ function isURL(uid){
 }
 
 function isNotify(u){
-  return /^nfy-/.test(u);
+  return /^ntf-/.test(u);
 }
 
 function toUID(u){
