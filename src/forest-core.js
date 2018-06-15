@@ -72,13 +72,6 @@ function spawnObject(o){
   return UID;
 }
 
-function storeObject(o){
-  if(!o.UID)    return;
-  if(!o.Notify) o.Notify = [];
-  cacheAndPersist(o);
-  notifyObservers(o);
-}
-
 function cacheObjects(list){
   return list.map(o => spawnObject(o));
 }
@@ -103,7 +96,7 @@ function ensureObjectState(u, obsuid){
       if(!fetching[url]){
         fetching[url]=true;
         network && network.doGet(url)
-         .then(json => { fetching[url]=false; setObjectState(url, json) });
+         .then(json => { fetching[url]=false; updateObject(url, json) });
       }
     }
   })
@@ -147,12 +140,19 @@ function notifyObservers(o){
 
 function incomingObject(json){
   getObject(json.UID).then(o=>{
-    if(o) setObjectState(json.UID, json)
-    else storeObject(json);
+    if(!o) storeObject(json);
+    else updateObject(json.UID, json)
   })
 }
 
-function setObjectState(uid, update){
+function storeObject(o){
+  if(!o.UID)    return;
+  if(!o.Notify) o.Notify = [];
+  cacheAndPersist(o);
+  notifyObservers(o);
+}
+
+function updateObject(uid, update){
   if(!uid) return null
   const o=getCachedObject(uid)
   if(!o) return null;
@@ -253,7 +253,7 @@ function checkTimer(o,time){
   if(time && time > 0 && !o.TimerId){
     o.TimerId = setTimeout(() => {
       getCachedObject(o.UID).TimerId = null;
-      setObjectState(o.UID, { Timer: 0 });
+      updateObject(o.UID, { Timer: 0 });
       doEvaluate(o.UID);
     }, time);
   }
@@ -263,7 +263,7 @@ function setPromiseState(uid, o, p){
   p.then(newState => {
     if(debug) console.log('<<<<<<<<<<<<< new state bits: ', newState);
     checkTimer(o,newState.Timer);
-    setObjectState(uid, newState);
+    updateObject(uid, newState);
   });
   return {};
 }
@@ -284,7 +284,7 @@ function doEvaluate(uid, params) {
     else newState = evalout;
     if(debug) console.log(i, '<<<<<<<<<<<<< new state bits: ', newState);
     checkTimer(o,newState.Timer);
-    o = setObjectState(uid, newState);
+    o = updateObject(uid, newState);
     if(!o) break;
   }
   if(reactnotify) reactnotify();
@@ -302,7 +302,7 @@ export default {
   storeObject,
   cacheObjects,
   setNotify,
-  setObjectState,
+  updateObject,
   incomingObject,
   object,
   runEvaluator,

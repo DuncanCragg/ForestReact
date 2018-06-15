@@ -123,22 +123,22 @@ export default class ForestCommon extends Component {
 
   onRead(name){
     const value = this.object(name);
-    core.setObjectState(this.userStateUID, { [name]: value });
+    core.updateObject(this.userStateUID, { [name]: value });
     return value;
   }
 
   onChange(name, value){
-    core.setObjectState(this.userStateUID, { [name]: value });
+    core.updateObject(this.userStateUID, { [name]: value });
   }
 
   KEY_ENTER = 13;
 
   onKeyDown(name, e){
     if (e.keyCode !== this.KEY_ENTER){
-      core.setObjectState(this.userStateUID, { [name+'-submitted']: false });
+      core.updateObject(this.userStateUID, { [name+'-submitted']: false });
       return;
     }
-    core.setObjectState(this.userStateUID, { [name+'-submitted']: true });
+    core.updateObject(this.userStateUID, { [name+'-submitted']: true });
     e.preventDefault();
   }
 }

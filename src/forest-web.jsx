@@ -13,12 +13,12 @@ export default class Forest extends ForestCommon {
   }
 
   button(name, {label='', className=''}={}){
-//  core.setObjectState(this.userStateUID, { [name]: false });
+//  core.updateObject(this.userStateUID, { [name]: false });
     return <button className={className} onMouseDown={e => this.onChange(name, true)} onMouseUp={e => this.onChange(name, false)}>{label}</button>;
   }
 
   textField(name, {label='', className='', placeholder=''}={}){
-    core.setObjectState(this.userStateUID, { [name+'-submitted']: false });
+    core.updateObject(this.userStateUID, { [name+'-submitted']: false });
     return (
       <span><span>{label}</span>
             <input className={className}
