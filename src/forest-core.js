@@ -111,7 +111,7 @@ function ensureObjectState(u, obsuid){
 }
 
 function setNotify(o,uid){
-  if(o.Notify.indexOf(uid) === -1){
+  if(!o.Notify.includes(uid)){
     o.Notify.push(uid);
     cacheAndPersist(o)
   }
