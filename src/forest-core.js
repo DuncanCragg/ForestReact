@@ -278,6 +278,7 @@ export default {
   spawnObject,
   storeObject,
   cacheObjects,
+  setNotify,
   setObjectState,
   object,
   runEvaluator,

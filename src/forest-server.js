@@ -54,9 +54,10 @@ app.get('/*',
   logRequest,
   CORS,
   (req, res, next) => {
+    const notify = req.headers.notify;
     const uid = req.originalUrl.substring(1);
     core.getObject(uid)
-      .then(o => res.json(JSON.parse(prefixUIDs(o))))
+      .then(o => { if(o){ res.json(JSON.parse(prefixUIDs(o))); if(notify) core.setNotify(o,notify)} else res.status(404).send('Not found')})
       .then(()=>next())
       .catch(e => console.error(e));
   },
