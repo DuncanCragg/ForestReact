@@ -75,7 +75,7 @@ app.post('/*',
     const notify = req.headers.notify;
     const path = req.originalUrl.substring(1);
     const Notify = ((path==='notify')? []: [path]).concat(json.Notify || []);
-    core.storeObject(Object.assign(json, { Notify, Remote: notify }));
+    core.incomingObject(Object.assign(json, { Notify, Remote: notify }))
     res.json({ });
     next();
   },
