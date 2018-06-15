@@ -141,6 +141,7 @@ function notifyObservers(o){
         delete n.Alerted;
       }
     }})
+    .catch(e => console.log(e))
   );
 }
 
