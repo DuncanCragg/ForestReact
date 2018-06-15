@@ -103,10 +103,10 @@ function ensureObjectState(u, obsuid){
   return null;
 }
 
-function setNotify(o,uid){
-  if(!o.Notify.includes(uid)){
+function setNotify(o,uid,savelater){
+  if(!o.Notify.find(n=>valMatch(n,uid))){
     o.Notify.push(uid);
-    cacheAndPersist(o)
+    if(!savelater) cacheAndPersist(o)
   }
 }
 
@@ -138,7 +138,9 @@ function notifyObservers(o){
   );
 }
 
-function incomingObject(json){
+function incomingObject(json, notify){
+  if(!json.Notify) json.Notify=[]
+  if(notify) setNotify(json, notify, true);
   getObject(json.UID).then(o=>{
     if(!o) storeObject(json);
     else updateObject(json.UID, json)
