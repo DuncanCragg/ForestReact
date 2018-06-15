@@ -122,11 +122,26 @@ function notifyObservers(o){
     setNotify(o, o.Notifying);
   }
   o.Notify.map(u => getObject(u).then(n=>{
-    if(!n) return;
-    n.Alerted=o.UID;
-    doEvaluate(toUID(u));
-    delete n.Alerted;
-  }));
+    if(!n){
+      if(isURL(u) || isNotify(u)){
+        network && network.doPost(o, u);
+      }
+    }
+    else {
+      if(n.Remote){
+        network && network.doPost(o, n.Remote);
+      }
+      else
+      if(isURL(n.UID)){
+        network && network.doPost(o, n.UID);
+      }
+      else {
+        n.Alerted=o.UID;
+        doEvaluate(n.UID);
+        delete n.Alerted;
+      }
+    }})
+  );
 }
 
 function setObjectState(uid, update){

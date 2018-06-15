@@ -17,6 +17,7 @@ function doGet(url){
 }
 
 function doPost(o,url){
+  if(!core.isURL(url)) return;
   const data = _.omit(o, core.localProps);
   return superagent.post(url)
     .timeout({ response: 9000, deadline: 10000 })
