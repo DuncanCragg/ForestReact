@@ -90,13 +90,11 @@ function doGet(url){
 
 const pendingWSpackets = {};
 
-function doPost(o){
-  const uid = o.Notifying;
-  if(core.isURL(uid)){
-    console.log('not posting to peer yet');
+function doPost(o, u){
+  if(core.isURL(u)){
+    console.log('not posting to peer yet:', u);
   }
   else{
-    o.Notify.unshift(uid);
     const notifyUID = uid2notify[uid];
     if(!pendingWSpackets[notifyUID]) pendingWSpackets[notifyUID] = [];
     pendingWSpackets[notifyUID].push(prefixUIDs(o));

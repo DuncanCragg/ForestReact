@@ -16,9 +16,8 @@ function doGet(url){
     .catch(e => console.error('doGet',e,url));
 }
 
-function doPost(o){
+function doPost(o,url){
   const data = _.omit(o, core.localProps);
-  const url = o.Notifying;
   return superagent.post(url)
     .timeout({ response: 9000, deadline: 10000 })
     .set('Notify', core.notifyUID)

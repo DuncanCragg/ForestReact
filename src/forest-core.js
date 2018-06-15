@@ -118,6 +118,9 @@ function setNotify(o,uid){
 }
 
 function notifyObservers(o){
+  if(o.Notifying){
+    setNotify(o, o.Notifying);
+  }
   o.Notify.map(u => getObject(u).then(n=>{
     if(!n) return;
     n.Alerted=o.UID;
@@ -136,7 +139,6 @@ function setObjectState(uid, update){
   if(debug) console.log(uid, 'changed: ', difference(o, p))
   cacheAndPersist(p);
   notifyObservers(p);
-  if(p.Notifying) network && network.doPost(p);
   return p;
 }
 
