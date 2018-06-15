@@ -97,10 +97,9 @@ function doPost(o){
   }
   else{
     o.Notify.unshift(uid);
-    const packet = prefixUIDs(o)
     const notifyUID = uid2notify[uid];
     if(!pendingWSpackets[notifyUID]) pendingWSpackets[notifyUID] = [];
-    pendingWSpackets[notifyUID].push(packet);
+    pendingWSpackets[notifyUID].push(prefixUIDs(o));
     wsFlush(notifyUID);
   }
 }
