@@ -157,6 +157,10 @@ function persist(o){
   toSave[core.toUID(o.UID)]=true;
 }
 
+function fetch(uid){
+  return Promise.resolve(null /*{ fix: 'me' }*/)
+}
+
 function toMongoProp(key, val){
   if(val.length===3 && val[1]==='..'){
     return { $gt: val[0], $lt: val[2] };
@@ -170,10 +174,6 @@ function toMongo(scope, match){
 
 function getInlineVals(o, inline){
   return Object.assign({}, ...inline.map(k => o[k] && { [k]: o[k] }), { More: o.UID })
-}
-
-function fetch(uid){
-  return Promise.resolve({ fix: 'me' })
 }
 
 function query(is, scope, query){
