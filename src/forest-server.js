@@ -129,6 +129,7 @@ function wsFlush(notifyUID){
   let packet;
   while((packet=(pendingWSpackets[notifyUID]||[]).shift())){
     try{
+      console.log('<<----------ws---------------\n', notifyUID, '\n', packet, '\n<<---------------------------');
       if(ws.readyState === ws.OPEN) ws.send(packet);
       else console.log('WebSocket closed sending\n', packet, '\nto', notifyUID)
     }
