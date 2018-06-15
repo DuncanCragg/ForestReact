@@ -46,7 +46,7 @@ app.options("/*",
 );
 
 function prefixUIDs(o){
-  const s = JSON.stringify(_.omit(o, core.localProps));
+  const s = JSON.stringify(_.omit(o, core.localProps), null, 2);
   return s.replace(/"uid-/g, `"http://${serverHost}:${serverPort}/uid-`)
 }
 
