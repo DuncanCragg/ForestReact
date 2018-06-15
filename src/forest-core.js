@@ -145,6 +145,13 @@ function notifyObservers(o){
   );
 }
 
+function incomingObject(json){
+  getObject(json.UID).then(o=>{
+    if(o) setObjectState(json.UID, json)
+    else storeObject(json);
+  })
+}
+
 function setObjectState(uid, update){
   if(!uid) return null
   const o=getCachedObject(uid)
@@ -296,6 +303,7 @@ export default {
   cacheObjects,
   setNotify,
   setObjectState,
+  incomingObject,
   object,
   runEvaluator,
   getObject,

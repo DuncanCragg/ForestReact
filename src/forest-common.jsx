@@ -50,10 +50,7 @@ export default class ForestCommon extends Component {
       else
       if(json.UID){
         console.log('------------ws------------->>\n', json, '\n--------------------------->>');
-        core.getObject(json.UID).then(o=>{
-          if(o) core.setObjectState(json.UID, json)
-          else core.storeObject(json);
-        })
+        core.incomingObject(json);
       }
     };
 
