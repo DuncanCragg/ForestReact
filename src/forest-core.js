@@ -110,6 +110,10 @@ function setNotify(o,uid,savelater){
   }
 }
 
+function isRemote(uid){
+  return getObject(uid).then(o=>o && o.Remote)
+}
+
 function notifyObservers(o){
   if(o.Notifying){
     setNotify(o, o.Notifying);
