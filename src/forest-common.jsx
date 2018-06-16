@@ -50,7 +50,7 @@ export default class ForestCommon extends Component {
       else
       if(json.UID){
         console.log('------------ws------------->>\n', json, '\n--------------------------->>');
-        core.incomingObject(json);
+        core.incomingObject(Object.assign(json, { Remote: json.UID }));
       }
     };
 

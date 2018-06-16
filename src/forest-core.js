@@ -92,7 +92,7 @@ function ensureObjectState(u, obsuid){
     }
     else if(isURL(u)){
       const url=u;
-      cacheAndPersist({ UID: url, Notify: [ obsuid ] });
+      cacheAndPersist({ UID: url, Notify: [ obsuid ], Remote: url });
       if(!fetching[url]){
         fetching[url]=true;
         network && network.doGet(url)
@@ -118,7 +118,8 @@ function notifyObservers(o){
   if(o.Notifying){
     setNotify(o, o.Notifying);
   }
-  o.Notify.map(u => getObject(u).then(n=>{
+  const remotes = {};
+  Promise.all(o.Notify.map(u => getObject(u).then(n=>{
     if(!n){
       if(isURL(u) || isNotify(u)){
         network && network.doPost(o, u);
@@ -126,11 +127,8 @@ function notifyObservers(o){
     }
     else {
       if(n.Remote){
-        network && network.doPost(o, n.Remote);
-      }
-      else
-      if(isURL(n.UID)){
-        network && network.doPost(o, n.UID);
+        if(!remotes[n.Remote]) remotes[n.Remote]=[n.UID]
+        else                   remotes[n.Remote].concat(n.UID)
       }
       else {
         n.Alerted=o.UID;
@@ -139,7 +137,8 @@ function notifyObservers(o){
       }
     }})
     .catch(e => console.log(e))
-  );
+  ))
+  .then(()=>Object.keys(remotes).map(r => network && network.doPost(Object.assign({}, o, { Notify: remotes[r] }), r)));
 }
 
 function incomingObject(json, notify){
