@@ -122,7 +122,7 @@ function notifyObservers(o){
   Promise.all(o.Notify.map(u => getObject(u).then(n=>{
     if(!n){
       if(isURL(u) || isNotify(u)){
-        network && network.doPost(o, u);
+        network && network.doPost(Object.assign({}, o, { Notify: [u] }), u);  // TODO: !dropping o.Notify entries..
       }
     }
     else {
