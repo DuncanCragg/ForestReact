@@ -227,7 +227,7 @@ function object(u,p,q) { const r = ((uid, path, query)=>{
             // TODO: ensureObjectState?
             const o=getCachedObject(v)
             if(!o) return false;
-            setNotify(o,uid);
+            setNotify(o,uid); // TODO: don't do that when it needn't observe: String:String case, UID:, etc
             return Object.keys(query.match).every(k => valMatch(o[k], query.match[k]));
           }
           if(v.constructor===Object){

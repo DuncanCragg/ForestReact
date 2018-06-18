@@ -3,6 +3,11 @@ To Do
 -----
 
  - --------------------
+ x don't add to Notify if already there
+ - only send remote Notify entries not local (prevent remote duplicating notifications back to you)
+ - detect diffs (to prevent looping): UID can change? and is Notify diff a diff? Timer?
+ - don't add Notify for just UID string match (prevent mutual obs of objects in the first place)
+ - --------------------
  - React coupling
    - hardwiring from obj to notify react (o.react)
      - and from react to notify obj (o.userState)
