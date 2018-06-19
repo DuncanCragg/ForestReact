@@ -5,7 +5,7 @@ const debug = false;
 
 const notifyUID = makeUID(true);
 
-const localProps = ['Notifying', 'Alerted', 'Timer', 'TimerId', 'Evaluator', 'ReactNotify', 'userState'];
+const localProps = ['Notifying', 'Alerted', 'Timer', 'TimerId', 'Evaluator', 'Cache', 'ReactNotify', 'userState'];
 
 function makeUID(notify){
   /*jshint bitwise:false */
