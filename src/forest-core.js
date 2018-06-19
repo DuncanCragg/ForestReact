@@ -275,13 +275,15 @@ function setPromiseState(uid, o, p){
 
 function doEvaluate(uid, params) {
   var o = getCachedObject(uid);
-  if(!o || !o.Evaluator || typeof o.Evaluator !== 'function') return o;
+  if(!o) return o;
+  const evaluator = o.Evaluator && (typeof o.Evaluator === 'function'? o.Evaluator: evaluators[o.Evaluator]);
+  if(!evaluator) return o;
   const reactnotify = o.ReactNotify;
   for(var i=0; i<4; i++){
     if(debug) console.log(i, '>>>>>>>>>>>>> ', object(uid, '.'));
     if(debug && object(uid, 'userState.')) console.log(i, '>>>>>>>>>>>>> ', object(uid, 'userState.'));
-    const evalout = o.Evaluator(object.bind(null, uid), params);
-    if(!evalout){ console.error('no eval output for', uid, o); return o; }
+    const evalout = evaluator(object.bind(null, uid), params);
+    if(!evalout){ console.error('no evaluator output for', uid, o); return o; }
     let newState;
     if(evalout.constructor === Array){
       newState = Object.assign({}, ...(evalout.map(x => (x && x.constructor === Promise)? setPromiseState(uid,o,x): (x || {}))))
@@ -300,6 +302,12 @@ function runEvaluator(uid, params){
   return getObject(uid).then(()=>doEvaluate(uid, params));
 }
 
+const evaluators = {}
+
+function setEvaluator(name, evaluator){
+  evaluators[name]=evaluator
+}
+
 export default {
   notifyUID,
   toUID,
@@ -311,6 +319,7 @@ export default {
   incomingObject,
   object,
   runEvaluator,
+  setEvaluator,
   getObject,
   setPersistence,
   setNetwork,
