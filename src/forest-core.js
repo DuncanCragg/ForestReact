@@ -48,14 +48,25 @@ function getObject(u){
   const o = objects[uid]
   if(o || !(persistence && persistence.fetch)) return Promise.resolve(o)
   return persistence.fetch(uid).then(o=>{
-    objects[uid] = o;
-    return o
+    objects[uid]=o;
+    return o;
   })
 }
 
 function cacheAndPersist(o){
   objects[toUID(o.UID)]=o;
   if(persistence && persistence.persist) persistence.persist(o);
+}
+
+function reCacheObjects(){
+  if(persistence && persistence.recache){
+    return persistence.recache().then(actives=>actives.map(o=>{
+      objects[o.UID]=o;
+      runEvaluator(o.UID);
+      return o;
+    }))
+  }
+  return Promise.resolve([]);
 }
 
 function dumpCache(){
@@ -192,12 +203,12 @@ function toUID(u){
 const isQueryableCacheListLabels = ['queryable', 'cache', 'list'];
 
 function cacheQuery(o, path, query){
-  if(!persistence) return new Promise();
+  if(!persistence) return Promise.resolve([]);
   const scope = o.list;
   if(scope.includes('local') || scope.includes('remote')){
     return persistence.query(o.is.filter(s => !isQueryableCacheListLabels.includes(s)), scope, query);
   }
-  return new Promise();
+  return Promise.resolve([]);
 }
 
 function object(u,p,q) { const r = ((uid, path, query)=>{
@@ -314,6 +325,7 @@ export default {
   spawnObject,
   storeObject,
   cacheObjects,
+  reCacheObjects,
   setNotify,
   updateObject,
   incomingObject,

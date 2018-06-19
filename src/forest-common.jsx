@@ -67,6 +67,10 @@ export default class ForestCommon extends Component {
     return core.cacheObjects(list);
   }
 
+  static reCacheObjects(){
+    return core.reCacheObjects();
+  }
+
   static renderDOM(Cpt, rootId = 'root'){
     return new Promise((resolve, reject) => {
       ReactDOM.render(

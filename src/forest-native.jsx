@@ -15,9 +15,15 @@ function fetch(uid){
   return AsyncStorage.getItem(uid).then(s=>JSON.parse(s))
 }
 
+function recache(){
+  return AsyncStorage.getAllKeys()
+    .then(uids => Promise.all(uids.map(uid => fetch(uid).then(o=>o.Cache==='keep-active'? o: null)))
+                   .then(actives => actives.filter(o=>o)))
+}
+
 function query(is, scope, query){ }
 
-core.setPersistence({ persist, fetch, query });
+core.setPersistence({ persist, fetch, query, recache });
 
 export default class Forest extends ForestCommon {
 
