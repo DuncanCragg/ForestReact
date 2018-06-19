@@ -237,8 +237,11 @@ function init({httpHost, httpPort, wsPort, mongoHostPort, saveInterval}){
 
 export default {
   init,
-  cacheObjects: core.cacheObjects,
-  spawnObject:  core.spawnObject,
+  cacheObjects:   core.cacheObjects,
+  reCacheObjects: core.reCacheObjects,
+  setEvaluator:   core.setEvaluator,
+  getObject:      core.getObject,
+  spawnObject:    core.spawnObject,
 }
 
 
