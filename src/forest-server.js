@@ -170,6 +170,12 @@ function fetch(uid){
   return forestdb.collections().then(colls=>findOneFirst(colls, uid))
 }
 
+function recache(){
+  return forestdb.collections()
+    .then(colls=>Promise.all(colls.map(coll=>coll.find({ Cache: 'keep-active' }).toArray()))
+                  .then(actives => [].concat(...actives)))
+}
+
 function toMongoProp(key, val){
   if(val.length===3 && val[1]==='..'){
     return { $gt: val[0], $lt: val[2] };
@@ -210,7 +216,7 @@ function persistenceInit(mongoHostPort, saveInterval){
     });
 }
 
-core.setPersistence({ persist, fetch, query });
+core.setPersistence({ persist, fetch, query, recache });
 
 // --------------------------------
 
