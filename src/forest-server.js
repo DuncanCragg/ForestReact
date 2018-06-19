@@ -161,8 +161,13 @@ function persist(o){
   toSave[core.toUID(o.UID)]=true;
 }
 
+function findOneFirst(colls, uid){
+  if(!(colls && colls.length)) return Promise.resolve(null);
+  return colls[0].findOne({ UID: uid }).then(o => o || findOneFirst(colls.slice(1), uid));
+}
+
 function fetch(uid){
-  return Promise.resolve(null /*{ fix: 'me' }*/)
+  return forestdb.collections().then(colls=>findOneFirst(colls, uid))
 }
 
 function toMongoProp(key, val){
