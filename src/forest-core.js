@@ -215,15 +215,17 @@ function object(u,p,q) { const r = ((uid, path, query)=>{
   if(!uid || !path) return null;
   const o=getCachedObject(uid)
   if(!o) return null;
-  const isQueryableCacheList = o.is && o.is.constructor===Array && isQueryableCacheListLabels.every(s => o.is.includes(s));
   const hasMatch = query && query.constructor===Object && query.match
-  if(path==='list' && isQueryableCacheList && hasMatch) return cacheQuery(o, path, query);
   if(path==='.') return o;
   const pathbits = path.split('.');
   let c=o;
   for(var i=0; i<pathbits.length; i++){
     if(pathbits[i]==='') return c;
     if(pathbits[i]==='Timer') return c.Timer || 0;
+
+    const isQueryableCacheList = c.is && c.is.constructor===Array && isQueryableCacheListLabels.every(s => c.is.includes(s));
+    if(pathbits[i]==='list' && isQueryableCacheList && hasMatch) return cacheQuery(c, pathbits[i], query);
+
     const val = c[pathbits[i]];
     if(val == null) return null;
     if(i==pathbits.length-1){
