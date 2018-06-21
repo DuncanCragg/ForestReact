@@ -3,6 +3,7 @@ import _ from 'lodash';
 
 const debugevaluate = false;
 const debugchanges = false;
+const debugnotify = false;
 const debugobject = false;
 
 const notifyUID = makeUID(true);
@@ -131,25 +132,36 @@ function notifyObservers(o){
   if(o.Notifying){
     setNotify(o, o.Notifying);
   }
+  if(debugnotify) console.log('===========================\no.UID/is/Remote:', (`${o.UID} / ${o.is} / ${o.Remote||'--'}`));
   const remotes = {};
   Promise.all(o.Notify.map(u => getObject(u).then(n=>{
+    if(debugnotify) console.log('------------------------\n');
+    if(debugnotify) console.log('remotes start', remotes, o.UID, o.is)
+    if(debugnotify) console.log('n.UID/is/Remote:', (n && (`${n.UID} / ${n.is} / ${n.Remote||'--'}`))||'--', u, toRemote(u));
     if(!n){
       if(isURL(u) || isNotify(u)){
+        if(debugnotify) console.log(isURL(u) && 'isURL', isNotify(u) && 'isNotify');
         network && network.doPost(Object.assign({}, o, { Notify: [u] }), u);  // TODO: !dropping o.Notify entries..
+        if(debugnotify) console.log('Remote',Remote)
       }
     }
     else {
       if(n.Remote){
+        if(debugnotify) console.log('n.Remote');
         if(!remotes[n.Remote]) remotes[n.Remote]=[n.UID]
         else                   remotes[n.Remote].concat(n.UID)
       }
       else {
+        if(debugnotify) console.log('local eval');
         n.Alerted=o.UID;
         doEvaluate(n.UID);
         delete n.Alerted;
       }
-    }})
-    .catch(e => console.log(e))
+    }
+    if(debugnotify) console.log('remotes now', remotes)
+    if(debugnotify) console.log('\n------------------------');
+  })
+  .catch(e => console.log(e))
   ))
   .then(()=>Object.keys(remotes).map(r => network && network.doPost(Object.assign({}, o, { Notify: remotes[r] }), r)));
 }
