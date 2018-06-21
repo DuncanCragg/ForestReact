@@ -1,7 +1,9 @@
 
 import _ from 'lodash';
 
-const debug = false;
+const debugevaluate = false;
+const debugchanges = false;
+const debugobject = false;
 
 const notifyUID = makeUID(true);
 
@@ -175,7 +177,7 @@ function updateObject(uid, update){
   const p = Object.assign({}, o, update);
   const changed = !_.isEqual(o, p);
   if(!changed) return null;
-  if(debug) console.log(uid, 'changed: ', difference(o, p))
+  if(debugchanges) console.log(uid, o.is, 'changed:\n', difference(o, p), '\n', JSON.stringify(o), '\n', JSON.stringify(p))
   cacheAndPersist(p);
   notifyObservers(p);
   return p;
@@ -259,7 +261,7 @@ function object(u,p,q) { const r = ((uid, path, query)=>{
     }
   }
   })(u,p,q);
-  // if(debug) console.log('object',getCachedObject(u),'path',p,'query',q,'=>',r);
+  if(debugobject) console.log('object',getCachedObject(u),'path',p,'query',q,'=>',r);
   return r;
 }
 
@@ -279,7 +281,7 @@ function checkTimer(o,time){
 
 function setPromiseState(uid, o, p){
   p.then(newState => {
-    if(debug) console.log('<<<<<<<<<<<<< promised update: ', newState);
+    if(debugevaluate) console.log('<<<<<<<<<<<<< promised update: ', newState);
     checkTimer(o,newState.Timer);
     updateObject(uid, newState);
   });
@@ -293,8 +295,8 @@ function doEvaluate(uid, params) {
   if(!evaluator) return o;
   const reactnotify = o.ReactNotify;
   for(var i=0; i<4; i++){
-    if(debug) console.log(i, '>>>>>>>>>>>>> ', object(uid, '.'));
-    if(debug && object(uid, 'userState.')) console.log(i, '>>>>>>>>>>>>> ', object(uid, 'userState.'));
+    if(debugevaluate) console.log(i, '>>>>>>>>>>>>> ', object(uid, '.'));
+    if(debugevaluate && object(uid, 'userState.')) console.log(i, '>>>>>>>>>>>>> ', object(uid, 'userState.'));
     const evalout = evaluator(object.bind(null, uid), params);
     if(!evalout){ console.error('no evaluator output for', uid, o); return o; }
     let newState;
@@ -302,7 +304,7 @@ function doEvaluate(uid, params) {
       newState = Object.assign({}, ...(evalout.map(x => (x && x.constructor === Promise)? setPromiseState(uid,o,x): (x || {}))))
     }
     else newState = evalout;
-    if(debug) console.log(i, '<<<<<<<<<<<<< update: ', newState);
+    if(debugevaluate) console.log(i, '<<<<<<<<<<<<< update: ', newState);
     checkTimer(o,newState.Timer);
     o = updateObject(uid, newState);
     if(!o) break;
