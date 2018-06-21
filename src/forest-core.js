@@ -106,7 +106,7 @@ function ensureObjectState(u, obsuid){
     }
     else if(isURL(u)){
       const url=u;
-      cacheAndPersist({ UID: url, Notify: [ obsuid ], Remote: url });
+      cacheAndPersist({ UID: url, Notify: [ obsuid ], Remote: toRemote(url) });
       if(!fetching[url]){
         fetching[url]=true;
         network && network.doGet(url)
@@ -141,15 +141,21 @@ function notifyObservers(o){
     if(!n){
       if(isURL(u) || isNotify(u)){
         if(debugnotify) console.log(isURL(u) && 'isURL', isNotify(u) && 'isNotify');
-        network && network.doPost(Object.assign({}, o, { Notify: [u] }), u);  // TODO: !dropping o.Notify entries..
+        const Remote=toRemote(u);
         if(debugnotify) console.log('Remote',Remote)
+        if(o.Remote !== Remote){
+          if(!remotes[Remote]) remotes[Remote]=[u]
+          else                 remotes[Remote].push(u);
+        }
       }
     }
     else {
       if(n.Remote){
         if(debugnotify) console.log('n.Remote');
-        if(!remotes[n.Remote]) remotes[n.Remote]=[n.UID]
-        else                   remotes[n.Remote].concat(n.UID)
+        if(o.Remote !== n.Remote){
+          if(!remotes[n.Remote]) remotes[n.Remote]=[n.UID]
+          else                   remotes[n.Remote].push(n.UID)
+        }
       }
       else {
         if(debugnotify) console.log('local eval');
@@ -168,6 +174,7 @@ function notifyObservers(o){
 
 function incomingObject(json, notify){
   if(!json.Notify) json.Notify=[]
+  if(!json.Remote) json.Remote=toRemote(json.UID)
   if(notify) setNotify(json, notify, true);
   getObject(json.UID).then(o=>{
     if(!o) storeObject(json);
@@ -212,6 +219,13 @@ function toUID(u){
   const s=u.indexOf('uid-');
   if(s=== -1) return u;
   return u.substring(s);
+}
+
+function toRemote(u){
+  if(!isURL(u)) return u;
+  const s=u.indexOf('uid-')
+  if(s=== -1) return u;
+  return u.substring(0,s)+'notify';
 }
 
 const isQueryableCacheListLabels = ['queryable', 'cache', 'list'];
