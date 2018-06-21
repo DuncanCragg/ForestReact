@@ -13,8 +13,8 @@ let serverPort=0;
 
 const logRequest = (req, res, next) => {
   console.log('---------------------------->');
-  if(req.method==='POST') console.log(req.method, req.originalUrl, '\n', req.body);
-  else                    console.log(req.method, req.originalUrl);
+  if(req.method==='POST') console.log(req.method, req.originalUrl, req.headers.notify||'', '\n', req.body);
+  else                    console.log(req.method, req.originalUrl, req.headers.notify||'');
   next();
 };
 
