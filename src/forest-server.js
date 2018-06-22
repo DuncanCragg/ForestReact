@@ -163,7 +163,7 @@ function persist(o){
 
 function findOneFirst(colls, uid){
   if(!(colls && colls.length)) return Promise.resolve(null);
-  return colls[0].findOne({ UID: uid }).then(o => o || findOneFirst(colls.slice(1), uid));
+  return colls[0].findOne({ UID: uid }, { projection: { _id: 0 }}).then(o => o || findOneFirst(colls.slice(1), uid));
 }
 
 function fetch(uid){
@@ -172,7 +172,7 @@ function fetch(uid){
 
 function recache(){
   return forestdb.collections()
-    .then(colls=>Promise.all(colls.map(coll=>coll.find({ Cache: 'keep-active' }).toArray()))
+    .then(colls=>Promise.all(colls.map(coll=>coll.find({ Cache: 'keep-active' }, { projection: { _id: 0 }}).toArray()))
                   .then(actives => [].concat(...actives)))
 }
 
@@ -193,7 +193,7 @@ function getInlineVals(o, inline){
 
 function query(is, scope, query){
   return forestdb.collection(is.join('-'))
-    .find(toMongo(scope, query.match))
+    .find(toMongo(scope, query.match), { projection: { _id: 0 }})
     .toArray()
     .then(r => r.map(o => query.inline? getInlineVals(o, query.inline): o.UID))
     .catch(e => console.error(e));
