@@ -193,10 +193,12 @@ function updateObject(uid, update){
   if(!uid) return null
   const o=getCachedObject(uid)
   if(!o) return null;
+  if(debugchanges) console.log(uid, 'before\n', JSON.stringify(o,null,4),'\nupdate:\n',JSON.stringify(update,null,4));
   const p = Object.assign({}, o, update);
   const changed = !_.isEqual(o, p);
+  if(debugchanges && changed) console.log('changed, result\n', JSON.stringify(p,null,4));
+  if(debugchanges) console.log('diff:', difference(o,p))
   if(!changed) return null;
-  if(debugchanges) console.log(uid, o.is, 'changed:\n', difference(o, p), '\n', JSON.stringify(o), '\n', JSON.stringify(p))
   cacheAndPersist(p);
   notifyObservers(p);
   return p;
@@ -287,7 +289,7 @@ function object(u,p,q) { const r = ((uid, path, query)=>{
     }
   }
   })(u,p,q);
-  if(debugobject) console.log('object',getCachedObject(u),'path',p,'query',q,'=>',r);
+  if(debugobject) console.log('object', getCachedObject(u), '\npath:', p, q && 'query:' || '', q || '', '=>', r);
   return r;
 }
 
