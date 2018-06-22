@@ -59,6 +59,7 @@ function getObject(u){
 function cacheAndPersist(o){
   objects[toUID(o.UID)]=o;
   if(persistence && persistence.persist) persistence.persist(o);
+  else notifyObservers(o);
 }
 
 function reCacheObjects(){
@@ -185,7 +186,6 @@ function storeObject(o){
   if(!o.UID)    return;
   if(!o.Notify) o.Notify = [];
   cacheAndPersist(o);
-  notifyObservers(o);
 }
 
 function updateObject(uid, update){
@@ -199,7 +199,6 @@ function updateObject(uid, update){
   if(debugchanges) console.log('diff:', difference(o,p))
   if(!changed) return null;
   cacheAndPersist(p);
-  notifyObservers(p);
   return p;
 }
 
@@ -367,6 +366,7 @@ export default {
   cacheObjects,
   reCacheObjects,
   setNotify,
+  notifyObservers,
   updateObject,
   incomingObject,
   object,
