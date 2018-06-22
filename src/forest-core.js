@@ -194,13 +194,20 @@ function updateObject(uid, update){
   const o=getCachedObject(uid)
   if(!o) return null;
   if(debugchanges) console.log(uid, 'before\n', JSON.stringify(o,null,4),'\nupdate:\n',JSON.stringify(update,null,4));
-  const p = Object.assign({}, o, update);
+  const p=mergeUpdate(o, update);
   const changed = !_.isEqual(o, p);
   if(debugchanges && changed) console.log('changed, result\n', JSON.stringify(p,null,4));
   if(debugchanges) console.log('diff:', difference(o,p))
   if(!changed) return null;
   cacheAndPersist(p);
   notifyObservers(p);
+  return p;
+}
+
+function mergeUpdate(o,update){
+  const updateNotify=update.Notify; delete update.Notify;
+  const p=Object.assign({}, o, update);
+  updateNotify && updateNotify.forEach(un=>setNotify(p,un,true))
   return p;
 }
 
