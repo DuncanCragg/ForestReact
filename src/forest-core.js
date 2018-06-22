@@ -73,9 +73,9 @@ function reCacheObjects(){
 }
 
 function dumpCache(){
-  console.log("---------cache-------");
+  console.log('---------cache-------');
   Object.keys(objects).map(k => console.log(objects[k]));
-  console.log("---------------------");
+  console.log('---------------------');
 }
 
 function spawnObject(o){
@@ -102,7 +102,6 @@ function ensureObjectState(u, obsuid){
   getObject(u).then(o=>{
     if(o){
       setNotify(o,obsuid);
-      //notifyObservers(o);
     }
     else if(isURL(u)){
       const url=u;
@@ -140,7 +139,7 @@ function notifyObservers(o){
     if(debugnotify) console.log('n.UID/is/Remote:', (n && (`${n.UID} / ${n.is} / ${n.Remote||'--'}`))||'--', u, toRemote(u));
     if(!n){
       if(isURL(u) || isNotify(u)){
-        if(debugnotify) console.log(isURL(u) && 'isURL', isNotify(u) && 'isNotify');
+        if(debugnotify) console.log(isURL(u) && 'isURL' || '', isNotify(u) && 'isNotify' || '');
         const Remote=toRemote(u);
         if(debugnotify) console.log('Remote',Remote)
         if(o.Remote !== Remote){
@@ -331,8 +330,9 @@ function doEvaluate(uid, params) {
   if(!evaluator) return o;
   const reactnotify = o.ReactNotify;
   for(var i=0; i<4; i++){
-    if(debugevaluate) console.log(i, '>>>>>>>>>>>>>\n', object(uid, '.'));
-    if(debugevaluate && object(uid, 'userState.')) console.log(i, '>>>>>user>>>>\n', object(uid, 'userState.'));
+    if(debugevaluate) console.log(`iteration ${i}`);
+    if(debugevaluate) console.log('>>>>>>>>>>>>>\n', object(uid, '.'));
+    if(debugevaluate && object(uid, 'userState.')) console.log('>>>>>user>>>>\n', object(uid, 'userState.'));
     const evalout = evaluator(object.bind(null, uid), params);
     if(!evalout){ console.error('no evaluator output for', uid, o); return o; }
     let newState;
@@ -340,7 +340,7 @@ function doEvaluate(uid, params) {
       newState = Object.assign({}, ...(evalout.map(x => (x && x.constructor === Promise)? setPromiseState(uid,o,x): (x || {}))))
     }
     else newState = evalout;
-    if(debugevaluate) console.log(i, '<<<<<<<<<<<<< update:\n', newState);
+    if(debugevaluate) console.log('<<<<<<<<<<<<< update:\n', newState);
     checkTimer(o,newState.Timer);
     o = updateObject(uid, newState);
     if(!o) break;
