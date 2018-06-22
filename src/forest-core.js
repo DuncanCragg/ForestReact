@@ -239,7 +239,8 @@ function toRemote(u){
 
 const isQueryableCacheListLabels = ['queryable', 'cache', 'list'];
 
-function cacheQuery(o, path, query){
+function cacheQuery(o, uid, query){
+  setNotify(o,uid);
   if(!persistence) return Promise.resolve([]);
   const scope = o.list;
   if(scope.includes('local') || scope.includes('remote')){
@@ -261,7 +262,7 @@ function object(u,p,q) { const r = ((uid, path, query)=>{
     if(pathbits[i]==='Timer') return c.Timer || 0;
 
     const isQueryableCacheList = c.is && c.is.constructor===Array && isQueryableCacheListLabels.every(s => c.is.includes(s));
-    if(pathbits[i]==='list' && isQueryableCacheList && hasMatch) return cacheQuery(c, pathbits[i], query);
+    if(pathbits[i]==='list' && isQueryableCacheList && hasMatch) return cacheQuery(c, uid, query);
 
     const val = c[pathbits[i]];
     if(val == null) return null;
