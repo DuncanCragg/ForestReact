@@ -135,7 +135,7 @@ function notifyObservers(o){
   if(debugnotify) console.log('===========================\no.UID/is/Remote:', (`${o.UID} / ${o.is} / ${o.Remote||'--'}`));
   const remotes = {};
   Promise.all(o.Notify.map(u => getObject(u).then(n=>{
-    if(debugnotify) console.log('------------------------\n');
+    if(debugnotify) console.log('------------------------');
     if(debugnotify) console.log('remotes start', remotes, o.UID, o.is)
     if(debugnotify) console.log('n.UID/is/Remote:', (n && (`${n.UID} / ${n.is} / ${n.Remote||'--'}`))||'--', u, toRemote(u));
     if(!n){
@@ -316,7 +316,7 @@ function checkTimer(o,time){
 
 function setPromiseState(uid, o, p){
   p.then(newState => {
-    if(debugevaluate) console.log('<<<<<<<<<<<<< promised update: ', newState);
+    if(debugevaluate) console.log('<<<<<<<<<<<<< promised update:\n', newState);
     checkTimer(o,newState.Timer);
     updateObject(uid, newState);
   });
@@ -330,8 +330,8 @@ function doEvaluate(uid, params) {
   if(!evaluator) return o;
   const reactnotify = o.ReactNotify;
   for(var i=0; i<4; i++){
-    if(debugevaluate) console.log(i, '>>>>>>>>>>>>> ', object(uid, '.'));
-    if(debugevaluate && object(uid, 'userState.')) console.log(i, '>>>>>>>>>>>>> ', object(uid, 'userState.'));
+    if(debugevaluate) console.log(i, '>>>>>>>>>>>>>\n', object(uid, '.'));
+    if(debugevaluate && object(uid, 'userState.')) console.log(i, '>>>>>user>>>>\n', object(uid, 'userState.'));
     const evalout = evaluator(object.bind(null, uid), params);
     if(!evalout){ console.error('no evaluator output for', uid, o); return o; }
     let newState;
@@ -339,7 +339,7 @@ function doEvaluate(uid, params) {
       newState = Object.assign({}, ...(evalout.map(x => (x && x.constructor === Promise)? setPromiseState(uid,o,x): (x || {}))))
     }
     else newState = evalout;
-    if(debugevaluate) console.log(i, '<<<<<<<<<<<<< update: ', newState);
+    if(debugevaluate) console.log(i, '<<<<<<<<<<<<< update:\n', newState);
     checkTimer(o,newState.Timer);
     o = updateObject(uid, newState);
     if(!o) break;
