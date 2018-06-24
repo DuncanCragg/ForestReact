@@ -131,7 +131,7 @@ function notifyObservers(o){
   if(o.Notifying){
     setNotify(o, o.Notifying); // merge here, don't set; also, it saves o here
   }
-  if(debugnotify) console.log('===========================\no.UID/is/Remote:', (`${o.UID} / ${o.is} / ${o.Remote||'--'}`));
+  if(debugnotify) console.log('===========================\no.UID/is/Remote:', `${o.UID} / ${o.is} / ${o.Remote||'--'}`);
   const remotes = {};
   Promise.all(o.Notify.map(u => getObject(u).then(n=>{
     if(debugnotify) console.log('------------------------');
