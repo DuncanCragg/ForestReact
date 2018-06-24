@@ -144,30 +144,14 @@ core.setNetwork({ doGet, doPost });
 
 let forestdb;
 
-function persistenceInit(mongoHostPort, saveInterval){
+function persistenceInit(mongoHostPort){
   return mongodb.MongoClient.connect(mongoHostPort)
     .then((client) => {
       forestdb = client.db('forest');
-      setInterval(()=>{ persistenceFlush().then((a)=> (a.length && console.log(a)))}, saveInterval)
     });
 }
 
-const toSave = {};
-
 function persist(o){
-  toSave[core.toUID(o.UID)]=true;
-}
-
-function persistenceFlush(){
-  return Promise.all(Object.keys(toSave).map(uid=>{
-    return core.getObject(uid).then(o=>{
-      delete toSave[uid];
-      return saveObject(o);
-    })
-  }))
-}
-
-function saveObject(o){
   if(!o.is) return Promise.resolve();
   const collectionName = (o.is.constructor===String)? o.is:
                         ((o.is.constructor===Array)? o.is.join('-'): null);
@@ -220,10 +204,10 @@ core.setPersistence({ persist, fetch, recache, query });
 
 // --------------------------------
 
-function init({httpHost, httpPort, wsPort, mongoHostPort, saveInterval}){
+function init({httpHost, httpPort, wsPort, mongoHostPort}){
   serverHost=httpHost; serverPort=httpPort;
   return new Promise((resolve, reject) => {
-    persistenceInit(mongoHostPort, saveInterval)
+    persistenceInit(mongoHostPort)
       .then(() => {
         app.listen(httpPort, ()=>{
           console.log(`Server started on port ${httpPort}`);

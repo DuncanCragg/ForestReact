@@ -57,9 +57,23 @@ function getObject(u){
   })
 }
 
+const toSave = {};
+
 function cacheAndPersist(o){
   objects[toUID(o.UID)]=o;
-  if(persistence && persistence.persist) persistence.persist(o);
+  toSave[toUID(o.UID)]=true;
+}
+
+setInterval(()=>{ persistenceFlush().then((a)=> (a.length && console.log(a)))}, 100);
+
+function persistenceFlush(){
+  if(!(persistence && persistence.persist)) return Promise.resolve([]);
+  return Promise.all(Object.keys(toSave).map(uid=>{
+    return getObject(uid).then(o=>{
+      delete toSave[uid];
+      return persistence.persist(o);
+    })
+  }))
 }
 
 function reCacheObjects(){
