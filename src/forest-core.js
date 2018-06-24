@@ -1,10 +1,11 @@
 
 import _ from 'lodash';
 
-const debugevaluate = false;
-const debugchanges = false;
-const debugnotify = false;
-const debugobject = false;
+const debugall = false;
+const debugevaluate = debugall || false;
+const debugchanges = debugall || false;
+const debugnotify = debugall || false;
+const debugobject = debugall || false;
 
 const notifyUID = makeUID(true);
 
