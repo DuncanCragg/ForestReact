@@ -194,9 +194,10 @@ function updateObject(uid, update){
   if(!o) return null;
   if(debugchanges) console.log(uid, 'before\n', JSON.stringify(o,null,4),'\nupdate:\n',JSON.stringify(update,null,4));
   const p=mergeUpdate(o, update);
-  const changed = !_.isEqual(o, p);
+  const diff = difference(o,p);
+  const changed = !(_.isEqual(diff, {}) || _.isEqual(diff, { Timer: 0 }));
+  if(debugchanges) console.log('diff:', diff, 'changed:', changed);
   if(debugchanges && changed) console.log('changed, result\n', JSON.stringify(p,null,4));
-  if(debugchanges) console.log('diff:', difference(o,p))
   if(!changed) return null;
   cacheAndPersist(p);
   notifyObservers(p);
