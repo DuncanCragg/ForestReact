@@ -62,13 +62,13 @@ const toSave = {};
 function cacheAndPersist(o, notify){
   const uid=toUID(o.UID);
   objects[uid]=o;
-  toSave[uid]=(toSave[uid] || notify || false);
+  if(persistence && persistence.persist) toSave[uid]=(toSave[uid] || notify || false);
+  else if(notify) notifyObservers(o);
 }
 
 setInterval(()=>{ persistenceFlush().then((a)=> (a.length && console.log(a)))}, 10);
 
 function persistenceFlush(){
-  if(!(persistence && persistence.persist)) return Promise.resolve([]);
   return Promise.all(Object.keys(toSave).map(uid=>{
     return getObject(uid).then(o=>{
       const notify = toSave[uid];
