@@ -144,59 +144,18 @@ core.setNetwork({ doGet, doPost });
 
 let forestdb;
 
-function saveObject(o){
-  if(!o.is) return Promise.resolve();
-  const collectionName = (o.is.constructor===String)? o.is:
-                        ((o.is.constructor===Array)? o.is.join('-'): null);
-  if(!collectionName) return Promise.resolve();
-  return forestdb.collection(collectionName)
-    .update({ UID: o.UID }, o, { upsert: true })
-    .then((result) => { console.log(`updated ${o.UID} in ${collectionName}`); return result.result })
-    .catch((err) => { console.log(err, `Failed to insert ${o.UID} in ${collectionName}`); return err });
+function persistenceInit(mongoHostPort, saveInterval){
+  return mongodb.MongoClient.connect(mongoHostPort)
+    .then((client) => {
+      forestdb = client.db('forest');
+      setInterval(()=>{ persistenceFlush().then((a)=> (a.length && console.log(a)))}, saveInterval)
+    });
 }
 
 const toSave = {};
 
 function persist(o){
   toSave[core.toUID(o.UID)]=true;
-}
-
-function findOneFirst(colls, uid){
-  if(!(colls && colls.length)) return Promise.resolve(null);
-  return colls[0].findOne({ UID: uid }, { projection: { _id: 0 }}).then(o => o || findOneFirst(colls.slice(1), uid));
-}
-
-function fetch(uid){
-  return forestdb.collections().then(colls=>findOneFirst(colls, uid))
-}
-
-function recache(){
-  return forestdb.collections()
-    .then(colls=>Promise.all(colls.map(coll=>coll.find({ Cache: 'keep-active' }, { projection: { _id: 0 }}).toArray()))
-                  .then(actives => [].concat(...actives)))
-}
-
-function toMongoProp(key, val){
-  if(val.length===3 && val[1]==='..'){
-    return { $gt: val[0], $lt: val[2] };
-  }
-  return val;
-}
-
-function toMongo(scope, match){
-  return Object.assign({}, ...Object.keys(match).map(k => ({[k]: toMongoProp(k,match[k])})));
-}
-
-function getInlineVals(o, inline){
-  return Object.assign({}, ...inline.map(k => o[k] && { [k]: o[k] }), { More: o.UID })
-}
-
-function query(is, scope, query){
-  return forestdb.collection(is.join('-'))
-    .find(toMongo(scope, query.match), { projection: { _id: 0 }})
-    .toArray()
-    .then(r => r.map(o => query.inline? getInlineVals(o, query.inline): o.UID))
-    .catch(e => console.error(e));
 }
 
 function persistenceFlush(){
@@ -208,15 +167,56 @@ function persistenceFlush(){
   }))
 }
 
-function persistenceInit(mongoHostPort, saveInterval){
-  return mongodb.MongoClient.connect(mongoHostPort)
-    .then((client) => {
-      forestdb = client.db('forest');
-      setInterval(()=>{ persistenceFlush().then((a)=> (a.length && console.log(a)))}, saveInterval)
-    });
+function saveObject(o){
+  if(!o.is) return Promise.resolve();
+  const collectionName = (o.is.constructor===String)? o.is:
+                        ((o.is.constructor===Array)? o.is.join('-'): null);
+  if(!collectionName) return Promise.resolve();
+  return forestdb.collection(collectionName)
+    .update({ UID: o.UID }, o, { upsert: true })
+    .then((result) => { console.log(`updated ${o.UID} in ${collectionName}`); return result.result })
+    .catch((err) => { console.log(err, `Failed to insert ${o.UID} in ${collectionName}`); return err });
 }
 
-core.setPersistence({ persist, fetch, query, recache });
+function fetch(uid){
+  return forestdb.collections().then(colls=>findOneFirst(colls, uid))
+}
+
+function findOneFirst(colls, uid){
+  if(!(colls && colls.length)) return Promise.resolve(null);
+  return colls[0].findOne({ UID: uid }, { projection: { _id: 0 }}).then(o => o || findOneFirst(colls.slice(1), uid));
+}
+
+function recache(){
+  return forestdb.collections()
+    .then(colls=>Promise.all(colls.map(coll=>coll.find({ Cache: 'keep-active' }, { projection: { _id: 0 }}).toArray()))
+                  .then(actives => [].concat(...actives)))
+}
+
+function query(is, scope, query){
+  return forestdb.collection(is.join('-'))
+    .find(toMongo(scope, query.match), { projection: { _id: 0 }})
+    .toArray()
+    .then(r => r.map(o => query.inline? getInlineVals(o, query.inline): o.UID))
+    .catch(e => console.error(e));
+}
+
+function toMongo(scope, match){
+  return Object.assign({}, ...Object.keys(match).map(k => ({[k]: toMongoProp(k,match[k])})));
+}
+
+function toMongoProp(key, val){
+  if(val.length===3 && val[1]==='..'){
+    return { $gt: val[0], $lt: val[2] };
+  }
+  return val;
+}
+
+function getInlineVals(o, inline){
+  return Object.assign({}, ...inline.map(k => o[k] && { [k]: o[k] }), { More: o.UID })
+}
+
+core.setPersistence({ persist, fetch, recache, query });
 
 // --------------------------------
 
