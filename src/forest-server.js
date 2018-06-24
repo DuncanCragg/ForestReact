@@ -203,7 +203,7 @@ function persistenceFlush(){
   return Promise.all(Object.keys(toSave).map(uid=>{
     return core.getObject(uid).then(o=>{
       delete toSave[uid];
-      return saveObject(o).then(r=>{ core.notifyObservers(o); return r; });
+      return saveObject(o);
     })
   }))
 }
