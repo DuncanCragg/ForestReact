@@ -59,19 +59,21 @@ function getObject(u){
 
 const toSave = {};
 
-function cacheAndPersist(o){
-  objects[toUID(o.UID)]=o;
-  toSave[toUID(o.UID)]=true;
+function cacheAndPersist(o, notify){
+  const uid=toUID(o.UID);
+  objects[uid]=o;
+  toSave[uid]=(toSave[uid] || notify || false);
 }
 
-setInterval(()=>{ persistenceFlush().then((a)=> (a.length && console.log(a)))}, 100);
+setInterval(()=>{ persistenceFlush().then((a)=> (a.length && console.log(a)))}, 10);
 
 function persistenceFlush(){
   if(!(persistence && persistence.persist)) return Promise.resolve([]);
   return Promise.all(Object.keys(toSave).map(uid=>{
     return getObject(uid).then(o=>{
+      const notify = toSave[uid];
       delete toSave[uid];
-      return persistence.persist(o);
+      return persistence.persist(o).then(r => { if(notify) notifyObservers(o); return r; });
     })
   }))
 }
@@ -199,8 +201,7 @@ function incomingObject(json, notify){
 function storeObject(o){
   if(!o.UID)    return;
   if(!o.Notify) o.Notify = [];
-  cacheAndPersist(o);
-  notifyObservers(o);
+  cacheAndPersist(o, true);
 }
 
 function updateObject(uid, update){
@@ -214,8 +215,7 @@ function updateObject(uid, update){
   if(debugchanges) console.log('diff:', diff, 'changed:', changed);
   if(debugchanges && changed) console.log('changed, result\n', JSON.stringify(p,null,4));
   if(!changed) return null;
-  cacheAndPersist(p);
-  notifyObservers(p);
+  cacheAndPersist(p, true);
   return p;
 }
 
