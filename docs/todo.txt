@@ -3,10 +3,11 @@ To Do
 -----
 
  - --------------------
- x don't add to Notify if already there
- x only send remote Notify entries not local (prevent remote duplicating notifications back to you)
- - detect diffs (to prevent looping): UID can change? and is Notify diff a diff? Timer?
+ - save changes to shadow in eval loop, save to persistence, .then() make public and notify
+ - store (ntf->rem) uid in localStorage/config
+ - detect diffs (to prevent looping): UID can change? Timer===0 not a change and is Notify diff a diff?
  - don't add Notify for just UID string match (prevent mutual obs of objects in the first place)
+ x only send remote Notify entries not local (prevent remote duplicating notifications back to you)
  - --------------------
  - React coupling
    - hardwiring from obj to notify react (o.react)
@@ -30,7 +31,8 @@ To Do
     - timeout? don't use fetch!
  - refresh? after viewed and time rel to cache ttl
     - only look through giphy (url) if button pressed, but then need to look through when it comes in and notify/evaluates.. ?
-    - every view-through fetches means only don't notify when it's not changed .. and giphy always changes so get stuck in loop
+    - fetching on every view through url in path means you only don't notify when remote object is not changed
+      .. and giphy always changes, so you get stuck in a loop
     - giphy: opaque URLs; non-idempotency
  - --------------------
  - deletions: set to undefined and they're removed
