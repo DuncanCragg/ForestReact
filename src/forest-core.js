@@ -209,12 +209,12 @@ function updateObject(uid, update){
   if(debugchanges) console.log(uid, 'before\n', JSON.stringify(o,null,4),'\nupdate:\n',JSON.stringify(update,null,4));
   const p=mergeUpdate(o, update);
   const diff = difference(o,p);
-  const changed = !(_.isEqual(diff, {}) || _.isEqual(diff, { Timer: 0 }));
-  if(debugchanges) console.log('diff:', diff, 'changed:', changed);
+  const changed = !_.isEqual(diff, {});
+  const justtimeout = _.isEqual(diff, { Timer: 0 });
+  if(debugchanges) console.log('diff:', diff, 'changed:', changed, 'justtimeout:', justtimeout);
   if(debugchanges && changed) console.log('changed, result\n', JSON.stringify(p,null,4));
-  if(!changed) return null;
-  cacheAndPersist(p, true);
-  return p;
+  if(changed) cacheAndPersist(p, !justtimeout);
+  return (changed && !justtimeout)? p: null;
 }
 
 function mergeUpdate(o,update){
