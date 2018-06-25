@@ -5,13 +5,14 @@ import superagent from 'superagent';
 import _ from 'lodash';
 import core from './forest-core';
 
-const uid2notify = {};
-const notify2ws = {};
+const remote2ws = {};
+
+let clientRemote = null;
 
 function doGet(url){
   return superagent.get(url)
     .timeout({ response: 9000, deadline: 10000 })
-    .set('Notify', core.notifyUID)
+    .set(clientRemote? { Remote: clientRemote}: {})
     .then(x => x.body)
     .catch(e => console.error('doGet',e,url));
 }
@@ -21,7 +22,7 @@ function doPost(o,url){
   const data = _.omit(o, core.localProps);
   return superagent.post(url)
     .timeout({ response: 9000, deadline: 10000 })
-    .set('Notify', core.notifyUID)
+    .set(clientRemote? { Remote: clientRemote}: {})
     .send(data)
     .then(x => x.body)
     .catch(e => console.error('doPost',e,url,data));
@@ -38,14 +39,14 @@ export default class ForestCommon extends Component {
     const ws = new WebSocket(`ws://${host}:${port}`);
 
     ws.onopen = () => {
-      ws.send(JSON.stringify({ notifyUID: core.notifyUID }));
+      if(clientRemote) ws.send(JSON.stringify({ Remote: clientRemote }));
     };
 
     ws.onmessage = (message) => {
       const json = JSON.parse(message.data);
-      if(json.notifyUID){
+      if(json.Remote){
         console.log('ws init:', json);
-        notify2ws[json.notifyUID]=ws;
+        remote2ws[json.Remote]=ws;
       }
       else
       if(json.UID){
@@ -95,6 +96,14 @@ export default class ForestCommon extends Component {
 
   static getObject(uid){
     return core.getObject(uid);
+  }
+
+  static makeUID(rem){
+    return core.makeUID(rem);
+  }
+
+  static setRemote(Remote){
+    clientRemote = Remote;
   }
 
   UID;

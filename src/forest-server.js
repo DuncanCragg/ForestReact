@@ -13,8 +13,8 @@ let serverPort=0;
 
 const logRequest = (req, res, next) => {
   console.log('---------------------------->');
-  if(req.method==='POST') console.log(req.method, req.originalUrl, req.headers.notify||'', '\n', req.body);
-  else                    console.log(req.method, req.originalUrl, req.headers.notify||'');
+  if(req.method==='POST') console.log(req.method, req.originalUrl, req.headers.remote||'', '\n', req.body);
+  else                    console.log(req.method, req.originalUrl, req.headers.remote||'');
   next();
 };
 
@@ -27,7 +27,7 @@ const logResponse = (req, res, next) => {
 const CORS = (req, res, next) => {
   res.header('Access-Control-Allow-Origin','*');
   res.header('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, X-Requested-With, Notify'); // Accept, X-Requested-By, Origin, Cache-Control
+  res.header('Access-Control-Allow-Headers', 'Content-Type, X-Requested-With, Remote'); // Accept, X-Requested-By, Origin, Cache-Control
   next();
 };
 
@@ -54,17 +54,17 @@ app.get('/*',
   logRequest,
   CORS,
   (req, res, next) => {
-    const notify = req.headers.notify;
+    const Remote = req.headers.remote;
     const uid = req.originalUrl.substring(1);
     core.getObject(uid)
-      .then(o => { if(o){ res.json(JSON.parse(prefixUIDs(o))); if(notify) core.setNotify(o,notify)} else res.status(404).send('Not found')})
+      .then(o => { if(o){ res.json(JSON.parse(prefixUIDs(o))); if(Remote) core.setNotify(o,Remote)} else res.status(404).send('Not found')})
       .then(()=>next())
       .catch(e => console.error(e));
   },
   logResponse,
 );
 
-const notify2ws = {};
+const remote2ws = {};
 
 app.post('/*',
   logRequest,
@@ -72,9 +72,9 @@ app.post('/*',
   (req, res, next) => {
     const json=req.body;
     if(!json || !json.UID) next();
-    const notify = req.headers.notify;
+    const Remote = req.headers.remote;
     const path = req.originalUrl.substring(1);
-    core.incomingObject(Object.assign(json, notify && { Remote: notify }), path!=='notify' && path)
+    core.incomingObject(Object.assign(json, Remote && { Remote }), path!=='notify' && path)
     res.json({ });
     next();
   },
@@ -89,15 +89,17 @@ function doGet(url){
 
 const pendingWSpackets = {};
 
+let serverRemote = null;
+
 function doPost(o, u){
   if(core.isURL(u)){
     console.log('not posting to peer yet:', u);
   }
   else{
-    const notifyUID = core.isNotify(u)? u: o.Remote;
-    if(!pendingWSpackets[notifyUID]) pendingWSpackets[notifyUID] = [];
-    pendingWSpackets[notifyUID].push(prefixUIDs(o));
-    wsFlush(notifyUID);
+    const Remote = core.isNotify(u)? u: o.Remote;
+    if(!pendingWSpackets[Remote]) pendingWSpackets[Remote] = [];
+    pendingWSpackets[Remote].push(prefixUIDs(o));
+    wsFlush(Remote);
   }
 }
 
@@ -106,11 +108,11 @@ function wsInit(config){
   wss.on('connection', (ws) => {
     ws.on('message', (data) => {
       const json = JSON.parse(data);
-      if(json.notifyUID){
+      if(json.Remote){
         console.log('ws init:', json);
-        notify2ws[json.notifyUID]=ws;
-        ws.send(JSON.stringify({ notifyUID: core.notifyUID }));
-        wsFlush(json.notifyUID);
+        remote2ws[json.Remote]=ws;
+        if(serverRemote) ws.send(JSON.stringify({ Remote: serverRemote }));
+        wsFlush(json.Remote);
       }
       else{
         console.log('ws incoming json:', json);
@@ -119,21 +121,21 @@ function wsInit(config){
   });
 }
 
-function wsFlush(notifyUID){
-  const ws = notify2ws[notifyUID];
+function wsFlush(Remote){
+  const ws = remote2ws[Remote];
   if(!ws){
-    console.log('websocket not found', notifyUID);
+    console.log('websocket not found', Remote);
     return;
   }
   let packet;
-  while((packet=(pendingWSpackets[notifyUID]||[]).shift())){
+  while((packet=(pendingWSpackets[Remote]||[]).shift())){
     try{
-      console.log('<<----------ws---------------\n', notifyUID, '\n', packet, '\n<<---------------------------');
+      console.log('<<----------ws---------------\n', Remote, '\n', packet, '\n<<---------------------------');
       if(ws.readyState === ws.OPEN) ws.send(packet);
-      else console.log('WebSocket closed sending\n', packet, '\nto', notifyUID)
+      else console.log('WebSocket closed sending\n', packet, '\nto', Remote)
     }
     catch(e){
-      console.error('error sending\n', packet, '\nto', notifyUID, '\n', e)
+      console.error('error sending\n', packet, '\nto', Remote, '\n', e)
     }
   }
 }
@@ -219,13 +221,17 @@ function init({httpHost, httpPort, wsPort, mongoHostPort}){
   });
 }
 
+function setRemote(Remote){ serverRemote = Remote; }
+
 export default {
   init,
+  setRemote,
   cacheObjects:   core.cacheObjects,
   reCacheObjects: core.reCacheObjects,
   setEvaluator:   core.setEvaluator,
   getObject:      core.getObject,
   spawnObject:    core.spawnObject,
+  makeUID:        core.makeUID,
 }
 
 

@@ -7,11 +7,9 @@ const debugchanges = debugall || false;
 const debugnotify = debugall || false;
 const debugobject = debugall || false;
 
-const notifyUID = makeUID(true);
-
 const localProps = ['Notifying', 'Alerted', 'Timer', 'TimerId', 'Evaluator', 'Cache', 'ReactNotify', 'userState'];
 
-function makeUID(notify){
+function makeUID(rem){
   /*jshint bitwise:false */
   var i, random;
   var uuid = '';
@@ -20,7 +18,7 @@ function makeUID(notify){
     if (i === 8 || i === 12 || i === 16 || i === 20) uuid += '-';
     uuid += (i === 12 ? 4 : (i === 16 ? (random & 3 | 8) : random)).toString(16);
   }
-  return (!notify? 'uid-': 'ntf-') + uuid;
+  return (!rem? 'uid-': 'rem-') + uuid;
 }
 
 function difference(a, b) {
@@ -235,7 +233,7 @@ function isURL(u){
 }
 
 function isNotify(u){
-  return /^ntf-/.test(u);
+  return /^rem-/.test(u);
 }
 
 function toUID(u){
@@ -376,7 +374,7 @@ function setEvaluator(name, evaluator){
 }
 
 export default {
-  notifyUID,
+  makeUID,
   toUID,
   spawnObject,
   storeObject,
