@@ -111,7 +111,7 @@ function doGet(url){
   if(!fetching[url]){
     fetching[url]=true;
     network && network.doGet(url)
-      .then(json => { fetching[url]=false; updateObject(url, json) })
+      .then(json => { fetching[url]=false; updateObject(url, Object.assign({ Updated: Date.now() }, json)) })
       .catch(e => { fetching[url]=false; console.error('doGet',e,url); });
   }
 }
@@ -128,7 +128,7 @@ function ensureObjectState(u, obsuid){
       setNotify(o,obsuid);
     }
     else if(isURL(u)){
-      cacheAndPersist({ UID: u, Notify: [ obsuid ], Remote: toRemote(u) });
+      cacheAndPersist({ UID: u, Notify: [ obsuid ], Remote: toRemote(u), Updated: 0 });
       doGet(u);
     }
   })
@@ -144,6 +144,10 @@ function setNotify(o,uid,savelater){
 
 function isRemote(uid){
   return getObject(uid).then(o=>o && o.Remote)
+}
+
+function isShell(o){
+  return o.Remote && !o.Updated;
 }
 
 function notifyObservers(o){
@@ -215,7 +219,8 @@ function updateObject(uid, update){
   const diff = difference(o,p);
   const changed = !_.isEqual(diff, {});
   const justtimeout = _.isEqual(diff, { Timer: 0 });
-  if(debugchanges) console.log('diff:', diff, 'changed:', changed, 'justtimeout:', justtimeout);
+  const justupdated = _.isEqual(diff, { Updated: 0 }); // also needed for Version:
+  if(debugchanges) console.log('diff:', diff, 'changed:', changed, 'justtimeout:', justtimeout, 'justupdated:', justupdated);
   if(debugchanges && changed) console.log('changed, result\n', JSON.stringify(p,null,4));
   if(changed) cacheAndPersist(p, !justtimeout);
   return (changed && !justtimeout)? p: null;
