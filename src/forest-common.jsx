@@ -32,15 +32,30 @@ core.setNetwork({ doGet, doPost });
 
 export default class ForestCommon extends Component {
 
-  static wsRetry=1000
+  static wsRetryId=0;
+  static wsRetryIn=1000;
+  static wsRetryDither=Math.floor(Math.random()*5000);
 
   static wsInit(host,port){
 
     const ws = new WebSocket(`ws://${host}:${port}`);
 
     ws.onopen = () => {
+      clearTimeout(this.wsRetryId);
+      this.wsRetryIn=1000;
+      this.wsRetryDither=Math.floor(Math.random()*5000);
       if(clientRemote) ws.send(JSON.stringify({ Remote: clientRemote }));
     };
+
+    ws.onclose = () => {
+      const timeout=this.wsRetryIn + this.wsRetryDither;
+      this.wsRetryDither=0;
+      console.log('WebSocket closed, retry in.. ', timeout/1000);
+      this.wsRetryId=setTimeout(()=>{
+        this.wsRetryIn=Math.min(Math.floor(this.wsRetryIn*1.5), 15000)
+        this.wsInit(host, port)
+      }, timeout);
+    }
 
     ws.onmessage = (message) => {
       const json = JSON.parse(message.data);
@@ -55,12 +70,8 @@ export default class ForestCommon extends Component {
       }
     };
 
-    ws.onerror = (e) => {
-      setTimeout(()=>{
-        this.wsInit(host, port)
-        this.wsRetry=Math.min(Math.floor(this.wsRetry*1.5), 10000)
-        console.log('retry WebSocket in..', this.wsRetry/1000)
-      }, this.wsRetry);
+    ws.onerror = e => {
+      console.log('websocket error', e);
     };
   }
 

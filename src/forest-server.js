@@ -124,7 +124,7 @@ function wsInit(config){
 function wsFlush(Remote){
   const ws = remote2ws[Remote];
   if(!ws){
-    console.log('websocket not found', Remote);
+    console.log('websocket not found', Remote, 'sending:', pendingWSpackets[Remote]);
     return;
   }
   let packet;
