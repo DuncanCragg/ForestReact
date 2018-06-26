@@ -119,12 +119,17 @@ function doGet(url){
 function ensureObjectState(u, obsuid){
   const o = getCachedObject(u);
   if(o){
-    // if(isURL(u) && o.timeSinceFetched < ..){ // and below after getObject
+    if(isURL(u) && o.Updated + 10000 < Date.now()){
+      doGet(u);
+    }
     setNotify(o,obsuid);
     return o;
   }
   getObject(u).then(o=>{
     if(o){
+      if(isURL(u) && o.Updated + 10000 < Date.now()){
+        doGet(u);
+      }
       setNotify(o,obsuid);
     }
     else if(isURL(u)){
