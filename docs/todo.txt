@@ -3,11 +3,12 @@ To Do
 -----
 
  - --------------------
- - detect diffs (to prevent looping): UID can change? Timer===0 not a change and is Notify diff a diff?
+ - properly detect no diffs (to prevent looping)
  - don't add Notify for just UID string match (prevent mutual obs of objects in the first place)
  x store (ntf->rem) host/cache/remote uid in localStorage/config
  x save changes to shadow in eval loop, save to persistence, .then() make public and notify
  x only send remote Notify entries not local (prevent remote duplicating notifications back to you)
+ x Timer===0 not a change
  - --------------------
  - React coupling
    - hardwiring from obj to notify react (o.react)
