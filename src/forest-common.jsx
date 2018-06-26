@@ -13,8 +13,7 @@ function doGet(url){
   return superagent.get(url)
     .timeout({ response: 9000, deadline: 10000 })
     .set(clientRemote? { Remote: clientRemote}: {})
-    .then(x => x.body)
-    .catch(e => console.error('doGet',e,url));
+    .then(x => x.body);
 }
 
 function doPost(o,url){

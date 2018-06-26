@@ -107,6 +107,15 @@ function cacheObjects(list){
 
 var fetching = {};
 
+function doGet(url){
+  if(!fetching[url]){
+    fetching[url]=true;
+    network && network.doGet(url)
+      .then(json => { fetching[url]=false; updateObject(url, json) })
+      .catch(e => { fetching[url]=false; console.error('doGet',e,url); });
+  }
+}
+
 function ensureObjectState(u, obsuid){
   const o = getCachedObject(u);
   if(o){
@@ -119,13 +128,8 @@ function ensureObjectState(u, obsuid){
       setNotify(o,obsuid);
     }
     else if(isURL(u)){
-      const url=u;
-      cacheAndPersist({ UID: url, Notify: [ obsuid ], Remote: toRemote(url) });
-      if(!fetching[url]){
-        fetching[url]=true;
-        network && network.doGet(url)
-         .then(json => { fetching[url]=false; updateObject(url, json) });
-      }
+      cacheAndPersist({ UID: u, Notify: [ obsuid ], Remote: toRemote(u) });
+      doGet(u);
     }
   })
   return null;

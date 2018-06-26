@@ -83,8 +83,7 @@ app.post('/*',
 
 function doGet(url){
   return fetch(url)
-    .then(res => res.json())
-    .catch(e => console.error('doGet', e));
+    .then(res => res.json());
 }
 
 const pendingWSpackets = {};
