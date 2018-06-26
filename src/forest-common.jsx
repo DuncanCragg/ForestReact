@@ -32,7 +32,6 @@ core.setNetwork({ doGet, doPost });
 
 export default class ForestCommon extends Component {
 
-  static wsRetryId=0;
   static wsRetryIn=1000;
   static wsRetryDither=Math.floor(Math.random()*5000);
 
@@ -41,7 +40,6 @@ export default class ForestCommon extends Component {
     const ws = new WebSocket(`ws://${host}:${port}`);
 
     ws.onopen = () => {
-      clearTimeout(this.wsRetryId);
       this.wsRetryIn=1000;
       this.wsRetryDither=Math.floor(Math.random()*5000);
       if(clientRemote) ws.send(JSON.stringify({ Remote: clientRemote }));
@@ -51,7 +49,7 @@ export default class ForestCommon extends Component {
       const timeout=this.wsRetryIn + this.wsRetryDither;
       this.wsRetryDither=0;
       console.log('WebSocket closed, retry in.. ', timeout/1000);
-      this.wsRetryId=setTimeout(()=>{
+      setTimeout(()=>{
         this.wsRetryIn=Math.min(Math.floor(this.wsRetryIn*1.5), 15000)
         this.wsInit(host, port)
       }, timeout);
