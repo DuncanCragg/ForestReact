@@ -305,15 +305,13 @@ function object(u,p,q) { const r = ((uid, path, query)=>{
         }
         const r = val.filter(v => {
           if(valMatch(v, query.match)) return true;
-          if(v.constructor === String){
-            // TODO: ensureObjectState?
-            const o=getCachedObject(v)
+          if(isLink(v) && query.match.constructor===Object){
+            const o=ensureObjectState(v, observingMatcher(query.match) && uid);
             if(!o) return false;
-            setNotify(o,uid); // TODO: don't do that when it needn't observe: String:String case, UID:, etc
             return Object.keys(query.match).every(k => valMatch(o[k], query.match[k]));
           }
           if(v.constructor===Object){
-            return Object.keys(query.match).every(k => valMatch(v[k],query.match[k]));
+            return Object.keys(query.match).every(k => valMatch(v[k], query.match[k]));
           }
           return false;
         });
@@ -334,6 +332,10 @@ function object(u,p,q) { const r = ((uid, path, query)=>{
 
 function valMatch(a, b){
   return a == b || ((isURL(a) || isURL(b)) && toUID(a) === toUID(b));
+}
+
+function observingMatcher(match){
+  return !_.isEqual(Object.keys(match), [ 'UID' ]);
 }
 
 function checkTimer(o,time){
