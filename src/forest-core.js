@@ -122,7 +122,7 @@ function ensureObjectState(u, obsuid){
     if(isURL(u) && o.Updated + 10000 < Date.now()){
       doGet(u);
     }
-    setNotify(o,obsuid);
+    if(obsuid) setNotify(o,obsuid);
     return o;
   }
   getObject(u).then(o=>{
@@ -130,9 +130,9 @@ function ensureObjectState(u, obsuid){
       if(isURL(u) && o.Updated + 10000 < Date.now()){
         doGet(u);
       }
-      setNotify(o,obsuid);
+      if(obsuid) setNotify(o,obsuid);
     }
-    else if(isURL(u)){
+    else if(isURL(u) && obsuid){
       cacheAndPersist({ UID: u, Notify: [ obsuid ], Remote: toRemote(u), Updated: 0 });
       doGet(u);
     }
