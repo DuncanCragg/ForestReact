@@ -238,16 +238,20 @@ function mergeUpdate(o,update){
   return p;
 }
 
+function isLink(u){
+  return isUID(u) || isURL(u) || isNotify(u);
+}
+
 function isUID(u){
-  return /^uid-/.test(u);
+  return u.constructor === String && /^uid-/.test(u);
 }
 
 function isURL(u){
-  return /^https?:\/\//.test(u);
+  return u.constructor === String && /^https?:\/\//.test(u);
 }
 
 function isNotify(u){
-  return /^rem-/.test(u);
+  return u.constructor === String && /^rem-/.test(u);
 }
 
 function toUID(u){
