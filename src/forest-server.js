@@ -3,6 +3,7 @@ import _ from 'lodash';
 import express from 'express';
 import WebSocket from 'ws';
 import bodyParser from 'body-parser';
+import superagent from 'superagent';
 import mongodb from 'mongodb';
 import core from './forest-core';
 
@@ -81,14 +82,16 @@ app.post('/*',
   logResponse,
 );
 
+let serverRemote = null;
+
 function doGet(url){
-  return fetch(url)
-    .then(res => res.json());
+  return superagent.get(url)
+    .timeout({ response: 9000, deadline: 10000 })
+    .set(serverRemote? { Remote: serverRemote}: {})
+    .then(x => x.body);
 }
 
 const pendingWSpackets = {};
-
-let serverRemote = null;
 
 function doPost(o, u){
   if(core.isURL(u)){
