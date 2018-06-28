@@ -190,9 +190,7 @@ function notifyObservers(o){
       }
       else {
         if(debugnotify) console.log('local eval');
-        n.Alerted=o.UID;
-        doEvaluate(n.UID);
-        delete n.Alerted;
+        doEvaluate(n.UID, { Alerted: o.UID });
       }
     }
     if(debugnotify) console.log('remotes now', remotes)
@@ -371,7 +369,9 @@ function doEvaluate(uid, params) {
     if(debugevaluate) console.log(`iteration ${i}`);
     if(debugevaluate) console.log('>>>>>>>>>>>>>\n', object(uid, '.'));
     if(debugevaluate && object(uid, 'userState.')) console.log('>>>>>user>>>>\n', object(uid, 'userState.'));
+    if(params && params.Alerted) o.Alerted=params.Alerted;
     const evalout = evaluator(object.bind(null, uid), params);
+    delete o.Alerted;
     if(!evalout){ console.error('no evaluator output for', uid, o); return o; }
     let newState;
     if(evalout.constructor === Array){
