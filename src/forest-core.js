@@ -134,7 +134,7 @@ function ensureObjectState(u, obsuid){
       if(isURL(u) && o.Updated + 10000 < Date.now()){
         doGet(u);
       }
-      if(obsuid) setNotify(o,obsuid);
+      if(obsuid){ setNotify(o,obsuid); notifyObservers(o); }
     }
     else if(isURL(u) && obsuid){
       cacheAndPersist({ UID: u, Notify: [ obsuid ], Remote: toRemote(u), Updated: 0 });
