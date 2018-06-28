@@ -1,14 +1,24 @@
-
-To Do
------
-
  - --------------------
- - properly detect no diffs (to prevent looping)
- - don't add Notify for just UID string match (prevent mutual obs of objects in the first place)
- x store (ntf->rem) host/cache/remote uid in localStorage/config
- x save changes to shadow in eval loop, save to persistence, .then() make public and notify
- x only send remote Notify entries not local (prevent remote duplicating notifications back to you)
- x Timer===0 not a change
+ - drop rem-* with no WS/discard pkts
+ - Notifying as a list
+ - shadow object
+ - don't see UID as a change
+ - --------------------
+ - doGet:
+    - check actually GETing a URL!; lastmod/etag?
+    - errors
+    - timeout
+    - Version -> ETag
+ - treat shell case differently from refresh? (initial load timeout different from polling rate?)
+    - do you retry in ONR if you fail to see the object come in? if so, must be over 10s
+ - can have remote URL in any object
+    - evaluate / animated remotely of course
+    - only need Notify and render
+    - wrap remote with Forest, like WebObjects did?
+       - send userState over the wire
+ - --------------------
+ - deletion of properties: set eval return value to undefined/''/[]/null and they're removed
+ - deletion of objects? returning 404
  - --------------------
  - React coupling
    - hardwiring from obj to notify react (o.react)
@@ -21,31 +31,31 @@ To Do
  - --------------------
  - more widgets: selector, radio, textarea..
  - --------------------
- - can have remote URL in any object
-    - evaluate / animated remotely
-    - remote only need Notify and render
-    - wrap remote with Forest, like WebObjects did?
-    - send userState over the wire
- - fetch:
-    - check actually fetch()ing a URL!; lastmod/etag?
-    - error on fetch
-    - timeout? don't use fetch!
- - refresh? after viewed and time rel to cache ttl
-    - only look through giphy (url) if button pressed, but then need to look through when it comes in and notify/evaluates.. ?
-    - fetching on every view through url in path means you only don't notify when remote object is not changed
-      .. and giphy always changes, so you get stuck in a loop
-    - giphy: opaque URLs; non-idempotency
- - --------------------
- - deletions: set to undefined and they're removed
- - --------------------
- - any other way to pass thread than setTimeout(1)? setTimeout(0)!!
-   - need to queue up doEvaluates, not use setTimeout?
-   - only call doEvaluate if not already signalled
- - --------------------
-
-
- - --------------------
  - move numactive, numcompleted, shownTodos logic into evaluate (render is just show/hide/iterate no logic)
+ - --------------------
+
+
+ - --------------------
+ x don't see Timer: 0 as a change
+ x don't observe match on just UID
+ x save rem uid in config
+ - --------------------
+ x refresh? after viewed and time rel to cache ttl
+    x only look through giphy (url) if button pressed, but then need to look through when it comes in and notify/evaluates.. ?
+    x fetching on every view through url in path means you only don't notify when remote object is not changed
+      .. and giphy always changes, so you get stuck in a loop
+    x giphy: opaque URLs; non-idempotency
+ - --------------------
+ x any other way to pass thread than setTimeout(1)? setTimeout(0)!!
+   x need to queue up doEvaluates, not use setTimeout?
+   x only call doEvaluate if not already signalled
+ - --------------------
+ x properly detect no diffs (to prevent looping)
+ x don't add Notify for just UID string match (prevent mutual obs of objects in the first place)
+ x store (ntf->rem) host/cache/remote uid in localStorage/config
+ x save changes to shadow in eval loop, save to persistence, .then() make public and notify
+ x only send remote Notify entries not local (prevent remote duplicating notifications back to you)
+ x Timer===0 not a change
  - --------------------
 
 
