@@ -57,6 +57,10 @@ function getObject(u){
 
 const toSave = {};
 
+function cachePersistAndNotify(o){
+  cacheAndPersist(o, true);
+}
+
 function cacheAndPersist(o, notify){
   const uid=toUID(o.UID);
   objects[uid]=o;
@@ -96,7 +100,7 @@ function dumpCache(){
 function spawnObject(o){
   const UID = o.UID || makeUID();
   const Notify = o.Notify || [];
-  cacheAndPersist(Object.assign({ UID, Notify }, o));
+  cachePersistAndNotify(Object.assign({ UID, Notify }, o));
   doEvaluate(UID);
   return UID;
 }
@@ -212,7 +216,7 @@ function incomingObject(json, notify){
 function storeObject(o){
   if(!o.UID)    return;
   if(!o.Notify) o.Notify = [];
-  cacheAndPersist(o, true);
+  cachePersistAndNotify(o);
 }
 
 function updateObject(uid, update){
@@ -227,7 +231,7 @@ function updateObject(uid, update){
   const justupdated = _.isEqual(diff, { Updated: 0 }); // also needed for Version:
   if(debugchanges) console.log('diff:', diff, 'changed:', changed, 'justtimeout:', justtimeout, 'justupdated:', justupdated);
   if(debugchanges && changed) console.log('changed, result\n', JSON.stringify(p,null,4));
-  if(changed) cacheAndPersist(p, !justtimeout);
+  if(changed){ if(!justtimeout) cachePersistAndNotify(p); else cacheAndPersist(p); }
   return (changed && !justtimeout)? p: null;
 }
 
