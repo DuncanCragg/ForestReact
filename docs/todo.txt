@@ -1,4 +1,5 @@
  - --------------------
+ - test: incomingObject sets Updated (e.g. results pushed, initially, but also polled)
  - drop rem-* with no WS/discard pkts
  - Notifying as a list
  - shadow object

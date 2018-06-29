@@ -123,7 +123,7 @@ function doGet(url){
 function ensureObjectState(u, obsuid){
   const o = getCachedObject(u);
   if(o){
-    if(isURL(u) && o.Updated + 10000 < Date.now()){
+    if(isURL(u) && (o.Updated||0)+10000 < Date.now()){
       doGet(u);
     }
     if(obsuid) setNotify(o,obsuid);
@@ -131,7 +131,7 @@ function ensureObjectState(u, obsuid){
   }
   getObject(u).then(o=>{
     if(o){
-      if(isURL(u) && o.Updated + 10000 < Date.now()){
+      if(isURL(u) && (o.Updated||0)+10000 < Date.now()){
         doGet(u);
       }
       if(obsuid){ setNotify(o,obsuid); notifyObservers(o); }
@@ -204,6 +204,7 @@ function notifyObservers(o){
 function incomingObject(json, notify){
   if(!json.Notify) json.Notify=[]
   if(!json.Remote) json.Remote=toRemote(json.UID)
+  json.Updated = Date.now();
   if(notify) setNotify(json, notify, true);
   getObject(json.UID).then(o=>{
     if(!o) storeObject(json);
@@ -226,8 +227,8 @@ function updateObject(uid, update){
   const diff = difference(o,p);
   const changed = !_.isEqual(diff, {});
   const justtimeout = _.isEqual(diff, { Timer: 0 });
-  const justupdated = _.isEqual(diff, { Updated: 0 }); // also needed for Version:
-  if(debugchanges) console.log('diff:', diff, 'changed:', changed, 'justtimeout:', justtimeout, 'justupdated:', justupdated);
+//const justupdated = _.isEqual(diff, { Updated: 0 }); // also needed for Version:
+  if(debugchanges) console.log('diff:', diff, 'changed:', changed, 'justtimeout:', justtimeout /*, 'justupdated:', justupdated*/);
   if(debugchanges && changed) console.log('changed, result\n', JSON.stringify(p,null,4));
   if(changed){ if(!justtimeout) cachePersistAndNotify(p); else cacheAndPersist(p); }
   return (changed && !justtimeout)? p: null;
