@@ -102,7 +102,7 @@ function dumpCache(){
 function spawnObject(o){
   const UID = o.UID || makeUID();
   const Notify = o.Notify || [];
-  cachePersistAndNotify(Object.assign({ UID, Notify }, o));
+  cachePersistAndNotify(Object.assign({ UID, Notify, Version: 1 }, o));
   doEvaluate(UID);
   return UID;
 }
@@ -139,7 +139,7 @@ function ensureObjectState(u, obsuid){
       if(obsuid){ setNotify(o,obsuid); notifyObservers(o); }
     }
     else if(isURL(u) && obsuid){
-      cacheAndPersist({ UID: u, Notify: [ obsuid ], Remote: toRemote(u), Updated: 0 });
+      cacheAndPersist({ UID: u, Notify: [ obsuid ], Version: 0, Remote: toRemote(u), Updated: 0 });
       doGet(u);
     }
   })
@@ -231,8 +231,9 @@ function incomingObject(json, notify){
 }
 
 function storeObject(o){
-  if(!o.UID)    return;
-  if(!o.Notify) o.Notify = [];
+  if(!o.UID)     return;
+  if(!o.Notify)  o.Notify = [];
+  if(!o.Version) o.Version = 1;
   cachePersistAndNotify(o);
 }
 
@@ -241,14 +242,22 @@ function updateObject(uid, update){
   const o=getCachedObject(uid)
   if(!o) return null;
   if(debugchanges) console.log(uid, 'before\n', JSON.stringify(o,null,4),'\nupdate:\n',JSON.stringify(update,null,4));
+  if(o.Version && update.Version && o.Version >= update.Version){
+    console.log('incoming version not newer:', o.Version, 'not less than', update.Version);
+    return null;
+  }
   const p=mergeUpdate(o, update);
   const diff = difference(o,p);
   const changed = !_.isEqual(diff, {});
   const justtimeout = _.isEqual(diff, { Timer: 0 });
-//const justupdated = _.isEqual(diff, { Updated: 0 }); // also needed for Version:
+//const justupdated = _.isEqual(diff, { Updated: .. }); // also needed for Version: ?
   if(debugchanges) console.log('diff:', diff, 'changed:', changed, 'justtimeout:', justtimeout /*, 'justupdated:', justupdated*/);
-  if(debugchanges && changed) console.log('changed, result\n', JSON.stringify(p,null,4));
-  if(changed){ if(!justtimeout) cachePersistAndNotify(p); else cacheAndPersist(p); }
+  if(changed){
+    if(!justtimeout && !update.Version) p.Version = (p.Version||0)+1;
+    if(debugchanges) console.log('changed, result\n', JSON.stringify(p,null,4));
+    if(!justtimeout) cachePersistAndNotify(p);
+    else             cacheAndPersist(p);
+  }
   return (changed && !justtimeout)? p: null;
 }
 
