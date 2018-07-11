@@ -379,10 +379,10 @@ function checkTimer(o,time){
 }
 
 function setPromiseState(uid, o, p){
-  p.then(newState => {
-    if(debugevaluate) console.log('<<<<<<<<<<<<< promised update:\n', newState);
-    checkTimer(o,newState.Timer);
-    updateObject(uid, newState);
+  p.then(update => {
+    if(debugevaluate) console.log('<<<<<<<<<<<<< promised update:\n', update);
+    checkTimer(o,update.Timer);
+    updateObject(uid, update);
   });
   return {};
 }
@@ -401,14 +401,14 @@ function doEvaluate(uid, params) {
     const evalout = evaluator(object.bind(null, uid), params);
     delete o.Alerted;
     if(!evalout){ console.error('no evaluator output for', uid, o); return o; }
-    let newState;
+    let update;
     if(evalout.constructor === Array){
-      newState = Object.assign({}, ...(evalout.map(x => (x && x.constructor === Promise)? setPromiseState(uid,o,x): (x || {}))))
+      update = Object.assign({}, ...(evalout.map(x => (x && x.constructor === Promise)? setPromiseState(uid,o,x): (x || {}))))
     }
-    else newState = evalout;
-    if(debugevaluate) console.log('<<<<<<<<<<<<< update:\n', newState);
-    checkTimer(o,newState.Timer);
-    o = updateObject(uid, newState);
+    else update = evalout;
+    if(debugevaluate) console.log('<<<<<<<<<<<<< update:\n', update);
+    checkTimer(o,update.Timer);
+    o = updateObject(uid, update);
     if(!o) break;
   }
   if(reactnotify) reactnotify();
