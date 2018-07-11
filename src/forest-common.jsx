@@ -5,8 +5,6 @@ import superagent from 'superagent';
 import _ from 'lodash';
 import core from './forest-core';
 
-const remote2ws = {};
-
 let clientRemote = null;
 
 function doGet(url){
@@ -58,7 +56,6 @@ export default class ForestCommon extends Component {
       const json = JSON.parse(message.data);
       if(json.Remote){
         console.log('ws init:', json);
-        remote2ws[json.Remote]=ws;
       }
       else
       if(json.UID){
