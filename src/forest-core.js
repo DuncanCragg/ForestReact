@@ -7,6 +7,7 @@ const debugchanges = debugall || false;
 const debugnotify = debugall || false;
 const debugobject = debugall || false;
 const debugnet = debugall || true;
+const debugpersist = debugall || false;
 
 const localProps = ['Notifying', 'Alerted', 'Timer', 'TimerId', 'Evaluator', 'Cache', 'ReactNotify', 'userState'];
 
@@ -69,7 +70,7 @@ function cacheAndPersist(o, notify){
   else if(notify) notifyObservers(o);
 }
 
-setInterval(()=>{ persistenceFlush().then((a)=> (a.length && console.log(a)))}, 10);
+setInterval(()=>{ persistenceFlush().then((a)=> (a.length && debugpersist && console.log(a)))}, 10);
 
 function persistenceFlush(){
   return Promise.all(Object.keys(toSave).map(uid=>{
