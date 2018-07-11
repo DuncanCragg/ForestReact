@@ -14,7 +14,7 @@ let serverPort=0;
 
 const logRequest = (req, res, next) => {
   console.log('---------------------------->');
-  if(req.method==='POST') console.log(req.method, req.originalUrl, req.headers.remote||'', '\n', req.body);
+  if(req.method==='POST') console.log(req.method, req.originalUrl, req.headers.remote||''); // , '\n', req.body);
   else                    console.log(req.method, req.originalUrl, req.headers.remote||'');
   next();
 };
@@ -94,15 +94,12 @@ function doGet(url){
 const pendingWSpackets = {};
 
 function doPost(o, u){
-  if(core.isURL(u)){
-    console.log('not posting to peer yet:', u);
-  }
-  else{
-    const Remote = core.isNotify(u)? u: o.Remote;
-    if(!pendingWSpackets[Remote]) pendingWSpackets[Remote] = [];
-    pendingWSpackets[Remote].push(prefixUIDs(o));
-    wsFlush(Remote);
-  }
+  if(core.isURL(u)) return Promise.resolve(false);
+  const Remote = core.isNotify(u)? u: o.Remote;
+  if(!pendingWSpackets[Remote]) pendingWSpackets[Remote] = [];
+  pendingWSpackets[Remote].push(prefixUIDs(o));
+  wsFlush(Remote);
+  return Promise.resolve(true);
 }
 
 function wsInit(config){
@@ -132,7 +129,7 @@ function wsFlush(Remote){
   let packet;
   while((packet=(pendingWSpackets[Remote]||[]).shift())){
     try{
-      console.log('<<----------ws---------------\n', Remote, '\n', packet, '\n<<---------------------------');
+      console.log('<<----------ws---------------', Remote);
       if(ws.readyState === ws.OPEN) ws.send(packet);
       else console.log('WebSocket closed sending\n', packet, '\nto', Remote)
     }

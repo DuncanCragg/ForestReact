@@ -6,6 +6,7 @@ const debugevaluate = debugall || false;
 const debugchanges = debugall || false;
 const debugnotify = debugall || false;
 const debugobject = debugall || false;
+const debugnet = debugall || true;
 
 const localProps = ['Notifying', 'Alerted', 'Timer', 'TimerId', 'Evaluator', 'Cache', 'ReactNotify', 'userState'];
 
@@ -115,7 +116,7 @@ function doGet(url){
   if(!fetching[url]){
     fetching[url]=true;
     network && network.doGet(url)
-      .then(json => { fetching[url]=false; updateObject(url, Object.assign({ Updated: Date.now() }, json)) })
+      .then(json => { fetching[url]=false; incomingObjectFromGET(url, json); })
       .catch(e => { fetching[url]=false; console.error('doGet',e,url); });
   }
 }
@@ -198,14 +199,30 @@ function notifyObservers(o){
   })
   .catch(e => console.log(e))
   ))
-  .then(()=>Object.keys(remotes).map(r => network && network.doPost(Object.assign({}, o, { Notify: remotes[r] }), r)));
+  .then(()=>Object.keys(remotes).map(u => outgoingObject(Object.assign({}, o, { Notify: remotes[u] }), u)));
+}
+
+function outgoingObject(o,u){
+  network && network.doPost(o,u).then((ok) => {
+    if(debugnet){
+      if(ok) console.log('-------------->> outgoingObject\n', JSON.stringify(o, null, 4), u);
+      else console.log('no outgoingObject for', u)
+    }
+  });
+}
+
+function incomingObjectFromGET(url, json){
+  json = Object.assign({ Updated: Date.now() }, json)
+  if(debugnet) console.log('<<-------------- incomingObjectFromGET\n', JSON.stringify(json, null, 4));
+  updateObject(url, json)
 }
 
 function incomingObject(json, notify){
   if(!json.Notify) json.Notify=[]
   if(!json.Remote) json.Remote=toRemote(json.UID)
-  json.Updated = Date.now();
+  json = Object.assign({ Updated: Date.now() }, json)
   if(notify) setNotify(json, notify, true);
+  if(debugnet) console.log('<<-------------- incomingObject\n', JSON.stringify(json, null, 4), notify);
   getObject(json.UID).then(o=>{
     if(!o) storeObject(json);
     else updateObject(json.UID, json)

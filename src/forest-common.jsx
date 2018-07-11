@@ -15,7 +15,7 @@ function doGet(url){
 }
 
 function doPost(o,url){
-  if(!core.isURL(url)) return;
+  if(!core.isURL(url)) return Promise.resolve(false);
   const data = _.omit(o, core.localProps);
   return superagent.post(url)
     .timeout({ response: 9000, deadline: 10000 })
@@ -56,10 +56,11 @@ export default class ForestCommon extends Component {
       const json = JSON.parse(message.data);
       if(json.Remote){
         console.log('ws init:', json);
+        ws.Remote = json.Remote;
       }
       else
       if(json.UID){
-        console.log('------------ws------------->>\n', message.data, '\n--------------------------->>');
+        console.log('------------ws------------->>', ws.Remote);
         core.incomingObject(json);
       }
     };
