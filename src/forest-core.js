@@ -266,7 +266,7 @@ function mergeUpdate(o,update){
   const updateNotify=update.Notify; delete update.Notify;
   const p=Object.assign({}, o, update);
   updateNotify && updateNotify.forEach(un=>setNotify(p,un,true))
-  return p;
+  return _.omitBy(p, v => v===null||v===undefined||v===''||v===[]);
 }
 
 function isLink(u){
