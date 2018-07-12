@@ -1,3 +1,7 @@
+
+ - --------------------
+ - Cache: no-persist = for userState
+ - thus Cache: [ .. ] in a list
  - --------------------
  - test: incomingObject sets Updated (e.g. results pushed, initially, but also polled)
  - drop rem-* with no WS/discard pkts
@@ -6,10 +10,7 @@
  - don't see UID as a change
  - --------------------
  - doGet:
-    - check actually GETing a URL!; lastmod/etag?
-    - errors
-    - timeout
-    - Version -> ETag
+    - Version -> ETag? 304s are coming back
  - treat shell case differently from refresh? (initial load timeout different from polling rate?)
     - do you retry in ONR if you fail to see the object come in? if so, must be over 10s
  - can have remote URL in any object
