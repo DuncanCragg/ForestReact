@@ -6,7 +6,7 @@ const debugevaluate = debugall || false;
 const debugchanges = debugall || false;
 const debugnotify = debugall || false;
 const debugobject = debugall || false;
-const debugnet = debugall || true;
+const debugnet = debugall || false;
 const debugpersist = debugall || false;
 
 const localProps = ['Notifying', 'Alerted', 'Timer', 'TimerId', 'Evaluator', 'Cache', 'ReactNotify', 'userState'];
