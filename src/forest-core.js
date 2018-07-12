@@ -13,8 +13,8 @@ const localProps = ['Notifying', 'Alerted', 'Timer', 'TimerId', 'Evaluator', 'Ca
 
 function makeUID(rem){
   /*jshint bitwise:false */
-  var i, random;
-  var uuid = '';
+  let i, random;
+  let uuid = '';
   for (i = 0; i < 32; i++) {
     random = Math.random() * 16 | 0;
     if (i === 8 || i === 12 || i === 16 || i === 20) uuid += '-';
@@ -111,7 +111,7 @@ function cacheObjects(list){
   return list.map(o => spawnObject(o));
 }
 
-var fetching = {};
+let fetching = {};
 
 function doGet(url){
   if(!fetching[url]){
@@ -318,7 +318,7 @@ function object(u,p,q) { const r = ((uid, path, query)=>{
   if(path==='.') return o;
   const pathbits = path.split('.');
   let c=o;
-  for(var i=0; i<pathbits.length; i++){
+  for(let i=0; i<pathbits.length; i++){
     if(pathbits[i]==='') return c;
     if(pathbits[i]==='Timer') return c.Timer || 0;
 
@@ -388,12 +388,12 @@ function setPromiseState(uid, o, p){
 }
 
 function doEvaluate(uid, params) {
-  var o = getCachedObject(uid);
+  let o = getCachedObject(uid);
   if(!o) return o;
   const evaluator = o.Evaluator && (typeof o.Evaluator === 'function'? o.Evaluator: evaluators[o.Evaluator]);
   if(!evaluator) return o;
   const reactnotify = o.ReactNotify;
-  for(var i=0; i<4; i++){
+  for(let i=0; i<4; i++){
     if(debugevaluate) console.log(`iteration ${i}`);
     if(debugevaluate) console.log('>>>>>>>>>>>>>\n', object(uid, '.'));
     if(debugevaluate && object(uid, 'userState.')) console.log('>>>>>user>>>>\n', object(uid, 'userState.'));
