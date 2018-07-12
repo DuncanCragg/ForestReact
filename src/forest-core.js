@@ -248,6 +248,7 @@ function updateObject(uid, update){
     return null;
   }
   const p=mergeUpdate(o, update);
+  checkTimer(p);
   const diff = difference(o,p);
   const changed = !_.isEqual(diff, {});
   const justtimeout = _.isEqual(diff, { Timer: 0 });
@@ -369,7 +370,8 @@ function observingMatcher(match){
   return !_.isEqual(Object.keys(match), [ 'UID' ]);
 }
 
-function checkTimer(o,time){
+function checkTimer(o){
+  const time=o.Timer;
   if(time && time > 0 && !o.TimerId){
     o.TimerId = setTimeout(() => {
       getCachedObject(o.UID).TimerId = null;
@@ -379,11 +381,10 @@ function checkTimer(o,time){
   }
 }
 
-function setPromiseState(uid, o, p){
+function setPromiseState(uid, p){
   p.then(update => {
     if(debugevaluate) console.log('<<<<<<<<<<<<< promised update:\n', update);
-    checkTimer(o,update.Timer);
-    updateObject(uid, update);
+    const o = updateObject(uid, update);
   });
   return {};
 }
@@ -404,11 +405,10 @@ function doEvaluate(uid, params) {
     if(!evalout){ console.error('no evaluator output for', uid, o); return o; }
     let update;
     if(evalout.constructor === Array){
-      update = Object.assign({}, ...(evalout.map(x => (x && x.constructor === Promise)? setPromiseState(uid,o,x): (x || {}))))
+      update = Object.assign({}, ...(evalout.map(x => (x && x.constructor === Promise)? setPromiseState(uid,x): (x || {}))))
     }
     else update = evalout;
     if(debugevaluate) console.log('<<<<<<<<<<<<< update:\n', update);
-    checkTimer(o,update.Timer);
     o = updateObject(uid, update);
     if(!o) break;
   }
