@@ -249,11 +249,10 @@ function updateObject(uid, update){
   }
   const p=mergeUpdate(o, update);
   checkTimer(p);
-  const diff = difference(o,p);
-  const changed = !_.isEqual(diff, {});
-  const justtimeout = _.isEqual(diff, { Timer: 0 });
+  const changed = !_.isEqual(o,p);
+  const justtimeout = changed && _.isEqual(difference(o,p), { Timer: 0 });
 //const justupdated = _.isEqual(diff, { Updated: .. }); // also needed for Version: ?
-  if(debugchanges) console.log('diff:', diff, 'changed:', changed, 'justtimeout:', justtimeout /*, 'justupdated:', justupdated*/);
+  if(debugchanges) console.log('diff:', difference(o,p), 'changed:', changed, 'justtimeout:', justtimeout /*, 'justupdated:', justupdated*/);
   if(changed){
     if(!justtimeout && !update.Version) p.Version = (p.Version||0)+1;
     if(debugchanges) console.log('changed, result\n', JSON.stringify(p,null,4));
