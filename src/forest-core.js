@@ -10,6 +10,7 @@ const debugnet = debugall || true;
 const debugpersist = debugall || false;
 
 const localProps = ['Notifying', 'Alerted', 'Timer', 'TimerId', 'Evaluator', 'Cache', 'ReactNotify', 'userState'];
+const noPersistProps = [ 'TimerId' ];
 
 function makeUID(rem){
   /*jshint bitwise:false */
@@ -77,7 +78,7 @@ function persistenceFlush(){
     return getObject(uid).then(o=>{
       const notify = toSave[uid];
       delete toSave[uid];
-      return persistence.persist(o).then(r => { if(notify) notifyObservers(o); return r; });
+      return persistence.persist(_.omit(o, noPersistProps)).then(r => { if(notify) notifyObservers(o); return r; });
     })
   }))
 }
