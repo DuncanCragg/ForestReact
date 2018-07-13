@@ -388,18 +388,19 @@ function setPromiseState(uid, p){
 
 function doEvaluate(uid, params) {
   let o = getCachedObject(uid);
-  if(!o) return o;
+  if(!o) return;
   const evaluator = o.Evaluator && (typeof o.Evaluator === 'function'? o.Evaluator: evaluators[o.Evaluator]);
-  if(!evaluator) return o;
+  if(!evaluator) return;
+  const Alerted = params && params.Alerted;
   const reactnotify = o.ReactNotify;
   for(let i=0; i<4; i++){
     if(debugevaluate) console.log(`iteration ${i}`);
     if(debugevaluate) console.log('>>>>>>>>>>>>>\n', object(uid, '.'));
     if(debugevaluate && object(uid, 'userState.')) console.log('>>>>>user>>>>\n', object(uid, 'userState.'));
-    if(params && params.Alerted) o.Alerted=params.Alerted;
+    if(Alerted) o.Alerted=Alerted;
     const evalout = evaluator(object.bind(null, uid), params);
     delete o.Alerted;
-    if(!evalout){ console.error('no evaluator output for', uid, o); return o; }
+    if(!evalout){ console.error('no evaluator output for', uid, o); return; }
     let update;
     if(evalout.constructor === Array){
       update = Object.assign({}, ...(evalout.map(x => (x && x.constructor === Promise)? setPromiseState(uid,x): (x || {}))))
@@ -410,7 +411,6 @@ function doEvaluate(uid, params) {
     if(!o) break;
   }
   if(reactnotify) reactnotify();
-  return o;
 }
 
 function runEvaluator(uid, params){
