@@ -163,12 +163,10 @@ function isShell(o){
 }
 
 function notifyObservers(o){
-  if(o.Notifying){
-    setNotify(o, o.Notifying); // merge here, don't set; also, it saves o here
-  }
+  const allNotify = _.uniq([].concat(o.Notifying||[]).concat(o.Notify||[]));
   if(debugnotify) console.log('===========================\no.UID/is/Remote:', `${o.UID} / ${o.is} / ${o.Remote||'--'}`);
   const remotes = {};
-  Promise.all(o.Notify.map(u => getObject(u).then(n=>{
+  Promise.all(allNotify.map(u => getObject(u).then(n=>{
     if(debugnotify) console.log('------------------------');
     if(debugnotify) console.log('remotes start', remotes, o.UID, o.is)
     if(debugnotify) console.log('n.UID/is/Remote:', (n && (`${n.UID} / ${n.is} / ${n.Remote||'--'}`))||'--', u, toRemote(u));

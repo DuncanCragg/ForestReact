@@ -1,12 +1,14 @@
 
  - --------------------
+ x Notifying as a list, don't put into Notify
+ - if Alerted not observed, remove Notify
+ - --------------------
  - Cache: no-persist = for userState
  - thus Cache: [ .. ] in a list
  - --------------------
- - test: incomingObject sets Updated (e.g. results pushed, initially, but also polled)
  - drop rem-* with no WS/discard pkts
- - Notifying as a list
- - shadow object
+ - test: incomingObject sets Updated (e.g. results pushed, initially, but also polled)
+ - shadow object in update
  - don't see UID as a change
  - --------------------
  - doGet:
