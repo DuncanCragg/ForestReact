@@ -335,9 +335,9 @@ function object(u,p,q) { const r = ((uid, path, query)=>{
         const r = val.filter(v => {
           if(valMatch(v, query.match)) return true;
           if(isLink(v) && query.match.constructor===Object){
-            const o=ensureObjectState(v, observingMatcher(query.match) && uid);
-            if(!o) return false;
-            return Object.keys(query.match).every(k => valMatch(o[k], query.match[k]));
+            const p=ensureObjectState(v, observingMatcher(query.match) && uid);
+            if(!p) return false;
+            return Object.keys(query.match).every(k => valMatch(p[k], query.match[k]));
           }
           if(v.constructor===Object){
             return Object.keys(query.match).every(k => valMatch(v[k], query.match[k]));
