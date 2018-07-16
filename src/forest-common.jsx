@@ -29,6 +29,10 @@ core.setNetwork({ doGet, doPost });
 
 export default class ForestCommon extends Component {
 
+  static setLogging(conf){
+    return core.setLogging(conf);
+  }
+
   static wsRetryIn=1000;
   static wsRetryDither=Math.floor(Math.random()*5000);
 

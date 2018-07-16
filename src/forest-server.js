@@ -231,6 +231,7 @@ export default {
   getObject:      core.getObject,
   spawnObject:    core.spawnObject,
   makeUID:        core.makeUID,
+  setLogging:     core.setLogging,
 }
 
 

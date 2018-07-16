@@ -2,12 +2,20 @@
 import _ from 'lodash';
 
 const debugall = false;
-const debugevaluate = debugall || false;
-const debugchanges = debugall || false;
-const debugnotify = debugall || false;
-const debugobject = debugall || false;
-const debugnet = debugall || false;
-const debugpersist = debugall || false;
+
+const log = {
+  update:   debugall || false,
+  evaluate: debugall || false,
+  changes:  debugall || false,
+  notify:   debugall || false,
+  object:   debugall || false,
+  net:      debugall || false,
+  persist:  debugall || false,
+}
+
+function setLogging(conf){
+  Object.assign(log, conf)
+}
 
 const localProps = ['Notifying', 'Alerted', 'Timer', 'TimerId', 'Evaluator', 'Cache', 'ReactNotify', 'userState'];
 const noPersistProps = [ 'TimerId' ];
@@ -71,7 +79,7 @@ function cacheAndPersist(o, notify){
   else if(notify) notifyObservers(o);
 }
 
-setInterval(()=>{ persistenceFlush().then((a)=> (a.length && debugpersist && console.log(a)))}, 10);
+setInterval(()=>{ persistenceFlush().then((a)=> (a.length && log.persist && console.log(a)))}, 10);
 
 function persistenceFlush(){
   return Promise.all(Object.keys(toSave).map(uid=>{
@@ -164,17 +172,17 @@ function isShell(o){
 
 function notifyObservers(o){
   const allNotify = _.uniq([].concat(o.Notifying||[]).concat(o.Notify||[]));
-  if(debugnotify) console.log('===========================\no.UID/is/Remote:', `${o.UID} / ${o.is} / ${o.Remote||'--'}`);
+  if(log.notify) console.log('===========================\no.UID/is/Remote:', `${o.UID} / ${o.is} / ${o.Remote||'--'}`);
   const remotes = {};
   Promise.all(allNotify.map(u => getObject(u).then(n=>{
-    if(debugnotify) console.log('------------------------');
-    if(debugnotify) console.log('remotes start', remotes, o.UID, o.is)
-    if(debugnotify) console.log('n.UID/is/Remote:', (n && (`${n.UID} / ${n.is} / ${n.Remote||'--'}`))||'--', u, toRemote(u));
+    if(log.notify) console.log('------------------------');
+    if(log.notify) console.log('remotes start', remotes, o.UID, o.is)
+    if(log.notify) console.log('n.UID/is/Remote:', (n && (`${n.UID} / ${n.is} / ${n.Remote||'--'}`))||'--', u, toRemote(u));
     if(!n){
       if(isURL(u) || isNotify(u)){
-        if(debugnotify) console.log(isURL(u) && 'isURL' || '', isNotify(u) && 'isNotify' || '');
+        if(log.notify) console.log(isURL(u) && 'isURL' || '', isNotify(u) && 'isNotify' || '');
         const Remote=toRemote(u);
-        if(debugnotify) console.log('Remote',Remote)
+        if(log.notify) console.log('Remote',Remote)
         if(o.Remote !== Remote){
           if(!remotes[Remote]) remotes[Remote]=[u]
           else                 remotes[Remote].push(u);
@@ -183,19 +191,19 @@ function notifyObservers(o){
     }
     else {
       if(n.Remote){
-        if(debugnotify) console.log('n.Remote');
+        if(log.notify) console.log('n.Remote');
         if(o.Remote !== n.Remote){
           if(!remotes[n.Remote]) remotes[n.Remote]=[n.UID]
           else                   remotes[n.Remote].push(n.UID)
         }
       }
       else {
-        if(debugnotify) console.log('local eval');
+        if(log.notify) console.log('local eval');
         doEvaluate(n.UID, { Alerted: o.UID });
       }
     }
-    if(debugnotify) console.log('remotes now', remotes)
-    if(debugnotify) console.log('\n------------------------');
+    if(log.notify) console.log('remotes now', remotes)
+    if(log.notify) console.log('\n------------------------');
   })
   .catch(e => console.log(e))
   ))
@@ -204,7 +212,7 @@ function notifyObservers(o){
 
 function outgoingObject(o,u){
   network && network.doPost(o,u).then((ok) => {
-    if(debugnet){
+    if(log.net){
       if(ok) console.log('-------------->> outgoingObject\n', JSON.stringify(o, null, 4), u);
       else console.log('no outgoingObject for', u)
     }
@@ -213,7 +221,7 @@ function outgoingObject(o,u){
 
 function incomingObjectFromGET(url, json){
   json = Object.assign({ Updated: Date.now() }, json)
-  if(debugnet) console.log('<<-------------- incomingObjectFromGET\n', JSON.stringify(json, null, 4));
+  if(log.net) console.log('<<-------------- incomingObjectFromGET\n', JSON.stringify(json, null, 4));
   updateObject(url, json)
 }
 
@@ -222,7 +230,7 @@ function incomingObject(json, notify){
   if(!json.Remote) json.Remote=toRemote(json.UID)
   json = Object.assign({ Updated: Date.now() }, json)
   if(notify) setNotify(json, notify, true);
-  if(debugnet) console.log('<<-------------- incomingObject\n', JSON.stringify(json, null, 4), notify);
+  if(log.net) console.log('<<-------------- incomingObject\n', JSON.stringify(json, null, 4), notify);
   getObject(json.UID).then(o=>{
     if(!o) storeObject(json);
     else updateObject(json.UID, json)
@@ -240,7 +248,7 @@ function updateObject(uid, update){
   if(!uid) return null
   const o=getCachedObject(uid)
   if(!o) return null;
-  if(debugchanges) console.log(uid, 'before\n', JSON.stringify(o,null,4),'\nupdate:\n',JSON.stringify(update,null,4));
+  if(log.changes) console.log(uid, 'before\n', JSON.stringify(o,null,4),'\nupdate:\n',JSON.stringify(update,null,4));
   if(o.Version && update.Version && o.Version >= update.Version){
     console.log('incoming version not newer:', o.Version, 'not less than', update.Version);
     return null;
@@ -250,10 +258,10 @@ function updateObject(uid, update){
   const changed = !_.isEqual(o,p);
   const justtimeout = changed && _.isEqual(difference(o,p), { Timer: 0 });
 //const justupdated = _.isEqual(diff, { Updated: .. }); // also needed for Version: ?
-  if(debugchanges) console.log('diff:', difference(o,p), 'changed:', changed, 'justtimeout:', justtimeout /*, 'justupdated:', justupdated*/);
+  if(log.changes) console.log('diff:', difference(o,p), 'changed:', changed, 'justtimeout:', justtimeout /*, 'justupdated:', justupdated*/);
   if(changed){
     if(!justtimeout && !update.Version) p.Version = (p.Version||0)+1;
-    if(debugchanges) console.log('changed, result\n', JSON.stringify(p,null,4));
+    if(log.changes) console.log('changed, result\n', JSON.stringify(p,null,4));
     if(!justtimeout) cachePersistAndNotify(p);
     else             cacheAndPersist(p);
   }
@@ -355,7 +363,7 @@ function object(u,p,q) { const r = ((uid, path, query)=>{
     }
   }
   })(u,p,q);
-  if(debugobject) console.log('object', getCachedObject(u), '\npath:', p, q && 'query:' || '', q || '', '=>', r);
+  if(log.object) console.log('object', getCachedObject(u), '\npath:', p, q && 'query:' || '', q || '', '=>', r);
   return r;
 }
 
@@ -380,7 +388,7 @@ function checkTimer(o){
 
 function setPromiseState(uid, p){
   p.then(update => {
-    if(debugevaluate) console.log('<<<<<<<<<<<<< promised update:\n', update);
+    if(log.evaluate || log.update) console.log('<<<<<<<<<<<<< promised update:\n', update);
     const o = updateObject(uid, update);
   });
   return {};
@@ -394,9 +402,10 @@ function doEvaluate(uid, params) {
   const Alerted = params && params.Alerted;
   const reactnotify = o.ReactNotify;
   for(let i=0; i<4; i++){
-    if(debugevaluate) console.log(`iteration ${i}`);
-    if(debugevaluate) console.log('>>>>>>>>>>>>>\n', object(uid, '.'));
-    if(debugevaluate && object(uid, 'userState.')) console.log('>>>>>user>>>>\n', object(uid, 'userState.'));
+    if(log.update) console.log('>>>>>>>>>>>>>', uid, object(uid, 'is'));
+    if(log.evaluate) console.log(`iteration ${i}`);
+    if(log.evaluate) console.log('>>>>>>>>>>>>>\n', object(uid, '.'));
+    if(log.evaluate && object(uid, 'userState.')) console.log('>>>>>user>>>>\n', object(uid, 'userState.'));
     if(Alerted) o.Alerted=Alerted;
     const evalout = evaluator(object.bind(null, uid), params);
     delete o.Alerted;
@@ -406,7 +415,7 @@ function doEvaluate(uid, params) {
       update = Object.assign({}, ...(evalout.map(x => (x && x.constructor === Promise)? setPromiseState(uid,x): (x || {}))))
     }
     else update = evalout;
-    if(debugevaluate) console.log('<<<<<<<<<<<<< update:\n', update);
+    if(log.evaluate || log.update) console.log('<<<<<<<<<<<<< update:\n', update);
     o = updateObject(uid, update);
     if(!o) break;
   }
@@ -442,5 +451,6 @@ export default {
   localProps,
   isURL,
   isNotify,
+  setLogging,
 }
 
