@@ -324,6 +324,7 @@ function object(u,p,q) { const r = ((uid, path, query)=>{
   const hasMatch = query && query.constructor===Object && query.match
   if(path==='.') return o;
   const pathbits = path.split('.');
+  const observesubs = pathbits[0]!=='Alerted';
   let c=o;
   for(let i=0; i<pathbits.length; i++){
     if(pathbits[i]==='') return c;
@@ -343,7 +344,7 @@ function object(u,p,q) { const r = ((uid, path, query)=>{
         const r = val.filter(v => {
           if(valMatch(v, query.match)) return true;
           if(isLink(v) && query.match.constructor===Object){
-            const p=ensureObjectState(v, observingMatcher(query.match) && uid);
+            const p=ensureObjectState(v, observesubs && observingMatcher(query.match) && uid);
             if(!p) return false;
             return Object.keys(query.match).every(k => valMatch(p[k], query.match[k]));
           }
@@ -358,7 +359,7 @@ function object(u,p,q) { const r = ((uid, path, query)=>{
     }
     if(val.constructor === Object){ c = val; continue; }
     if(val.constructor === String){
-      c = ensureObjectState(val, uid);
+      c = ensureObjectState(val, observesubs && uid);
       if(!c) return null;
     }
   }
