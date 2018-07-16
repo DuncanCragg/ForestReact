@@ -131,24 +131,31 @@ function doGet(url){
   }
 }
 
-function ensureObjectState(u, obsuid){
+function ensureObjectState(u, observer){
   const o = getCachedObject(u);
   if(o){
+    if(observer){
+      setNotifyAndObserve(o,observer);
+    }
     if(isURL(u) && (o.Updated||0)+10000 < Date.now()){
       doGet(u);
     }
-    if(obsuid) setNotify(o,obsuid);
     return o;
   }
   getObject(u).then(o=>{
     if(o){
+      if(observer){
+        setNotifyAndObserve(o,observer);
+        doEvaluate(observer.UID, { Alerted: o.UID });
+      }
       if(isURL(u) && (o.Updated||0)+10000 < Date.now()){
         doGet(u);
       }
-      if(obsuid){ setNotify(o,obsuid); doEvaluate(obsuid, { Alerted: o.UID }); }
     }
-    else if(isURL(u) && obsuid){
-      cacheAndPersist({ UID: u, Notify: [ obsuid ], Version: 0, Remote: toRemote(u), Updated: 0 });
+    else if(isURL(u) && observer){
+      const o={ UID: u, Notify: [], Version: 0, Remote: toRemote(u), Updated: 0 }
+      setNotifyAndObserve(o,observer);
+      cacheAndPersist(o);
       doGet(u);
     }
   })
@@ -160,6 +167,17 @@ function setNotify(o,uid,savelater){
     o.Notify.push(uid);
     if(!savelater) cacheAndPersist(o)
   }
+}
+
+function setNotifyAndObserve(o,observer){
+  if(!o.Notify.find(n=>valMatch(n,observer.UID))){
+    o.Notify.push(observer.UID);
+  }
+  observer.Observe && observer.Observe.push(o.UID);
+}
+
+function remNotify(o,uid){
+  o.Notify=o.Notify.filter(n=>!valMatch(n,uid))
 }
 
 function isRemote(uid){
@@ -344,7 +362,7 @@ function object(u,p,q) { const r = ((uid, path, query)=>{
         const r = val.filter(v => {
           if(valMatch(v, query.match)) return true;
           if(isLink(v) && query.match.constructor===Object){
-            const p=ensureObjectState(v, observesubs && observingMatcher(query.match) && uid);
+            const p=ensureObjectState(v, observesubs && observingMatcher(query.match) && o);
             if(!p) return false;
             return Object.keys(query.match).every(k => valMatch(p[k], query.match[k]));
           }
@@ -359,7 +377,7 @@ function object(u,p,q) { const r = ((uid, path, query)=>{
     }
     if(val.constructor === Object){ c = val; continue; }
     if(val.constructor === String){
-      c = ensureObjectState(val, observesubs && uid);
+      c = ensureObjectState(val, observesubs && o);
       if(!c) return null;
     }
   }
@@ -402,14 +420,18 @@ function doEvaluate(uid, params) {
   if(!evaluator) return;
   const Alerted = params && params.Alerted;
   const reactnotify = o.ReactNotify;
+  let observes=[];
   for(let i=0; i<4; i++){
     if(log.update) console.log('>>>>>>>>>>>>>', uid, object(uid, 'is'));
     if(log.evaluate) console.log(`iteration ${i}`);
     if(log.evaluate) console.log('>>>>>>>>>>>>>\n', object(uid, '.'));
     if(log.evaluate && object(uid, 'userState.')) console.log('>>>>>user>>>>\n', object(uid, 'userState.'));
+    o.Observe=[];
     if(Alerted) o.Alerted=Alerted;
     const evalout = evaluator(object.bind(null, uid), params);
     delete o.Alerted;
+    observes=_.uniq(observes.concat(o.Observe));
+    delete o.Observe;
     if(!evalout){ console.error('no evaluator output for', uid, o); return; }
     let update;
     if(evalout.constructor === Array){
@@ -419,6 +441,10 @@ function doEvaluate(uid, params) {
     if(log.evaluate || log.update) console.log('<<<<<<<<<<<<< update:\n', update);
     o = updateObject(uid, update);
     if(!o) break;
+  }
+  if(Alerted && !observes.includes(Alerted)){
+    if(log.evaluate || log.update) console.log('--------- Alerted not observed back, dropping Notify entry:\n', getCachedObject(Alerted));
+    remNotify(getCachedObject(Alerted), uid);
   }
   if(reactnotify) reactnotify();
 }
