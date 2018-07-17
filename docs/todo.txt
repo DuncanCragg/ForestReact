@@ -1,10 +1,16 @@
 
  - --------------------
- x Notifying as a list, don't put into Notify
- - if Alerted not observed, remove Notify
- - --------------------
  - Cache: no-persist = for userState
- - thus Cache: [ .. ] in a list
+    - thus Cache: [ .. ] in a list
+    - or merge into user object..
+ - React coupling
+   - hardwiring from obj to notify react (o.react)
+     - and from react to notify obj (o.userState)
+   - React cpt refers to state and 'subscribes' to it (o.react.notify)
+   - React cpt is actually the user object, which can observe a top object and anything linked under it
+     - state('watching.counter') what if that changes?
+     - state('giphy.url') instead of state('image') - but disappears, so no
+     - state('image') relies on 'own' state subscribing and setting something for render
  - --------------------
  - drop rem-* with no WS/discard pkts
  - test: incomingObject sets Updated (e.g. results pushed, initially, but also polled)
@@ -21,17 +27,8 @@
     - wrap remote with Forest, like WebObjects did?
        - send userState over the wire
  - --------------------
- - deletion of properties: set eval return value to undefined/''/[]/null and they're removed
+ x deletion of properties: set eval return value to undefined/''/[]/null and they're removed
  - deletion of objects? returning 404
- - --------------------
- - React coupling
-   - hardwiring from obj to notify react (o.react)
-     - and from react to notify obj (o.userState)
-   - React cpt refers to state and 'subscribes' to it (o.react.notify)
-   - React cpt is actually the user object, which can observe a top object and anything linked under it
-     - state('watching.counter') what if that changes?
-     - state('giphy.url') instead of state('image') - but disappears, so no
-     - state('image') relies on 'own' state subscribing and setting something for render
  - --------------------
  - more widgets: selector, radio, textarea..
  - --------------------
@@ -39,6 +36,9 @@
  - --------------------
 
 
+ - --------------------
+ x Notifying as a list, don't put into Notify
+ x if Alerted not observed, remove Notify
  - --------------------
  x don't see Timer: 0 as a change
  x don't observe match on just UID

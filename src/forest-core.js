@@ -178,6 +178,7 @@ function setNotifyAndObserve(o,observer){
 
 function remNotify(o,uid){
   o.Notify=o.Notify.filter(n=>!valMatch(n,uid))
+  cacheAndPersist(o)
 }
 
 function isRemote(uid){
