@@ -59,7 +59,11 @@ app.get('/*',
     const { Peer, Identity } = auth.getPeerIdentity(req);
     const uid = req.originalUrl.substring(1);
     core.getObject(uid)
-      .then(o => { if(o){ res.json(JSON.parse(prefixUIDs(o))); if(Peer) core.setNotify(o,Peer)} else res.status(404).send('Not found')})
+      .then(o => {
+        if(!o) return res.status(404).send('Not found');
+        res.json(JSON.parse(prefixUIDs(o)));
+        if(Peer) core.setNotify(o,Peer);
+      })
       .then(()=>next())
       .catch(e => console.error(e));
   },
