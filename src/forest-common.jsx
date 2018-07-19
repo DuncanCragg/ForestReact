@@ -6,12 +6,13 @@ import _ from 'lodash';
 import core from './forest-core';
 import auth from './auth';
 
-let clientPeer = null;
+let Peer = null;
+let Identity = null;
 
 function doGet(url){
   return superagent.get(url)
     .timeout({ response: 9000, deadline: 10000 })
-    .set(clientPeer? { Authorization: auth.makeHTTPAuth(clientPeer, 'http://host/uid-identity') }: {})
+    .set(Peer? { Authorization: auth.makeHTTPAuth(Peer, Identity) }: {})
     .then(x => x.body);
 }
 
@@ -20,7 +21,7 @@ function doPost(o,url){
   const data = _.omit(o, core.localProps);
   return superagent.post(url)
     .timeout({ response: 9000, deadline: 10000 })
-    .set(clientPeer? { Authorization: auth.makeHTTPAuth(clientPeer, 'http://host/uid-identity') }: {})
+    .set(Peer? { Authorization: auth.makeHTTPAuth(Peer, Identity) }: {})
     .send(data)
     .then(x => x.body)
     .catch(e => console.error('doPost',e,url,data));
@@ -44,7 +45,7 @@ export default class ForestCommon extends Component {
     ws.onopen = () => {
       this.wsRetryIn=1000;
       this.wsRetryDither=Math.floor(Math.random()*5000);
-      if(clientPeer) ws.send(auth.makeWSAuth(clientPeer, 'http://host/uid-identity'));
+      if(Peer) ws.send(auth.makeWSAuth(Peer, Identity));
     };
 
     ws.onclose = () => {
@@ -113,8 +114,9 @@ export default class ForestCommon extends Component {
     return core.makeUID(rem);
   }
 
-  static setPeer(Peer){
-    clientPeer = Peer;
+  static setPeerIdentity(peer, identity){
+    Peer = peer;
+    Identity = identity;
   }
 
   UID;
