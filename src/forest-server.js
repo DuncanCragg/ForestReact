@@ -159,8 +159,8 @@ function persist(o){
   if(!collectionName) return Promise.resolve();
   return forestdb.collection(collectionName)
     .update({ UID: o.UID }, o, { upsert: true })
-    .then((result) => { console.log(`updated ${o.UID} in ${collectionName}`); return result.result })
-    .catch((err) => { console.log(err, `Failed to insert ${o.UID} in ${collectionName}`); return err });
+    .then(result => result.result)
+    .catch(err => { console.log(err, `Failed to insert ${o.UID} in ${collectionName}`); return err });
 }
 
 function fetch(uid){
