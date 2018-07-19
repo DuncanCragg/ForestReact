@@ -60,8 +60,10 @@ app.get('/*',
     const uid = req.originalUrl.substring(1);
     core.runEvaluator(uid, { Peer, Identity })
       .then(o => {
-        if(!o) return res.status(404).send('Not found');
-        res.json(JSON.parse(prefixUIDs(o)));
+        const ok = o && o.PK!==false && (!o.PK || auth.checkSig(o.PK));
+        if(o) delete o.PK;
+        if(ok) return res.json(JSON.parse(prefixUIDs(o)));
+        else   return res.status(404).send('Not found');
         if(Peer) core.setNotify(o,Peer);
       })
       .then(()=>next())

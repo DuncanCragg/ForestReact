@@ -17,5 +17,10 @@ function getPeerIdentity(req){
   return { Peer, Identity };
 }
 
-export default { makeHTTPAuth, makeWSAuth, getPeerIdentity };
+function checkSig(pk){
+  console.log('checkSig', pk);
+  return true;
+}
+
+export default { makeHTTPAuth, makeWSAuth, getPeerIdentity, checkSig };
 
