@@ -416,9 +416,9 @@ function setPromiseState(uid, p){
 
 function doEvaluate(uid, params) {
   let o = getCachedObject(uid);
-  if(!o) return;
+  if(!o) return null;
   const evaluator = o.Evaluator && (typeof o.Evaluator === 'function'? o.Evaluator: evaluators[o.Evaluator]);
-  if(!evaluator) return;
+  if(!evaluator) return o;
   const Alerted = params && params.Alerted;
   const reactnotify = o.ReactNotify;
   let observes=[];
@@ -433,21 +433,23 @@ function doEvaluate(uid, params) {
     delete o.Alerted;
     observes=_.uniq(observes.concat(o.Observe));
     delete o.Observe;
-    if(!evalout){ console.error('no evaluator output for', uid, o); return; }
+    if(!evalout){ console.error('no evaluator output for', uid, o); return o; }
     let update;
     if(evalout.constructor === Array){
       update = Object.assign({}, ...(evalout.map(x => (x && x.constructor === Promise)? setPromiseState(uid,x): (x || {}))))
     }
     else update = evalout;
     if(log.evaluate || log.update) console.log('<<<<<<<<<<<<< update:\n', update);
-    o = updateObject(uid, update);
-    if(!o) break;
+    const u = updateObject(uid, update);
+    if(!u) break;
+    o = u;
   }
   if(Alerted && !observes.includes(Alerted)){
     if(log.evaluate || log.update) console.log('--------- Alerted not observed back, dropping Notify entry:\n', getCachedObject(Alerted));
     remNotify(getCachedObject(Alerted), uid);
   }
   if(reactnotify) reactnotify();
+  return o;
 }
 
 function runEvaluator(uid, params){

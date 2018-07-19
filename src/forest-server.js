@@ -58,7 +58,7 @@ app.get('/*',
   (req, res, next) => {
     const { Peer, Identity } = auth.getPeerIdentity(req);
     const uid = req.originalUrl.substring(1);
-    core.getObject(uid)
+    core.runEvaluator(uid, { Peer, Identity })
       .then(o => {
         if(!o) return res.status(404).send('Not found');
         res.json(JSON.parse(prefixUIDs(o)));
