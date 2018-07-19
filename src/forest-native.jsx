@@ -1,6 +1,6 @@
 
 import React, { Component } from 'react';
-import { Text, TouchableHighlight, AsyncStorage } from 'react-native';
+import { Text, TouchableHighlight, AsyncStorage, Linking, Platform } from 'react-native';
 import ReactDOM from 'react-dom';
 import superagent from 'superagent';
 import _ from 'lodash';
@@ -29,6 +29,28 @@ export default class Forest extends ForestCommon {
 
   constructor(props) {
     super(props)
+  }
+
+  componentDidMount(){
+    super.componentDidMount();
+    if(Platform.OS !== 'ios'){
+      Linking.getInitialURL()
+        .then(url=>this.viewing(url.replace(/.*?:\/\/.*?\//g, '')))
+        .catch(err => console.error('unable to get initial URL:', err));
+    } else {
+      Linking.addEventListener('url', this.handleOpenURL);
+    }
+  }
+
+  componentWillUnmount() {
+    super.componentWillUnmount();
+    Linking.removeEventListener('url', this.handleOpenURL);
+  }
+
+  handleOpenURL = e => this.viewing(e.url.replace(/.*?:\/\/.*?\//g, ''));
+
+  viewing(path){
+    console.log('implement "viewing(path)"', path);
   }
 
   Button(name, {label='', className='', style=null}={}){
