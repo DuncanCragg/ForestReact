@@ -1,6 +1,5 @@
 
  - --------------------
- - Remote -> peer+identity in Auth
  - if Visibility, GET identity, match peer, check identity in Visibility
  - if POST, add identity as Identity:
  - mechanism to: generate tokens/links for onboarding; set peer in an identity
