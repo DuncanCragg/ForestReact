@@ -17,8 +17,9 @@ function setLogging(conf){
   Object.assign(log, conf)
 }
 
-const localProps = ['Notifying', 'Alerted', 'Timer', 'TimerId', 'Evaluator', 'Cache', 'ReactNotify', 'userState'];
-const noPersistProps = [ 'TimerId' ];
+const localProps =         ['Timer', 'TimerId', 'PK', 'Notifying', 'Alerted', 'Evaluator', 'Cache', 'ReactNotify', 'userState'];
+const notNotifiableProps = ['Timer', 'TimerId', 'PK'];
+const noPersistProps =     [         'TimerId', 'PK'];
 
 function makeUID(rem){
   /*jshint bitwise:false */
@@ -275,16 +276,16 @@ function updateObject(uid, update){
   const p=mergeUpdate(o, update);
   checkTimer(p);
   const changed = !_.isEqual(o,p);
-  const justtimeout = changed && _.isEqual(difference(o,p), { Timer: 0 });
-//const justupdated = _.isEqual(diff, { Updated: .. }); // also needed for Version: ?
-  if(log.changes) console.log('diff:', difference(o,p), 'changed:', changed, 'justtimeout:', justtimeout /*, 'justupdated:', justupdated*/);
+  const diff = changed && difference(o,p);
+  const notifiable = diff && Object.keys(diff).filter(e=>!notNotifiableProps.includes(e)).length || diff.Timer;
+  if(log.changes) console.log('changed:', changed, 'diff:', diff, 'notifiable:', notifiable);
   if(changed){
-    if(!justtimeout && !update.Version) p.Version = (p.Version||0)+1;
+    if(notifiable && !update.Version) p.Version = (p.Version||0)+1;
     if(log.changes) console.log('changed, result\n', JSON.stringify(p,null,4));
-    if(!justtimeout) cachePersistAndNotify(p);
-    else             cacheAndPersist(p);
+    if(notifiable) cachePersistAndNotify(p);
+    else           cacheAndPersist(p);
   }
-  return (changed && !justtimeout)? p: null;
+  return { updated: p, changed, notifiable };
 }
 
 function mergeUpdate(o,update){
@@ -409,7 +410,7 @@ function checkTimer(o){
 function setPromiseState(uid, p){
   p.then(update => {
     if(log.evaluate || log.update) console.log('<<<<<<<<<<<<< promised update:\n', update);
-    const o = updateObject(uid, update);
+    updateObject(uid, update);
   });
   return {};
 }
@@ -443,9 +444,9 @@ function doEvaluate(uid, params) {
     }
     else update = evalout;
     if(log.evaluate || log.update) console.log('<<<<<<<<<<<<< update:\n', update);
-    const u = updateObject(uid, update);
-    if(!u) break;
-    o = u;
+    const { updated, changed, notifiable } = updateObject(uid, update);
+    o = updated;
+    if(!changed) break;
   }
   if(Alerted && !observes.includes(Alerted)){
     if(log.evaluate || log.update) console.log('--------- Alerted not observed back, dropping Notify entry:\n', getCachedObject(Alerted));
