@@ -14,8 +14,8 @@ let serverPort=0;
 
 const logRequest = (req, res, next) => {
   console.log('---------------------------->');
-  if(req.method==='POST') console.log(req.method, req.originalUrl, req.headers.peer||''); // , '\n', req.body);
-  else                    console.log(req.method, req.originalUrl, req.headers.peer||'');
+  if(req.method==='POST') console.log(req.method, req.originalUrl, req.headers.authorization||''); // , '\n', req.body);
+  else                    console.log(req.method, req.originalUrl, req.headers.authorization||'');
   next();
 };
 
@@ -28,7 +28,7 @@ const logResponse = (req, res, next) => {
 const CORS = (req, res, next) => {
   res.header('Access-Control-Allow-Origin','*');
   res.header('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, X-Requested-With, Peer'); // Accept, X-Requested-By, Origin, Cache-Control
+  res.header('Access-Control-Allow-Headers', 'Content-Type, X-Requested-With, Authorization'); // Accept, X-Requested-By, Origin, Cache-Control
   next();
 };
 
@@ -51,11 +51,16 @@ function prefixUIDs(o){
   return s.replace(/"(uid-[^"]*"[^:])/g, `"http://${serverHost}:${serverPort}/$1`)
 }
 
+const authRE=/Forest Peer="(.*?)", Identity="(.*)"/;
+
 app.get('/*',
   logRequest,
   CORS,
   (req, res, next) => {
-    const Peer = req.headers.peer;
+    const auth = req.headers.authorization;
+    const m = auth && auth.match(authRE);
+    const Peer=m && m[1];
+    const Identity=m && m[2];
     const uid = req.originalUrl.substring(1);
     core.getObject(uid)
       .then(o => { if(o){ res.json(JSON.parse(prefixUIDs(o))); if(Peer) core.setNotify(o,Peer)} else res.status(404).send('Not found')})
@@ -73,7 +78,10 @@ app.post('/*',
   (req, res, next) => {
     const json=req.body;
     if(!json || !json.UID) next();
-    const Peer = req.headers.peer;
+    const auth = req.headers.authorization;
+    const m = auth && auth.match(authRE);
+    const Peer=m && m[1];
+    const Identity=m && m[2];
     const path = req.originalUrl.substring(1);
     core.incomingObject(Object.assign(json, Peer && { Peer }), path!=='notify' && path)
     res.json({ });
@@ -87,8 +95,16 @@ let serverPeer = null;
 function doGet(url){
   return superagent.get(url)
     .timeout({ response: 9000, deadline: 10000 })
-    .set(serverPeer? { Peer: serverPeer }: {})
+    .set(serverPeer? { Authorization: makeHTTPAuth(serverPeer, 'http://host/uid-identity') }: {})
     .then(x => x.body);
+}
+
+function makeHTTPAuth(Peer, Identity){
+  return `Forest Peer="${Peer}", Identity="${Identity}"`;
+}
+
+function makeWSAuth(Peer, Identity){
+  return JSON.stringify({ Peer, Identity });
 }
 
 const pendingWSpackets = {};
@@ -110,7 +126,7 @@ function wsInit(config){
       if(json.Peer){
         console.log('ws init:', json);
         peer2ws[json.Peer]=ws;
-        if(serverPeer) ws.send(JSON.stringify({ Peer: serverPeer }));
+        if(serverPeer) ws.send(makeWSAuth(serverPeer, 'http://host/uid-identity' ));
         wsFlush(json.Peer);
       }
       else{
