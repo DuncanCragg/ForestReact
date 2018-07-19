@@ -4,13 +4,14 @@ import ReactDOM from 'react-dom';
 import superagent from 'superagent';
 import _ from 'lodash';
 import core from './forest-core';
+import auth from './auth';
 
 let clientPeer = null;
 
 function doGet(url){
   return superagent.get(url)
     .timeout({ response: 9000, deadline: 10000 })
-    .set(clientPeer? { Authorization: makeHTTPAuth(clientPeer, 'http://host/uid-identity') }: {})
+    .set(clientPeer? { Authorization: auth.makeHTTPAuth(clientPeer, 'http://host/uid-identity') }: {})
     .then(x => x.body);
 }
 
@@ -19,18 +20,10 @@ function doPost(o,url){
   const data = _.omit(o, core.localProps);
   return superagent.post(url)
     .timeout({ response: 9000, deadline: 10000 })
-    .set(clientPeer? { Authorization: makeHTTPAuth(clientPeer, 'http://host/uid-identity') }: {})
+    .set(clientPeer? { Authorization: auth.makeHTTPAuth(clientPeer, 'http://host/uid-identity') }: {})
     .send(data)
     .then(x => x.body)
     .catch(e => console.error('doPost',e,url,data));
-}
-
-function makeHTTPAuth(Peer, Identity){
-  return `Forest Peer="${Peer}", Identity="${Identity}"`;
-}
-
-function makeWSAuth(Peer, Identity){
-  return JSON.stringify({ Peer, Identity });
 }
 
 core.setNetwork({ doGet, doPost });
@@ -51,7 +44,7 @@ export default class ForestCommon extends Component {
     ws.onopen = () => {
       this.wsRetryIn=1000;
       this.wsRetryDither=Math.floor(Math.random()*5000);
-      if(clientPeer) ws.send(makeWSAuth(clientPeer, 'http://host/uid-identity'));
+      if(clientPeer) ws.send(auth.makeWSAuth(clientPeer, 'http://host/uid-identity'));
     };
 
     ws.onclose = () => {
