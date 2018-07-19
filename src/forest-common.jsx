@@ -5,12 +5,12 @@ import superagent from 'superagent';
 import _ from 'lodash';
 import core from './forest-core';
 
-let clientRemote = null;
+let clientPeer = null;
 
 function doGet(url){
   return superagent.get(url)
     .timeout({ response: 9000, deadline: 10000 })
-    .set(clientRemote? { Remote: clientRemote}: {})
+    .set(clientPeer? { Peer: clientPeer}: {})
     .then(x => x.body);
 }
 
@@ -19,7 +19,7 @@ function doPost(o,url){
   const data = _.omit(o, core.localProps);
   return superagent.post(url)
     .timeout({ response: 9000, deadline: 10000 })
-    .set(clientRemote? { Remote: clientRemote}: {})
+    .set(clientPeer? { Peer: clientPeer}: {})
     .send(data)
     .then(x => x.body)
     .catch(e => console.error('doPost',e,url,data));
@@ -43,7 +43,7 @@ export default class ForestCommon extends Component {
     ws.onopen = () => {
       this.wsRetryIn=1000;
       this.wsRetryDither=Math.floor(Math.random()*5000);
-      if(clientRemote) ws.send(JSON.stringify({ Remote: clientRemote }));
+      if(clientPeer) ws.send(JSON.stringify({ Peer: clientPeer }));
     };
 
     ws.onclose = () => {
@@ -58,13 +58,13 @@ export default class ForestCommon extends Component {
 
     ws.onmessage = (message) => {
       const json = JSON.parse(message.data);
-      if(json.Remote){
+      if(json.Peer){
         console.log('ws init:', json);
-        ws.Remote = json.Remote;
+        ws.Peer = json.Peer;
       }
       else
       if(json.UID){
-        console.log('------------ws------------->>', ws.Remote);
+        console.log('------------ws------------->>', ws.Peer);
         core.incomingObject(json);
       }
     };
@@ -112,8 +112,8 @@ export default class ForestCommon extends Component {
     return core.makeUID(rem);
   }
 
-  static setRemote(Remote){
-    clientRemote = Remote;
+  static setPeer(Peer){
+    clientPeer = Peer;
   }
 
   UID;
@@ -136,9 +136,9 @@ export default class ForestCommon extends Component {
 
   mounted = false;
 
-  componentDidMount() { this.mounted = true; }
+  componentDidMount(){ this.mounted = true; }
 
-  componentWillUnmount() { this.mounted = false; }
+  componentWillUnmount(){ this.mounted = false; }
 
   object(path, match) {
     return core.object(this.UID, path, match);

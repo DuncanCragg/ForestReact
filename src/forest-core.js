@@ -153,7 +153,7 @@ function ensureObjectState(u, observer){
       }
     }
     else if(isURL(u) && observer){
-      const o={ UID: u, Notify: [], Version: 0, Remote: toRemote(u), Updated: 0 }
+      const o={ UID: u, Notify: [], Version: 0, Peer: toPeer(u), Updated: 0 }
       setNotifyAndObserve(o,observer);
       cacheAndPersist(o);
       doGet(u);
@@ -182,38 +182,38 @@ function remNotify(o,uid){
 }
 
 function isRemote(uid){
-  return getObject(uid).then(o=>o && o.Remote)
+  return getObject(uid).then(o=>o && o.Peer)
 }
 
 function isShell(o){
-  return o.Remote && !o.Updated;
+  return o.Peer && !o.Updated;
 }
 
 function notifyObservers(o){
   const allNotify = _.uniq([].concat(o.Notifying||[]).concat(o.Notify||[]));
-  if(log.notify) console.log('===========================\no.UID/is/Remote:', `${o.UID} / ${o.is} / ${o.Remote||'--'}`);
-  const remotes = {};
+  if(log.notify) console.log('===========================\no.UID/is/Peer:', `${o.UID} / ${o.is} / ${o.Peer||'--'}`);
+  const peers = {};
   Promise.all(allNotify.map(u => getObject(u).then(n=>{
     if(log.notify) console.log('------------------------');
-    if(log.notify) console.log('remotes start', remotes, o.UID, o.is)
-    if(log.notify) console.log('n.UID/is/Remote:', (n && (`${n.UID} / ${n.is} / ${n.Remote||'--'}`))||'--', u, toRemote(u));
+    if(log.notify) console.log('peers start', peers, o.UID, o.is)
+    if(log.notify) console.log('n.UID/is/Peer:', (n && (`${n.UID} / ${n.is} / ${n.Peer||'--'}`))||'--', u, toPeer(u));
     if(!n){
       if(isURL(u) || isNotify(u)){
         if(log.notify) console.log(isURL(u) && 'isURL' || '', isNotify(u) && 'isNotify' || '');
-        const Remote=toRemote(u);
-        if(log.notify) console.log('Remote',Remote)
-        if(o.Remote !== Remote){
-          if(!remotes[Remote]) remotes[Remote]=[u]
-          else                 remotes[Remote].push(u);
+        const Peer=toPeer(u);
+        if(log.notify) console.log('Peer',Peer)
+        if(o.Peer !== Peer){
+          if(!peers[Peer]) peers[Peer]=[u]
+          else             peers[Peer].push(u);
         }
       }
     }
     else {
-      if(n.Remote){
-        if(log.notify) console.log('n.Remote');
-        if(o.Remote !== n.Remote){
-          if(!remotes[n.Remote]) remotes[n.Remote]=[n.UID]
-          else                   remotes[n.Remote].push(n.UID)
+      if(n.Peer){
+        if(log.notify) console.log('n.Peer');
+        if(o.Peer !== n.Peer){
+          if(!peers[n.Peer]) peers[n.Peer]=[n.UID]
+          else               peers[n.Peer].push(n.UID)
         }
       }
       else {
@@ -221,12 +221,12 @@ function notifyObservers(o){
         doEvaluate(n.UID, { Alerted: o.UID });
       }
     }
-    if(log.notify) console.log('remotes now', remotes)
+    if(log.notify) console.log('peers now', peers)
     if(log.notify) console.log('\n------------------------');
   })
   .catch(e => console.log(e))
   ))
-  .then(()=>Object.keys(remotes).map(u => outgoingObject(Object.assign({}, o, { Notify: remotes[u] }), u)));
+  .then(()=>Object.keys(peers).map(u => outgoingObject(Object.assign({}, o, { Notify: peers[u] }), u)));
 }
 
 function outgoingObject(o,u){
@@ -246,7 +246,7 @@ function incomingObjectFromGET(url, json){
 
 function incomingObject(json, notify){
   if(!json.Notify) json.Notify=[]
-  if(!json.Remote) json.Remote=toRemote(json.UID)
+  if(!json.Peer) json.Peer=toPeer(json.UID)
   json = Object.assign({ Updated: Date.now() }, json)
   if(notify) setNotify(json, notify, true);
   if(log.net) console.log('<<-------------- incomingObject\n', JSON.stringify(json, null, 4), notify);
@@ -317,7 +317,7 @@ function toUID(u){
   return u.substring(s);
 }
 
-function toRemote(u){
+function toPeer(u){
   if(!isURL(u)) return u;
   const s=u.indexOf('uid-')
   if(s=== -1) return u;
