@@ -114,9 +114,9 @@ export default class ForestCommon extends Component {
     return core.makeUID(rem);
   }
 
-  static setPeerIdentity(peer, identity){
-    Peer = peer;
-    Identity = identity;
+  static setPeerIdentity({peer, identity}){
+    if(peer) Peer = peer;
+    if(identity) Identity = identity;
   }
 
   UID;

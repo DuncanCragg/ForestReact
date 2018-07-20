@@ -228,7 +228,10 @@ function init({httpHost, httpPort, wsPort, mongoHostPort}){
   });
 }
 
-function setPeerIdentity(peer, identity){ Peer = peer; Identity = identity; }
+function setPeerIdentity({peer, identity}){
+  if(peer) Peer = peer;
+  if(identity) Identity = identity;
+}
 
 export default {
   init,
