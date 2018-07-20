@@ -421,8 +421,6 @@ function doEvaluate(uid, params) {
   const evaluator = o.Evaluator && (typeof o.Evaluator === 'function'? o.Evaluator: evaluators[o.Evaluator]);
   if(!evaluator) return o;
   const Alerted  = params && params.Alerted;
-  const Peer     = params && params.Peer;
-  const Identity = params && params.Identity;
   const reactnotify = o.ReactNotify;
   let observes=[];
   for(let i=0; i<4; i++){
@@ -432,9 +430,8 @@ function doEvaluate(uid, params) {
     if(log.evaluate && object(uid, 'userState.')) console.log('>>>>>user>>>>\n', object(uid, 'userState.'));
     o.Observe=[];
     if(Alerted) o.Alerted=Alerted;
-    if(Peer && Identity){ o.ObsPeer=Peer; o.ObsIdentity=Identity; }
     const evalout = evaluator(object.bind(null, uid), params);
-    delete o.Alerted; delete o.ObsPeer; delete o.ObsIdentity;
+    delete o.Alerted;
     observes=_.uniq(observes.concat(o.Observe));
     delete o.Observe;
     if(!evalout){ console.error('no evaluator output for', uid, o); return o; }
