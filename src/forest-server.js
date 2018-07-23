@@ -89,13 +89,10 @@ app.post('/*',
   logResponse,
 );
 
-let Peer = null;
-let Identity = null;
-
 function doGet(url){
   return superagent.get(url)
     .timeout({ response: 9000, deadline: 10000 })
-    .set(Peer? { Authorization: auth.makeHTTPAuth(Peer, Identity) }: {})
+    .set(auth.makeHTTPAuth())
     .then(x => x.body);
 }
 
@@ -118,7 +115,7 @@ function wsInit(config){
       if(json.Peer){
         console.log('ws init:', json);
         peer2ws[json.Peer]=ws;
-        if(Peer) ws.send(auth.makeWSAuth(Peer, Identity ));
+        ws.send(auth.makeWSAuth());
         wsFlush(json.Peer);
       }
       else{
@@ -228,22 +225,16 @@ function init({httpHost, httpPort, wsPort, mongoHostPort}){
   });
 }
 
-function setPeerIdentity({ peer, identity }){
-  if(peer) Peer = peer;
-  if(identity) Identity = identity;
-  return { peer: Peer, identity: Identity };
-}
-
 export default {
   init,
-  setPeerIdentity,
-  cacheObjects:   core.cacheObjects,
-  reCacheObjects: core.reCacheObjects,
-  setEvaluator:   core.setEvaluator,
-  getObject:      core.getObject,
-  spawnObject:    core.spawnObject,
-  makeUID:        core.makeUID,
-  setLogging:     core.setLogging,
+  cacheObjects:    core.cacheObjects,
+  reCacheObjects:  core.reCacheObjects,
+  setEvaluator:    core.setEvaluator,
+  getObject:       core.getObject,
+  spawnObject:     core.spawnObject,
+  makeUID:         core.makeUID,
+  setLogging:      core.setLogging,
+  setPeerIdentity: auth.setPeerIdentity,
 }
 
 
