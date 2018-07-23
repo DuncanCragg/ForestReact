@@ -1,29 +1,31 @@
 
 let Peer = null;
 let Identity = null;
+let User = null;
 
-function setPeerIdentity({ peer, identity }){
+function setPeerIdentityUser({ peer, identity, user}){
   if(peer) Peer = peer;
   if(identity) Identity = identity;
-  return { peer: Peer, identity: Identity };
+  if(user) User = user;
+  return { peer: Peer, identity: Identity, user: User };
 }
 
 function makeHTTPAuth(){
-  return Peer? { Authorization: `Forest Peer="${Peer}", Identity="${Identity}"` }: {};
+  return Peer? { Authorization: `Forest Peer="${Peer}", User="${User}"` }: {};
 }
 
 function makeWSAuth(){
-  return Peer? JSON.stringify({ Peer, Identity }): '{}';
+  return Peer? JSON.stringify({ Peer, User }): '{}';
 }
 
-const authRE=/Forest Peer="(.*?)", Identity="(.*)"/;
+const authRE=/Forest Peer="(.*?)", User="(.*)"/;
 
-function getPeerIdentity(req){
+function getPeerUser(req){
   const auth = req.headers.authorization;
   const m = auth && auth.match(authRE);
   const Peer=m && m[1];
-  const Identity=m && m[2];
-  return { Peer, Identity };
+  const User=m && m[2];
+  return { Peer, User };
 }
 
 function checkSig(pk){
@@ -31,5 +33,5 @@ function checkSig(pk){
   return true;
 }
 
-export default { makeHTTPAuth, makeWSAuth, getPeerIdentity, setPeerIdentity, checkSig };
+export default { makeHTTPAuth, makeWSAuth, getPeerUser, setPeerIdentityUser, checkSig };
 

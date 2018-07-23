@@ -56,9 +56,9 @@ app.get('/*',
   logRequest,
   CORS,
   (req, res, next) => {
-    const { Peer, Identity } = auth.getPeerIdentity(req);
+    const { Peer, User } = auth.getPeerUser(req);
     const uid = req.originalUrl.substring(1);
-    core.runEvaluator(uid, { Peer, Identity })
+    core.runEvaluator(uid, { Peer, User })
       .then(o => {
         const ok = o && o.PK!==false && (!o.PK || auth.checkSig(o.PK));
         if(o) delete o.PK;
@@ -80,7 +80,7 @@ app.post('/*',
   (req, res, next) => {
     const json=req.body;
     if(!json || !json.UID) next();
-    const { Peer, Identity } = auth.getPeerIdentity(req);
+    const { Peer, User } = auth.getPeerUser(req);
     const path = req.originalUrl.substring(1);
     core.incomingObject(Object.assign(json, Peer && { Peer }), path!=='notify' && path)
     res.json({ });
@@ -227,14 +227,14 @@ function init({httpHost, httpPort, wsPort, mongoHostPort}){
 
 export default {
   init,
-  cacheObjects:    core.cacheObjects,
-  reCacheObjects:  core.reCacheObjects,
-  setEvaluator:    core.setEvaluator,
-  getObject:       core.getObject,
-  spawnObject:     core.spawnObject,
-  makeUID:         core.makeUID,
-  setLogging:      core.setLogging,
-  setPeerIdentity: auth.setPeerIdentity,
+  cacheObjects:        core.cacheObjects,
+  reCacheObjects:      core.reCacheObjects,
+  setEvaluator:        core.setEvaluator,
+  getObject:           core.getObject,
+  spawnObject:         core.spawnObject,
+  makeUID:             core.makeUID,
+  setLogging:          core.setLogging,
+  setPeerIdentityUser: auth.setPeerIdentityUser,
 }
 
 
