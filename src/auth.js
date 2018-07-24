@@ -11,7 +11,7 @@ function setPeerIdentityUser({ peer, identity, user}){
 }
 
 function makeHTTPAuth(){
-  return Peer? { Authorization: `Forest Peer="${Peer}", User="${User}"` }: {};
+  return Peer? { Authorization: `Forest Peer="${Peer}", User="${User||''}"` }: {};
 }
 
 function makeWSAuth(){
