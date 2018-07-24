@@ -58,16 +58,30 @@ app.get('/*',
   (req, res, next) => {
     const { Peer, User } = auth.getPeerUser(req);
     const uid = req.originalUrl.substring(1);
-    core.runEvaluator(uid, { Peer, User })
-      .then(o => {
-        const ok = o && o.PK!==false && (!o.PK || auth.checkSig(o.PK));
-        if(o) delete o.PK;
-        if(ok) res.json(JSON.parse(prefixUIDs(o)));
-        else   res.status(404).send('Not found');
-        if(Peer) core.setNotify(o,Peer);
+    if(!User){
+      console.log('implement temporary no-User user');
+      res.status(404).send('Not found');
+      next();
+      return;
+    }
+    core.runEvaluator(User, { method: 'GET', URL: uid, Peer })
+      .then(user => {
+        const ok = user && user.PK!==false && (!user.PK || auth.checkSig(user.PK));
+        if(user) delete user.PK;
+        if(!ok){
+          return res.status(404).send('Not found');
+        }
+        return core.getObject(uid).then(o => {
+          res.json(JSON.parse(prefixUIDs(o)));
+          if(Peer) core.setNotify(o,Peer);
+        });
       })
       .then(()=>next())
-      .catch(e => console.error(e));
+      .catch(e => {
+        console.error(e);
+        res.status(404).send('Not found');
+        next();
+      });
   },
   logResponse,
 );
