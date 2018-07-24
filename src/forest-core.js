@@ -138,7 +138,7 @@ function ensureObjectState(u, observer){
     if(observer){
       setNotifyAndObserve(o,observer);
     }
-    if(isURL(u) && (o.Updated||0)+10000 < Date.now()){
+    if(isURL(o.UID) && (o.Updated||0)+10000 < Date.now()){
       doGet(u);
     }
     return o;
@@ -149,7 +149,7 @@ function ensureObjectState(u, observer){
         setNotifyAndObserve(o,observer);
         doEvaluate(observer.UID, { Alerted: o.UID });
       }
-      if(isURL(u) && (o.Updated||0)+10000 < Date.now()){
+      if(isURL(o.UID) && (o.Updated||0)+10000 < Date.now()){
         doGet(u);
       }
     }
