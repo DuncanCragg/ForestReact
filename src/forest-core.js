@@ -208,6 +208,9 @@ function notifyObservers(o){
           else             peers[Peer].push(u);
         }
       }
+      else{
+        console.log('***** REMOVE ', n, 'from Notify of\n', o)
+      }
     }
     else {
       if(n.Peer){
@@ -446,7 +449,7 @@ function doEvaluate(uid, params) {
     if(!changed) break;
   }
   if(Alerted && !observes.includes(Alerted)){
-    if(log.evaluate || log.update) console.log('--------- Alerted not observed back, dropping Notify entry:\n', getCachedObject(Alerted));
+    if(log.evaluate || log.update) console.log('--------- Alerted not observed back by', uid, 'dropping Notify entry in Alerted:\n', getCachedObject(Alerted));
     remNotify(getCachedObject(Alerted), uid);
   }
   if(reactnotify) reactnotify();
