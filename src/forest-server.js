@@ -96,9 +96,28 @@ app.post('/*',
     if(!json || !json.UID) next();
     const { Peer, User } = auth.getPeerUser(req);
     const path = req.originalUrl.substring(1);
-    core.incomingObject(Object.assign(json, Peer && { Peer }), path!=='notify' && path)
-    res.json({ });
-    next();
+    if(!User){
+      console.log('implement temporary no-User user');
+      res.status(403).send('Forbidden');
+      next();
+      return;
+    }
+    core.runEvaluator(User, { method: 'POST', URL: json.UID, Peer })
+      .then(user => {
+        const ok = user && user.PK!==false && (!user.PK || auth.checkSig(user.PK));
+        if(user) delete user.PK;
+        if(!ok){
+          return res.status(403).send('Forbidden');
+        }
+        core.incomingObject(Object.assign({ User }, Peer && { Peer }, json), path!=='notify' && path)
+        res.json({ });
+      })
+      .then(()=>next())
+      .catch(e => {
+        console.error(e);
+        res.status(403).send('Forbidden');
+        next();
+      });
   },
   logResponse,
 );
