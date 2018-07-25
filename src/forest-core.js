@@ -117,6 +117,12 @@ function spawnObject(o){
   return UID;
 }
 
+function spawnTemporaryObject(o){
+  const UID=makeUID();
+  objects[UID]=Object.assign({ UID, Version: 1, Cache: 'no-persist' }, o);
+  return UID;
+}
+
 function cacheObjects(list){
   return list.map(o => spawnObject(o));
 }
@@ -343,7 +349,7 @@ function object(u,p,q) { const r = ((uid, path, query)=>{
   const hasMatch = query && query.constructor===Object && query.match
   if(path==='.') return o;
   const pathbits = path.split('.');
-  const observesubs = pathbits[0]!=='Alerted';
+  const observesubs = pathbits[0]!=='Alerted' && o.Cache !== 'no-persist';
   let c=o;
   for(let i=0; i<pathbits.length; i++){
     if(pathbits[i]==='') return c;
@@ -466,6 +472,7 @@ export default {
   makeUID,
   toUID,
   spawnObject,
+  spawnTemporaryObject,
   storeObject,
   cacheObjects,
   reCacheObjects,
