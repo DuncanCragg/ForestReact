@@ -367,9 +367,14 @@ function object(u,p,q) { const r = ((uid, path, query)=>{
         const r = val.filter(v => {
           if(valMatch(v, query.match)) return true;
           if(isLink(v) && query.match.constructor===Object){
-            const p=ensureObjectState(v, observesubs && observingMatcher(query.match) && o);
-            if(!p) return false;
-            return Object.keys(query.match).every(k => valMatch(p[k], query.match[k]));
+            if(_.isEqual(Object.keys(query.match), [ 'UID' ])){
+              return valMatch(v, query.match.UID);
+            }
+            else{
+              const p=ensureObjectState(v, observesubs && o);
+              if(!p) return false;
+              return Object.keys(query.match).every(k => valMatch(p[k], query.match[k]));
+            }
           }
           if(v.constructor===Object){
             return Object.keys(query.match).every(k => valMatch(v[k], query.match[k]));
@@ -393,10 +398,6 @@ function object(u,p,q) { const r = ((uid, path, query)=>{
 
 function valMatch(a, b){
   return a == b || ((isURL(a) || isURL(b)) && toUID(a) === toUID(b));
-}
-
-function observingMatcher(match){
-  return !_.isEqual(Object.keys(match), [ 'UID' ]);
 }
 
 function checkTimer(o){
