@@ -205,7 +205,7 @@ function notifyObservers(o){
         }
       }
       else{
-        console.log('***** REMOVE ', n, 'from Notify of\n', o)
+        console.log('***** REMOVE ', u, 'from Notify of\n', o)
       }
     }
     else {
