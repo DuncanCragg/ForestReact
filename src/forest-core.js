@@ -135,9 +135,7 @@ function doGet(url){
 function ensureObjectState(u, setnotify, observer){
   const o = getCachedObject(u);
   if(o){
-    if(setnotify){
-      setNotifyAndObserve(o,observer);
-    }
+    if(setnotify) setNotifyAndObserve(o,observer);
     if(isURL(o.UID) && (o.Updated||0)+10000 < Date.now()){
       doGet(u);
     }
@@ -145,10 +143,8 @@ function ensureObjectState(u, setnotify, observer){
   }
   getObject(u).then(o=>{
     if(o){
-      if(setnotify){
-        setNotifyAndObserve(o,observer);
-        doEvaluate(observer.UID, { Alerted: o.UID });
-      }
+      if(setnotify) setNotifyAndObserve(o,observer);
+      doEvaluate(observer.UID, { Alerted: o.UID });
       if(isURL(o.UID) && (o.Updated||0)+10000 < Date.now()){
         doGet(u);
       }
