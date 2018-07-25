@@ -14,7 +14,7 @@ const log = {
 }
 
 function setLogging(conf){
-  Object.assign(log, conf)
+  Object.assign(log, conf);
 }
 
 const localProps =         ['Timer', 'TimerId', 'Notifying', 'Alerted', 'Evaluator', 'Cache', 'ReactNotify', 'userState'];
@@ -54,17 +54,17 @@ function setNetwork(n){ network = n; }
 const objects = {};
 
 function getCachedObject(u){
-  return objects[toUID(u)]
+  return objects[toUID(u)];
 }
 
 function getObject(u){
   const uid=toUID(u);
-  const o = objects[uid]
-  if(o || !(persistence && persistence.fetch)) return Promise.resolve(o)
+  const o = objects[uid];
+  if(o || !(persistence && persistence.fetch)) return Promise.resolve(o);
   return persistence.fetch(uid).then(o=>{
     objects[uid]=o;
     return o;
-  })
+  });
 }
 
 const toSave = {};
@@ -88,8 +88,8 @@ function persistenceFlush(){
       const notify = toSave[uid];
       delete toSave[uid];
       return persistence.persist(_.omit(o, noPersistProps)).then(r => { if(notify) notifyObservers(o); return r; });
-    })
-  }))
+    });
+  }));
 }
 
 function reCacheObjects(){
@@ -98,7 +98,7 @@ function reCacheObjects(){
       objects[o.UID]=o;
       runEvaluator(o.UID);
       return o;
-    }))
+    }));
   }
   return Promise.resolve([]);
 }
@@ -155,20 +155,20 @@ function ensureObjectState(u, setnotify, observer){
         doGet(u);
       }
     }
-    else if(isURL(u) && setnotify){
-      const o={ UID: u, Notify: [], Version: 0, Peer: toPeer(u), Updated: 0 }
+    else if(isURL(u) && setnotify){ // FIXME: still set 'remote notify' even if not local (see stash)
+      const o={ UID: u, Notify: [], Version: 0, Peer: toPeer(u), Updated: 0 };
       setNotifyAndObserve(o,observer);
       cacheAndPersist(o);
       doGet(u);
     }
-  })
+  });
   return null;
 }
 
 function setNotify(o,uid,savelater){
   if(!o.Notify.find(n=>valMatch(n,uid))){
     o.Notify.push(uid);
-    if(!savelater) cacheAndPersist(o)
+    if(!savelater) cacheAndPersist(o);
   }
 }
 
@@ -180,12 +180,12 @@ function setNotifyAndObserve(o,observer){
 }
 
 function remNotify(o,uid){
-  o.Notify=o.Notify.filter(n=>!valMatch(n,uid))
-  cacheAndPersist(o)
+  o.Notify=o.Notify.filter(n=>!valMatch(n,uid));
+  cacheAndPersist(o);
 }
 
 function isRemote(uid){
-  return getObject(uid).then(o=>o && o.Peer)
+  return getObject(uid).then(o=>o && o.Peer);
 }
 
 function isShell(o){
@@ -198,28 +198,28 @@ function notifyObservers(o){
   const peers = {};
   Promise.all(allNotify.map(u => getObject(u).then(n=>{
     if(log.notify) console.log('------------------------');
-    if(log.notify) console.log('peers start', peers, o.UID, o.is)
+    if(log.notify) console.log('peers start', peers, o.UID, o.is);
     if(log.notify) console.log('n.UID/is/Peer:', (n && (`${n.UID} / ${n.is} / ${n.Peer||'--'}`))||'--', u, toPeer(u));
     if(!n){
       if(isURL(u) || isNotify(u)){
         if(log.notify) console.log(isURL(u) && 'isURL' || '', isNotify(u) && 'isNotify' || '');
         const Peer=toPeer(u);
-        if(log.notify) console.log('Peer',Peer)
+        if(log.notify) console.log('Peer',Peer);
         if(o.Peer !== Peer){
-          if(!peers[Peer]) peers[Peer]=[u]
+          if(!peers[Peer]) peers[Peer]=[u];
           else             peers[Peer].push(u);
         }
       }
       else{
-        console.log('***** REMOVE ', u, 'from Notify of\n', o)
+        console.log('***** REMOVE ', u, 'from Notify of\n', o);
       }
     }
     else {
       if(n.Peer){
         if(log.notify) console.log('n.Peer');
         if(o.Peer !== n.Peer){
-          if(!peers[n.Peer]) peers[n.Peer]=[n.UID]
-          else               peers[n.Peer].push(n.UID)
+          if(!peers[n.Peer]) peers[n.Peer]=[n.UID];
+          else               peers[n.Peer].push(n.UID);
         }
       }
       else {
@@ -227,7 +227,7 @@ function notifyObservers(o){
         doEvaluate(n.UID, { Alerted: o.UID });
       }
     }
-    if(log.notify) console.log('peers now', peers)
+    if(log.notify) console.log('peers now', peers);
     if(log.notify) console.log('\n------------------------');
   })
   .catch(e => console.log(e))
@@ -239,27 +239,27 @@ function outgoingObject(o,u){
   network && network.doPost(o,u).then((ok) => {
     if(log.net){
       if(ok) console.log('-------------->> outgoingObject\n', JSON.stringify(o, null, 4), u);
-      else console.log('no outgoingObject for', u)
+      else console.log('no outgoingObject for', u);
     }
   });
 }
 
 function incomingObjectFromGET(url, json){
-  json = Object.assign({ Updated: Date.now() }, json)
+  json = Object.assign({ Updated: Date.now() }, json);
   if(log.net) console.log('<<-------------- incomingObjectFromGET\n', JSON.stringify(json, null, 4));
-  updateObject(url, json)
+  updateObject(url, json);
 }
 
 function incomingObject(json, notify){
-  if(!json.Notify) json.Notify=[]
-  if(!json.Peer) json.Peer=toPeer(json.UID)
-  json = Object.assign({ Updated: Date.now() }, json)
+  if(!json.Notify) json.Notify=[];
+  if(!json.Peer) json.Peer=toPeer(json.UID);
+  json = Object.assign({ Updated: Date.now() }, json);
   if(notify) setNotify(json, notify, true);
   if(log.net) console.log('<<-------------- incomingObject\n', JSON.stringify(json, null, 4), notify);
   getObject(json.UID).then(o=>{
     if(!o) storeObject(json);
-    else updateObject(json.UID, json)
-  })
+    else updateObject(json.UID, json);
+  });
 }
 
 function storeObject(o){
@@ -270,8 +270,8 @@ function storeObject(o){
 }
 
 function updateObject(uid, update){
-  if(!uid) return null
-  const o=getCachedObject(uid)
+  if(!uid) return null;
+  const o=getCachedObject(uid);
   if(!o) return null;
   if(log.changes) console.log(uid, 'before\n', JSON.stringify(o,null,4),'\nupdate:\n',JSON.stringify(update,null,4));
   if(o.Version && update.Version && o.Version >= update.Version){
@@ -296,7 +296,7 @@ function updateObject(uid, update){
 function mergeUpdate(o,update){
   const updateNotify=update.Notify; delete update.Notify;
   const p=Object.assign({}, o, update);
-  updateNotify && updateNotify.forEach(un=>setNotify(p,un,true))
+  updateNotify && updateNotify.forEach(un=>setNotify(p,un,true));
   return _.omitBy(p, v => v===null||v===undefined||v===''||v===[]);
 }
 
@@ -325,7 +325,7 @@ function toUID(u){
 
 function toPeer(u){
   if(!isURL(u)) return u;
-  const s=u.indexOf('uid-')
+  const s=u.indexOf('uid-');
   if(s=== -1) return u;
   return u.substring(0,s)+'notify';
 }
@@ -344,9 +344,9 @@ function cacheQuery(o, uid, query){
 
 function object(u,p,q) { const r = ((uid, path, query)=>{
   if(!uid || !path) return null;
-  const o=getCachedObject(uid)
+  const o=getCachedObject(uid);
   if(!o) return null;
-  const hasMatch = query && query.constructor===Object && query.match
+  const hasMatch = query && query.constructor===Object && query.match;
   if(path==='.') return o;
   const pathbits = path.split('.');
   const observesubs = pathbits[0]!=='Alerted' && o.Cache !== 'no-persist';
@@ -442,7 +442,7 @@ function doEvaluate(uid, params) {
     delete o.Observe;
     let update;
     if(evalout.constructor === Array){
-      update = Object.assign({}, ...(evalout.map(x => (x && x.constructor === Promise)? setPromiseState(uid,x): (x || {}))))
+      update = Object.assign({}, ...(evalout.map(x => (x && x.constructor === Promise)? setPromiseState(uid,x): (x || {}))));
     }
     else update = evalout;
     if(log.evaluate || log.update) console.log('<<<<<<<<<<<<< update:\n', update);
@@ -465,7 +465,7 @@ function runEvaluator(uid, params){
 const evaluators = {}
 
 function setEvaluator(name, evaluator){
-  evaluators[name]=evaluator
+  evaluators[name]=evaluator;
 }
 
 export default {

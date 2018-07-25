@@ -21,7 +21,7 @@ const logRequest = (req, res, next) => {
 };
 
 const logResponse = (req, res, next) => {
-  console.log(res.statusCode)
+  console.log(res.statusCode);
   console.log('<----------------------------');
   next();
 };
@@ -49,7 +49,7 @@ app.options("/*",
 
 function prefixUIDs(o){
   const s = JSON.stringify(_.omit(o, core.localProps), null, 2);
-  return s.replace(/"(uid-[^"]*"[^:])/g, `"http://${serverHost}:${serverPort}/$1`)
+  return s.replace(/"(uid-[^"]*"[^:])/g, `"http://${serverHost}:${serverPort}/$1`);
 }
 
 app.get('/*',
@@ -169,10 +169,10 @@ function wsFlush(Peer){
     try{
       console.log('<<----------ws---------------', Peer);
       if(ws.readyState === ws.OPEN) ws.send(packet);
-      else console.log('WebSocket closed sending\n', packet, '\nto', Peer)
+      else console.log('WebSocket closed sending\n', packet, '\nto', Peer);
     }
     catch(e){
-      console.error('error sending\n', packet, '\nto', Peer, '\n', e)
+      console.error('error sending\n', packet, '\nto', Peer, '\n', e);
     }
   }
 }
@@ -202,7 +202,7 @@ function persist(o){
 }
 
 function fetch(uid){
-  return forestdb.collections().then(colls=>findOneFirst(colls, uid))
+  return forestdb.collections().then(colls=>findOneFirst(colls, uid));
 }
 
 function findOneFirst(colls, uid){
@@ -213,7 +213,7 @@ function findOneFirst(colls, uid){
 function recache(){
   return forestdb.collections()
     .then(colls=>Promise.all(colls.map(coll=>coll.find({ Cache: 'keep-active' }, { projection: { _id: 0 }}).toArray()))
-                  .then(actives => [].concat(...actives)))
+                  .then(actives => [].concat(...actives)));
 }
 
 function query(is, scope, query){
@@ -236,7 +236,7 @@ function toMongoProp(key, val){
 }
 
 function getInlineVals(o, inline){
-  return Object.assign({}, ...inline.map(k => o[k] && { [k]: o[k] }), { More: o.UID })
+  return Object.assign({}, ...inline.map(k => o[k] && { [k]: o[k] }), { More: o.UID });
 }
 
 core.setPersistence({ persist, fetch, recache, query });
