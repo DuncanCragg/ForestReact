@@ -433,11 +433,10 @@ function doEvaluate(uid, params) {
     if(log.evaluate && object(uid, 'userState.')) console.log('>>>>>user>>>>\n', object(uid, 'userState.'));
     o.Observe=[];
     if(Alerted) o.Alerted=Alerted;
-    const evalout = evaluator(object.bind(null, uid), params);
+    const evalout = evaluator(object.bind(null, uid), params) || {};
     delete o.Alerted;
     observes=_.uniq(observes.concat(o.Observe));
     delete o.Observe;
-    if(!evalout){ console.error('no evaluator output for', uid, o); return o; }
     let update;
     if(evalout.constructor === Array){
       update = Object.assign({}, ...(evalout.map(x => (x && x.constructor === Promise)? setPromiseState(uid,x): (x || {}))))
