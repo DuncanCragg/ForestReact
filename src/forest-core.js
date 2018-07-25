@@ -76,7 +76,7 @@ function cachePersistAndNotify(o){
 function cacheAndPersist(o, notify){
   const uid=toUID(o.UID);
   objects[uid]=o;
-  if(persistence && persistence.persist) toSave[uid]=(toSave[uid] || notify || false);
+  if(persistence && persistence.persist && o.Cache !== 'no-persist') toSave[uid]=(toSave[uid] || notify || false);
   else if(notify) notifyObservers(o);
 }
 
