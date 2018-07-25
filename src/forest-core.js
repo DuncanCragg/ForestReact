@@ -132,10 +132,10 @@ function doGet(url){
   }
 }
 
-function ensureObjectState(u, observer){
+function ensureObjectState(u, setnotify, observer){
   const o = getCachedObject(u);
   if(o){
-    if(observer){
+    if(setnotify){
       setNotifyAndObserve(o,observer);
     }
     if(isURL(o.UID) && (o.Updated||0)+10000 < Date.now()){
@@ -145,7 +145,7 @@ function ensureObjectState(u, observer){
   }
   getObject(u).then(o=>{
     if(o){
-      if(observer){
+      if(setnotify){
         setNotifyAndObserve(o,observer);
         doEvaluate(observer.UID, { Alerted: o.UID });
       }
@@ -153,7 +153,7 @@ function ensureObjectState(u, observer){
         doGet(u);
       }
     }
-    else if(isURL(u) && observer){
+    else if(isURL(u) && setnotify){
       const o={ UID: u, Notify: [], Version: 0, Peer: toPeer(u), Updated: 0 }
       setNotifyAndObserve(o,observer);
       cacheAndPersist(o);
@@ -371,7 +371,7 @@ function object(u,p,q) { const r = ((uid, path, query)=>{
               return valMatch(v, query.match.UID);
             }
             else{
-              const p=ensureObjectState(v, observesubs && o);
+              const p=ensureObjectState(v, observesubs, o);
               if(!p) return false;
               return Object.keys(query.match).every(k => valMatch(p[k], query.match[k]));
             }
@@ -387,7 +387,7 @@ function object(u,p,q) { const r = ((uid, path, query)=>{
     }
     if(val.constructor === Object){ c = val; continue; }
     if(val.constructor === String){
-      c = ensureObjectState(val, observesubs && o);
+      c = ensureObjectState(val, observesubs, o);
       if(!c) return null;
     }
   }
