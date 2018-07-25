@@ -52,40 +52,57 @@ function prefixUIDs(o){
   return s.replace(/"(uid-[^"]*"[^:])/g, `"http://${serverHost}:${serverPort}/$1`);
 }
 
+function checkPKAndReturnObject(Peer, uid, res, r){
+  if(!r.PK || r.PK==='FAIL'){
+    return res.status(404).send('Not found');
+  }
+  if(r.PK==='OK' || auth.checkSig(r.PK)){
+    return core.getObject(uid).then(o => {
+      res.json(JSON.parse(prefixUIDs(o)));
+      if(Peer) core.setNotify(o,Peer);
+    });
+  }
+  return res.status(404).send('Not found');
+}
+
 app.get('/*',
   logRequest,
   CORS,
   (req, res, next) => {
-    const { Peer, User } = auth.getPeerUser(req);
+    const { Peer, User='no-user' } = auth.getPeerUser(req);
     const uid = req.originalUrl.substring(1);
-    if(!User){
-      console.log('implement temporary no-User user');
+    const rc=core.spawnTemporaryObject({
+      Evaluator: 'evalRequestChecker',
+      is: ['request', 'checker'],
+      user: User,
+      peer: Peer,
+      method: 'GET',
+      url: uid,
+    });
+    core.runEvaluator(rc).then(r => {
+      if(r.PK) return checkPKAndReturnObject(Peer, uid, res, r);
+      return new Promise(resolve => setTimeout(()=>core.getObject(rc).then(r=>resolve(checkPKAndReturnObject(Peer, uid, res, r))), 500));
+    })
+    .then(()=>next())
+    .catch(e => {
+      console.error(e);
       res.status(404).send('Not found');
       next();
-      return;
-    }
-    core.runEvaluator(User, { method: 'GET', URL: uid, Peer })
-      .then(user => {
-        const ok = user && user.PK!==false && (!user.PK || auth.checkSig(user.PK));
-        if(user) delete user.PK;
-        if(!ok){
-          return res.status(404).send('Not found');
-        }
-        return core.getObject(uid).then(o => {
-          res.json(JSON.parse(prefixUIDs(o)));
-          if(Peer) core.setNotify(o,Peer);
-        });
-      })
-      .then(()=>next())
-      .catch(e => {
-        console.error(e);
-        res.status(404).send('Not found');
-        next();
-      });
+    });
   },
   logResponse,
 );
 
+function checkPKAndSaveObject(User, Peer, json, path, res, r){
+  if(!r.PK || r.PK==='FAIL'){
+    return res.status(403).send('Forbidden');
+  }
+  if(r.PK==='OK' || auth.checkSig(r.PK)){
+    core.incomingObject(Object.assign({ User }, Peer && { Peer }, json), path!=='notify' && path);
+    return res.json({ });
+  }
+  return res.status(403).send('Forbidden');
+}
 
 app.post('/*',
   logRequest,
@@ -93,30 +110,26 @@ app.post('/*',
   (req, res, next) => {
     const json=req.body;
     if(!json || !json.UID) next();
-    const { Peer, User } = auth.getPeerUser(req);
+    const { Peer, User='no-user' } = auth.getPeerUser(req);
     const path = req.originalUrl.substring(1);
-    if(!User){
-      console.log('implement temporary no-User user');
+    const rc=core.spawnTemporaryObject({
+      Evaluator: 'evalRequestChecker',
+      is: ['request', 'checker'],
+      user: User,
+      peer: Peer,
+      method: 'POST',
+      url: json.UID,
+    });
+    core.runEvaluator(rc).then(r => {
+      if(r.PK) return checkPKAndSaveObject(User, Peer, json, path, res, r);
+      return new Promise(resolve => setTimeout(()=>core.getObject(rc).then(r=>resolve(checkPKAndSaveObject(User, Peer, json, path, res, r))), 500));
+    })
+    .then(()=>next())
+    .catch(e => {
+      console.error(e);
       res.status(403).send('Forbidden');
       next();
-      return;
-    }
-    core.runEvaluator(User, { method: 'POST', URL: json.UID, Peer })
-      .then(user => {
-        const ok = user && user.PK!==false && (!user.PK || auth.checkSig(user.PK));
-        if(user) delete user.PK;
-        if(!ok){
-          return res.status(403).send('Forbidden');
-        }
-        core.incomingObject(Object.assign({ User }, Peer && { Peer }, json), path!=='notify' && path)
-        res.json({ });
-      })
-      .then(()=>next())
-      .catch(e => {
-        console.error(e);
-        res.status(403).send('Forbidden');
-        next();
-      });
+    });
   },
   logResponse,
 );
