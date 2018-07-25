@@ -17,9 +17,9 @@ function setLogging(conf){
   Object.assign(log, conf)
 }
 
-const localProps =         ['Timer', 'TimerId', 'PK', 'Notifying', 'Alerted', 'Evaluator', 'Cache', 'ReactNotify', 'userState'];
-const notNotifiableProps = ['Timer', 'TimerId', 'PK'];
-const noPersistProps =     [         'TimerId', 'PK'];
+const localProps =         ['Timer', 'TimerId', 'Notifying', 'Alerted', 'Evaluator', 'Cache', 'ReactNotify', 'userState'];
+const notNotifiableProps = ['Timer', 'TimerId'];
+const noPersistProps =     [         'TimerId'];
 
 function makeUID(rem){
   /*jshint bitwise:false */
