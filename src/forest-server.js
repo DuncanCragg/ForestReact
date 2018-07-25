@@ -86,7 +86,6 @@ app.get('/*',
   logResponse,
 );
 
-const peer2ws = {};
 
 app.post('/*',
   logRequest,
@@ -139,6 +138,8 @@ function doPost(o, u){
   wsFlush(Peer);
   return Promise.resolve(true);
 }
+
+const peer2ws = {};
 
 function wsInit(config){
   const wss = new WebSocket.Server(config);
