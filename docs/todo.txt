@@ -1,12 +1,10 @@
 
  - --------------------
- - maybe pass PK back another way - in/out params?
- - get Identity in to POST as param (Peer is on POSTed/Alerted but do that too) for access / role stuff (r/w)
- - incomingObject/incomingObjectFromGET don't they need to set Peer? (ws detects json.Peer, watch out)
- - --------------------
  - checkSig(): signing from peers to prove
  - --------------------
- - Cache: no-persist = for userState
+ - incomingObject/incomingObjectFromGET don't they need to set Peer? (ws detects json.Peer, watch out)
+ - --------------------
+ - Cache: no-persist = for userState too
     - thus Cache: [ .. ] in a list
     - or merge into user object..
  - React coupling
