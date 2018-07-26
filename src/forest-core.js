@@ -305,15 +305,15 @@ function isLink(u){
 }
 
 function isUID(u){
-  return u.constructor === String && /^uid-/.test(u);
+  return u && u.constructor === String && /^uid-/.test(u);
 }
 
 function isURL(u){
-  return u.constructor === String && /^https?:\/\//.test(u);
+  return u && u.constructor === String && /^https?:\/\//.test(u);
 }
 
 function isNotify(u){
-  return u.constructor === String && /^rem-/.test(u);
+  return u && u.constructor === String && /^rem-/.test(u);
 }
 
 function toUID(u){

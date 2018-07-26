@@ -31,6 +31,11 @@ export default class Forest extends ForestCommon {
     super(props)
   }
 
+  static dropAll(){
+    return AsyncStorage.getAllKeys()
+      .then(uids => console.log('*************** dropping', uids) || AsyncStorage.clear());
+  }
+
   componentDidMount(){
     super.componentDidMount();
     if(Platform.OS !== 'ios'){
@@ -60,9 +65,7 @@ export default class Forest extends ForestCommon {
     this.viewing(route, params);
   }
 
-  viewing(route, params){
-    console.log('implement "viewing(route, params)"');
-  }
+  viewing(route, params){ } // FIXME: only nav Component will need this..
 
   Button(name, {label='', className='', style=null}={}){
     return <TouchableHighlight

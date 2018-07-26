@@ -265,7 +265,7 @@ function dropAll(){
             .then(colls=>colls.map(coll=>coll.stats()
               .then(s=>{
                   if(!/system.indexes/.test(s.ns)){
-                    console.log('dropping', s.ns, s.count);
+                    console.log('*************** dropping', s.ns, s.count);
                     coll.drop()
                   }
               })

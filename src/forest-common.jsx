@@ -121,6 +121,7 @@ export default class ForestCommon extends Component {
   constructor(props) {
     super(props)
     core.getObject(props.uid).then(o=>{
+      if(!o){ console.error('No bound object', props.uid); return; }
       this.state = o;
       this.UID = props.uid;
       this.userStateUID = core.spawnObject({ 'is': ['user', 'state'] });
