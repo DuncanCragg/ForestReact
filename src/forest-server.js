@@ -260,6 +260,18 @@ function getInlineVals(o, inline){
   return Object.assign({}, ...inline.map(k => o[k] && { [k]: o[k] }), { More: o.UID });
 }
 
+function dropAll(){
+  return forestdb.collections()
+            .then(colls=>colls.map(coll=>coll.stats()
+              .then(s=>{
+                  if(!/system.indexes/.test(s.ns)){
+                    console.log('dropping', s.ns, s.count);
+                    coll.drop()
+                  }
+              })
+            ));
+}
+
 core.setPersistence({ persist, fetch, recache, query });
 
 // --------------------------------
@@ -281,6 +293,7 @@ function init({httpHost, httpPort, wsPort, mongoHostPort}){
 
 export default {
   init,
+  dropAll,
   cacheObjects:        core.cacheObjects,
   reCacheObjects:      core.reCacheObjects,
   setEvaluator:        core.setEvaluator,
