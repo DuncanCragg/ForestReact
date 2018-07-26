@@ -54,15 +54,19 @@ function prefixUIDs(o){
 
 function checkPKAndReturnObject(Peer, uid, res, r){
   if(!r.PK || r.PK==='FAIL'){
-    return res.status(404).send('Not found');
+    res.status(404).send('Not found');
   }
-  if(r.PK==='OK' || auth.checkSig(r.PK)){
+  else if(r.PK==='OK' || auth.checkSig(r.PK)){
+  // TODO: delete r
     return core.getObject(uid).then(o => {
       res.json(JSON.parse(prefixUIDs(o)));
       if(Peer) core.setNotify(o,Peer);
     });
   }
-  return res.status(404).send('Not found');
+  else{
+    res.status(404).send('Not found');
+  }
+  // TODO: delete r
 }
 
 app.get('/*',
@@ -95,13 +99,16 @@ app.get('/*',
 
 function checkPKAndSaveObject(User, Peer, json, path, res, r){
   if(!r.PK || r.PK==='FAIL'){
-    return res.status(403).send('Forbidden');
+    res.status(403).send('Forbidden');
   }
-  if(r.PK==='OK' || auth.checkSig(r.PK)){
+  else if(r.PK==='OK' || auth.checkSig(r.PK)){
     core.incomingObject(Object.assign({ User }, Peer && { Peer }, json), path!=='notify' && path);
-    return res.json({ });
+    res.json({ });
   }
-  return res.status(403).send('Forbidden');
+  else{
+    res.status(403).send('Forbidden');
+  }
+  // TODO: delete r
 }
 
 app.post('/*',
