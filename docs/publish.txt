@@ -1,4 +1,5 @@
 
+remove all console.logs and local edits
 npm run build && npm run webpack
 # test todo and fed
 git gui

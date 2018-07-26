@@ -35,7 +35,7 @@ export default class Forest extends ForestCommon {
     super.componentDidMount();
     if(Platform.OS !== 'ios'){
       Linking.getInitialURL()
-        .then(url=>this.viewing(url.replace(/.*?:\/\/.*?\//g, '')))
+        .then(url=>this.callViewing(url))
         .catch(err => console.error('unable to get initial URL:', err));
     } else {
       Linking.addEventListener('url', this.handleOpenURL);
@@ -47,10 +47,21 @@ export default class Forest extends ForestCommon {
     Linking.removeEventListener('url', this.handleOpenURL);
   }
 
-  handleOpenURL = e => this.viewing(e.url.replace(/.*?:\/\/.*?\//g, ''));
+  handleOpenURL = e => this.callViewing(e.url);
 
-  viewing(path){
-    console.log('implement "viewing(path)"', path);
+  urlRE=/.*?:\/\/.*?\/(.*?)\?(.*)/;
+
+  callViewing(url){
+    const m = url.match(this.urlRE);
+    if(!m) return;
+    const route=m[1];
+    const query=m[2];
+    const params = new URLSearchParams(query);
+    this.viewing(route, params);
+  }
+
+  viewing(route, params){
+    console.log('implement "viewing(route, params)"');
   }
 
   Button(name, {label='', className='', style=null}={}){
