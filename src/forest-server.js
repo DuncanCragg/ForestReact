@@ -126,6 +126,7 @@ app.post('/*',
       peer: Peer,
       method: 'POST',
       url: json.UID,
+      body: json,
     });
     core.runEvaluator(rc).then(r => {
       if(r.PK) return checkPKAndSaveObject(User, Peer, json, path, res, r);
