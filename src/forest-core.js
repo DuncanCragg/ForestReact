@@ -60,7 +60,7 @@ function getObject(u){
   const o = objects[uid];
   if(o || !(persistence && persistence.fetch)) return Promise.resolve(o);
   return persistence.fetch(uid).then(o=>{
-    objects[uid]=o;
+    if(o) objects[uid]=o;
     return o;
   });
 }
