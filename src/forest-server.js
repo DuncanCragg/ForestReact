@@ -298,6 +298,7 @@ export default {
   cacheObjects:        core.cacheObjects,
   reCacheObjects:      core.reCacheObjects,
   setEvaluator:        core.setEvaluator,
+  runEvaluator:        core.runEvaluator,
   getObject:           core.getObject,
   spawnObject:         core.spawnObject,
   makeUID:             core.makeUID,
