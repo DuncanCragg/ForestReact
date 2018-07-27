@@ -61,11 +61,10 @@ export default class Forest extends ForestCommon {
     if(!m) return;
     const route=m[1];
     const query=m[2];
-    const params = new URLSearchParams(query);
-    this.viewing(route, params);
+    this.viewing(route, new URLSearchParams(query));
   }
 
-  viewing(route, params){ } // FIXME: only nav Component will need this..
+  viewing(route, query){ } // FIXME: only nav Component will need this..
 
   Button(name, {label='', className='', style=null}={}){
     return <TouchableHighlight
