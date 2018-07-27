@@ -262,14 +262,14 @@ function getInlineVals(o, inline){
 
 function dropAll(){
   return forestdb.collections()
-            .then(colls=>colls.map(coll=>coll.stats()
+            .then(colls=>Promise.all(colls.map(coll=>coll.stats()
               .then(s=>{
                   if(!/system.indexes/.test(s.ns)){
                     console.log('*************** dropping', s.ns, s.count);
-                    coll.drop()
+                    return coll.drop();
                   }
               })
-            ));
+            )));
 }
 
 core.setPersistence({ persist, fetch, recache, query });
