@@ -83,6 +83,7 @@ setInterval(()=>{ persistenceFlush().then((a)=> (a.length && log.persist && cons
 function persistenceFlush(){
   return Promise.all(Object.keys(toSave).map(uid=>{
     return getObject(uid).then(o=>{
+      if(!o){ console.error('********* persistenceFlush: no object for', uid, toSave[uid], objects[uid]); delete toSave[uid]; return; }
       const notify = toSave[uid];
       delete toSave[uid];
       return persistence.persist(_.omit(o, noPersistProps)).then(r => { if(notify) notifyObservers(o); return r; });
