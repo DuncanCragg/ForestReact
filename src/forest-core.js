@@ -425,10 +425,11 @@ function doEvaluate(uid, params) {
   const evaluator = o.Evaluator && (typeof o.Evaluator === 'function'? o.Evaluator: evaluators[o.Evaluator]);
   if(!evaluator) return o;
   const Alerted  = params && params.Alerted;
+  if(Alerted) params=undefined;
   const reactnotify = o.ReactNotify;
   let observes=[];
   for(let i=0; i<4; i++){
-    if(log.update) console.log('>>>>>>>>>>>>>', uid, object(uid, 'is'));
+    if(log.update) console.log('>>>>>>>>>>>>>', uid, ['is:'].concat(object(uid, 'is')).join(' '));
     if(log.evaluate) console.log(`iteration ${i}`);
     if(log.evaluate) console.log('>>>>>>>>>>>>>\n', object(uid, '.'));
     if(log.evaluate && object(uid, 'userState.')) console.log('>>>>>user>>>>\n', object(uid, 'userState.'));
@@ -443,8 +444,8 @@ function doEvaluate(uid, params) {
       update = Object.assign({}, ...(evalout.map(x => (x && x.constructor === Promise)? setPromiseState(uid,x): (x || {}))));
     }
     else update = evalout;
-    if(log.evaluate || log.update) console.log('<<<<<<<<<<<<< update:\n', update);
     const { updated, changed, notifiable } = updateObject(uid, update);
+    if(log.evaluate || log.update) if(changed) console.log('<<<<<<<<<<<<< update:\n', update);
     o = updated;
     if(!changed) break;
   }
