@@ -23,8 +23,8 @@ const authRE=/Forest Peer="(.*?)", User="(.*)"/;
 function getPeerUser(req){
   const auth = req.headers.authorization;
   const m = auth && auth.match(authRE);
-  const Peer=m && m[1];
-  const User=m && m[2];
+  const Peer=m && m[1] || undefined;
+  const User=m && m[2] || undefined;
   return { Peer, User };
 }
 

@@ -73,7 +73,7 @@ app.get('/*',
   logRequest,
   CORS,
   (req, res, next) => {
-    const { Peer, User='no-user' } = auth.getPeerUser(req);
+    const { Peer, User } = auth.getPeerUser(req);
     const uid = req.originalUrl.substring(1);
     const rc=core.spawnTemporaryObject({
       Evaluator: 'evalRequestChecker',
@@ -117,7 +117,7 @@ app.post('/*',
   (req, res, next) => {
     const json=req.body;
     if(!json || !json.UID) next();
-    const { Peer, User='no-user' } = auth.getPeerUser(req);
+    const { Peer, User } = auth.getPeerUser(req);
     const path = req.originalUrl.substring(1);
     const rc=core.spawnTemporaryObject({
       Evaluator: 'evalRequestChecker',
