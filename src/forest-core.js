@@ -1,16 +1,14 @@
 
 import _ from 'lodash';
 
-const debugall = false;
-
 const log = {
-  update:   debugall || false,
-  evaluate: debugall || false,
-  changes:  debugall || false,
-  notify:   debugall || false,
-  object:   debugall || false,
-  net:      debugall || false,
-  persist:  debugall || false,
+  update:   false,
+  evaluate: false,
+  changes:  false,
+  notify:   false,
+  object:   false,
+  net:      false,
+  persist:  false,
 }
 
 function setLogging(conf){
