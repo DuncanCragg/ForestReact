@@ -53,10 +53,10 @@ function prefixUIDs(o){
 }
 
 function checkPKAndReturnObject(Peer, uid, res, r){
-  if(!r.PK || r.PK==='FAIL'){
+  if(!r.pk || r.pk==='FAIL'){
     res.status(404).send('Not found');
   }
-  else if(r.PK==='OK' || auth.checkSig(r.PK)){
+  else if(r.pk==='OK' || auth.checkSig(r.pk)){
   // TODO: delete r
     return core.getObject(uid).then(o => {
       res.json(JSON.parse(prefixUIDs(o)));
@@ -84,7 +84,7 @@ app.get('/*',
       url: uid,
     });
     core.runEvaluator(rc).then(r => {
-      if(r.PK) return checkPKAndReturnObject(Peer, uid, res, r);
+      if(r.pk) return checkPKAndReturnObject(Peer, uid, res, r);
       return new Promise(resolve => setTimeout(()=>core.getObject(rc).then(r=>resolve(checkPKAndReturnObject(Peer, uid, res, r))), 500));
     })
     .then(()=>next())
@@ -97,12 +97,12 @@ app.get('/*',
   logResponse,
 );
 
-function checkPKAndSaveObject(User, Peer, json, path, res, r){
-  if(!r.PK || r.PK==='FAIL'){
+function checkPKAndSaveObject(User, Peer, json, setnotify, res, r){
+  if(!r.pk || r.pk==='FAIL'){
     res.status(403).send('Forbidden');
   }
-  else if(r.PK==='OK' || auth.checkSig(r.PK)){
-    core.incomingObject(Object.assign({ User }, Peer && { Peer }, json), path!=='notify' && path);
+  else if(r.pk==='OK' || auth.checkSig(r.pk)){
+    core.incomingObject(Object.assign({ User }, Peer && { Peer }, json), setnotify);
     res.json({ });
   }
   else{
@@ -119,6 +119,7 @@ app.post('/*',
     if(!json || !json.UID) next();
     const { Peer, User } = auth.getPeerUser(req);
     const path = req.originalUrl.substring(1);
+    const setnotify=(path!=='notify' && path);
     const rc=core.spawnTemporaryObject({
       Evaluator: 'evalRequestChecker',
       is: ['request', 'checker'],
@@ -129,8 +130,8 @@ app.post('/*',
       body: json,
     });
     core.runEvaluator(rc).then(r => {
-      if(r.PK) return checkPKAndSaveObject(User, Peer, json, path, res, r);
-      return new Promise(resolve => setTimeout(()=>core.getObject(rc).then(r=>resolve(checkPKAndSaveObject(User, Peer, json, path, res, r))), 500));
+      if(r.pk) return checkPKAndSaveObject(User, Peer, json, setnotify, res, r);
+      return new Promise(resolve => setTimeout(()=>core.getObject(rc).then(r=>resolve(checkPKAndSaveObject(User, Peer, json, setnotify, res, r))), 500));
     })
     .then(()=>next())
     .catch(e => {
