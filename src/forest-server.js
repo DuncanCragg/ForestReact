@@ -120,6 +120,8 @@ app.post('/*',
     const { Peer, User } = auth.getPeerUser(req);
     const path = req.originalUrl.substring(1);
     const setnotify=(path!=='notify' && path);
+    const n=(setnotify && [setnotify] || []).concat(body.Notify||[]);
+    const notifying=(n.length===1 && n[0]) || n;
     const rc=core.spawnTemporaryObject({
       Evaluator: 'evalRequestChecker',
       is: ['request', 'checker'],
@@ -127,6 +129,7 @@ app.post('/*',
       peer: Peer,
       method: 'POST',
       url: body.UID,
+      notifying,
       body,
     });
     core.runEvaluator(rc).then(r => {
