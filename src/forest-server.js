@@ -97,12 +97,12 @@ app.get('/*',
   logResponse,
 );
 
-function checkPKAndSaveObject(User, Peer, json, setnotify, res, r){
+function checkPKAndSaveObject(User, Peer, body, setnotify, res, r){
   if(!r.pk || r.pk==='FAIL'){
     res.status(403).send('Forbidden');
   }
   else if(r.pk==='OK' || auth.checkSig(r.pk)){
-    core.incomingObject(Object.assign({ User }, Peer && { Peer }, json), setnotify);
+    core.incomingObject(Object.assign({ User }, Peer && { Peer }, body), setnotify);
     res.json({ });
   }
   else{
@@ -115,8 +115,8 @@ app.post('/*',
   logRequest,
   CORS,
   (req, res, next) => {
-    const json=req.body;
-    if(!json || !json.UID) next();
+    const body=req.body;
+    if(!body || !body.UID) next();
     const { Peer, User } = auth.getPeerUser(req);
     const path = req.originalUrl.substring(1);
     const setnotify=(path!=='notify' && path);
@@ -126,12 +126,12 @@ app.post('/*',
       user: User,
       peer: Peer,
       method: 'POST',
-      url: json.UID,
-      body: json,
+      url: body.UID,
+      body,
     });
     core.runEvaluator(rc).then(r => {
-      if(r.pk) return checkPKAndSaveObject(User, Peer, json, setnotify, res, r);
-      return new Promise(resolve => setTimeout(()=>core.getObject(rc).then(r=>resolve(checkPKAndSaveObject(User, Peer, json, setnotify, res, r))), 500));
+      if(r.pk) return checkPKAndSaveObject(User, Peer, body, setnotify, res, r);
+      return new Promise(resolve => setTimeout(()=>core.getObject(rc).then(r=>resolve(checkPKAndSaveObject(User, Peer, body, setnotify, res, r))), 500));
     })
     .then(()=>next())
     .catch(e => {
@@ -167,15 +167,15 @@ function wsInit(config){
   const wss = new WebSocket.Server(config);
   wss.on('connection', (ws) => {
     ws.on('message', (data) => {
-      const json = JSON.parse(data);
-      if(json.Peer){
-        console.log('ws init:', json);
-        peer2ws[json.Peer]=ws;
+      const body = JSON.parse(data);
+      if(body.Peer){
+        console.log('ws init:', body);
+        peer2ws[body.Peer]=ws;
         ws.send(auth.makeWSAuth());
-        wsFlush(json.Peer);
+        wsFlush(body.Peer);
       }
       else{
-        console.log('ws incoming json:', json);
+        console.log('ws incoming:', body);
       }
     });
   });
