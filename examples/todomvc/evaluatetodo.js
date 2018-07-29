@@ -6,7 +6,6 @@ import TodoApp from './rendertodo';
 const uids = Forest.cacheObjects(
   [{ Evaluator: evalTodo,
      is: 'todoapp',
-     newTodo: '',
      nowShowing: 'all',
   }]
 );
