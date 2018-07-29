@@ -9,9 +9,9 @@ function pluralize(count, word) {
 
 class TodoApp extends Forest {
   render(){
-    const all       = this.object('todos');
-    const active    = this.object('activeTodos') || [];
-    const completed = this.object('completedTodos') || [];
+    const all       = [].concat(this.object('todos')          || []);
+    const active    = [].concat(this.object('activeTodos')    || []);
+    const completed = [].concat(this.object('completedTodos') || []);
 
     const numactive    = active.length;
     const numcompleted = completed.length;

@@ -357,10 +357,11 @@ function object(u,p,q) { const r = ((uid, path, query)=>{
     const isQueryableCacheList = c.is && c.is.constructor===Array && isQueryableCacheListLabels.every(s => c.is.includes(s));
     if(pathbits[i]==='list' && isQueryableCacheList && hasMatch) return cacheQuery(c, uid, query);
 
-    const val = c[pathbits[i]];
+    let val = c[pathbits[i]];
     if(val == null) return null;
     if(i==pathbits.length-1){
       if(!hasMatch) return val;
+      if(val.constructor === String) val=[val];
       if(val.constructor === Array){
         if(query.match.constructor===Array){
           return (query.match.length <= val.length && query.match.every(q => val.find(v=>valMatch(q,v))) && val) || null;
@@ -382,7 +383,7 @@ function object(u,p,q) { const r = ((uid, path, query)=>{
           }
           return false;
         });
-        return (r.length && r) || null;
+        return (r.length===1 && r[0]) || (r.length && r) || null;
       }
       return valMatch(val,query.match)? val: null;
     }

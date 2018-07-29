@@ -8,7 +8,6 @@ const uids = Forest.cacheObjects(
      is: 'todoapp',
      newTodo: '',
      nowShowing: 'all',
-     todos: []
   }]
 );
 
@@ -17,7 +16,7 @@ function evalTodo(object){
   return Object.assign({},
    !object('userState.newTodo-submitted') && { newTodo: object('userState.newTodo')|| '' },
     todoSubmitted                         && { newTodo: '',
-                                               todos: (object('todos')||[]).concat([Forest.spawnObject(
+                                               todos: [].concat(object('todos')||[]).concat([Forest.spawnObject(
                                                  { Evaluator: evalTodoItem,
                                                    is: 'todoitem',
                                                    title: object('newTodo'),
@@ -31,7 +30,7 @@ function evalTodo(object){
     true                                  && { activeTodos:    object('todos', { match: { completed: false }}),
                                                completedTodos: object('todos', { match: { completed: true  }})},
     true                                  && { clearCompleted: object('userState.clearCompleted') },
-    true                                  && { toggleAll: object('activeTodos') == null || object('activeTodos').length == 0 },
+    true                                  && { toggleAll: !object('activeTodos') },
     true                                  && { creating: object('userState.newTodo-submitted') },
   );
 }
@@ -45,4 +44,6 @@ function evalTodoItem(object){
 }
 
 Forest.renderDOM(<TodoApp uid={uids[0]} key={uids[0]} />);
+
+Forest.setLogging({ update: false });
 
