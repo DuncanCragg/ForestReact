@@ -41,7 +41,7 @@ export default class Forest extends ForestCommon {
     if(Platform.OS !== 'ios'){
       Linking.getInitialURL()
         .then(url=>this.callViewing(url))
-        .catch(err => console.error('unable to get initial URL:', err));
+        .catch(err => console.log('unable to get initial URL:', err));
     } else {
       Linking.addEventListener('url', this.handleOpenURL);
     }
