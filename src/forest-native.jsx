@@ -54,17 +54,20 @@ export default class Forest extends ForestCommon {
 
   handleOpenURL = e => this.callViewing(e.url);
 
+  viewingCB=null;
+
   urlRE=/.*?:\/\/.*?\/(.*?)\?(.*)/;
 
   callViewing(url){
+    if(!this.viewingCB) return;
     const m = url.match(this.urlRE);
     if(!m) return;
     const route=m[1];
     const query=m[2];
-    this.viewing(route, new URLSearchParams(query));
+    this.viewingCB(route, new URLSearchParams(query));
   }
 
-  viewing(route, query){ } // FIXME: only nav Component will need this..
+  setViewing(v){ this.viewingCB=v; }
 
   Button(name, {label='', className='', style=null}={}){
     return <TouchableHighlight
