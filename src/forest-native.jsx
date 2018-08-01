@@ -4,6 +4,7 @@ import { Text, TouchableHighlight, AsyncStorage, Linking, Platform } from 'react
 import ReactDOM from 'react-dom';
 import superagent from 'superagent';
 import _ from 'lodash';
+import URLSearchParams from 'url-search-params';
 import core from './forest-core';
 import ForestCommon from './forest-common';
 
