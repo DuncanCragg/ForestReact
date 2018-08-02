@@ -265,13 +265,13 @@ function getInlineVals(o, inline){
   return Object.assign({}, ...inline.map(k => o[k] && { [k]: o[k] }), { More: o.UID });
 }
 
-function dropAll(){
+function dropAll(actually){
   return forestdb.collections()
             .then(colls=>Promise.all(colls.map(coll=>coll.stats()
               .then(s=>{
                   if(!/system.indexes/.test(s.ns)){
-                    console.log('*************** dropping', s.ns, s.count);
-                    return coll.drop();
+                    console.log(actually? '*************** dropping': '(not dropping)', s.ns, s.count);
+                    return actually && coll.drop();
                   }
               })
             )));

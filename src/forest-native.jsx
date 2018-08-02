@@ -32,9 +32,9 @@ export default class Forest extends ForestCommon {
     super(props)
   }
 
-  static dropAll(){
+  static dropAll(actually){
     return AsyncStorage.getAllKeys()
-      .then(uids => console.log('*************** dropping', uids) || AsyncStorage.clear());
+      .then(uids => console.log(actually? '*************** dropping': '(not dropping)', uids) || actually && AsyncStorage.clear());
   }
 
   viewingCB=null;
