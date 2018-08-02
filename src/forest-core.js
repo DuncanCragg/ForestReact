@@ -236,16 +236,13 @@ function notifyObservers(o){
 
 function outgoingObject(o,u){
   network && network.doPost(o,u).then((ok) => {
-    if(log.net){
-      if(ok) console.log('-------------->> outgoingObject\n', JSON.stringify(o, null, 4), u);
-      else console.log('no outgoingObject for', u);
-    }
+    if(log.net) console.log(ok? '<<-------------- outgoingObject': 'no outgoingObject for', u, '\n', JSON.stringify(o, null, 4));
   });
 }
 
 function incomingObjectFromGET(url, json){
   json = Object.assign({ Updated: Date.now() }, json);
-  if(log.net) console.log('<<-------------- incomingObjectFromGET\n', JSON.stringify(json, null, 4));
+  if(log.net) console.log('-------------->> incomingObjectFromGET\n', JSON.stringify(json, null, 4));
   updateObject(url, json);
 }
 
@@ -254,7 +251,7 @@ function incomingObject(json, notify){
   if(!json.Peer) json.Peer=toPeer(json.UID);
   json = Object.assign({ Updated: Date.now() }, json);
   if(notify) setNotify(json, notify, true);
-  if(log.net) console.log('<<-------------- incomingObject\n', JSON.stringify(json, null, 4), notify);
+  if(log.net) console.log('-------------->> incomingObject\n', JSON.stringify(json, null, 4), notify);
   getObject(json.UID).then(o=>{
     if(!o) storeObject(json);
     else updateObject(json.UID, json);
