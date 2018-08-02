@@ -37,14 +37,18 @@ export default class Forest extends ForestCommon {
       .then(uids => console.log('*************** dropping', uids) || AsyncStorage.clear());
   }
 
+  viewingCB=null;
+
   componentDidMount(){
     super.componentDidMount();
-    if(Platform.OS !== 'ios'){
-      Linking.getInitialURL()
-        .then(url=>this.callViewing(url))
-        .catch(err => console.log('unable to get initial URL:', err));
-    } else {
-      Linking.addEventListener('url', this.handleOpenURL);
+    if(this.viewingCB){
+      if(Platform.OS !== 'ios'){
+        Linking.getInitialURL()
+          .then(url=>this.callViewing(url))
+          .catch(err => console.log('unable to get initial URL:', err));
+      } else {
+        Linking.addEventListener('url', this.handleOpenURL); // what if there's already been an event?
+      }
     }
   }
 
@@ -55,12 +59,11 @@ export default class Forest extends ForestCommon {
 
   handleOpenURL = e => this.callViewing(e.url);
 
-  viewingCB=null;
-
   urlRE=/.*?:\/\/.*?\/(.*?)\?(.*)/;
 
   callViewing(url){
     if(!this.viewingCB) return;
+    if(!url) return;
     const m = url.match(this.urlRE);
     if(!m) return;
     const route=m[1];
