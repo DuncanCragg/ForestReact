@@ -21,7 +21,7 @@ function doPost(o,url){
     .set(auth.makeHTTPAuth())
     .send(data)
     .then(x => x.body)
-    .catch(e => console.error('doPost',e,url,data));
+    .catch(e => console.warn('doPost',e,url,data));
 }
 
 core.setNetwork({ doGet, doPost });

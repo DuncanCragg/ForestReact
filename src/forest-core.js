@@ -83,7 +83,7 @@ setInterval(()=>{ persistenceFlush().then((a)=> (a.length && log.persist && cons
 function persistenceFlush(){
   return Promise.all(Object.keys(toSave).map(uid=>{
     return getObject(uid).then(o=>{
-      if(!o){ console.error('********* persistenceFlush: no object for', uid, toSave[uid], objects[uid]); delete toSave[uid]; return; }
+      if(!o){ console.warn('********* persistenceFlush: no object for', uid, toSave[uid], objects[uid]); delete toSave[uid]; return; }
       const notify = toSave[uid];
       delete toSave[uid];
       return persistence.persist(_.omit(o, noPersistProps)).then(r => { if(notify) notifyObservers(o); return r; });
@@ -133,7 +133,7 @@ function doGet(url){
     fetching[url]=true;
     network && network.doGet(url)
       .then(json => { fetching[url]=false; incomingObjectFromGET(url, json); })
-      .catch(e => { fetching[url]=false; console.error('doGet',e,url); });
+      .catch(e => { fetching[url]=false; console.warn('doGet',e,url); });
   }
 }
 
