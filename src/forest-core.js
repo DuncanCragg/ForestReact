@@ -56,6 +56,7 @@ function getCachedObject(u){
 }
 
 function getObject(u){
+  if(!u) return Promise.resolve(null);
   const uid=toUID(u);
   const o = objects[uid];
   if(o || !(persistence && persistence.fetch)) return Promise.resolve(o);
