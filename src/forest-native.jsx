@@ -1,6 +1,6 @@
 
 import React, { Component } from 'react';
-import { View, Text, TouchableOpacity, AsyncStorage, Linking, Platform } from 'react-native';
+import { Platform, View, Text, TouchableOpacity, AsyncStorage, Linking, BackHandler } from 'react-native';
 import ReactDOM from 'react-dom';
 import superagent from 'superagent';
 import _ from 'lodash';
@@ -37,27 +37,39 @@ export default class Forest extends ForestCommon {
       .then(uids => console.log(actually? '*************** dropping': '(not dropping)', uids) || actually && AsyncStorage.clear());
   }
 
+  backButtonCB=null;
+
   viewingCB=null;
 
   componentDidMount(){
     super.componentDidMount();
+    if(this.backButtonCB){
+      BackHandler.addEventListener('hardwareBackPress', this.backButtonPushed);
+    }
     if(this.viewingCB){
       if(Platform.OS !== 'ios'){
         Linking.getInitialURL()
           .then(url=>this.callViewing(url))
           .catch(err => console.log('unable to get initial URL:', err));
       } else {
-        Linking.addEventListener('url', this.handleOpenURL); // what if there's already been an event?
+        Linking.addEventListener('url', this.initialURLSupplied); // what if there's already been an event?
       }
     }
   }
 
   componentWillUnmount() {
     super.componentWillUnmount();
-    Linking.removeEventListener('url', this.handleOpenURL);
+    BackHandler.removeEventListener('hardwareBackPress', this.backButtonPushed);
+    Linking.removeEventListener('url', this.initialURLSupplied);
   }
 
-  handleOpenURL = e => this.callViewing(e.url);
+  backButtonPushed = () => {
+    if(!this.backButtonCB) return;
+    this.backButtonCB();
+    return true;
+  }
+
+  initialURLSupplied = e => this.callViewing(e.url);
 
   urlRE=/.*?:\/\/.*?\/(.*?)\?(.*)/;
 
@@ -71,7 +83,9 @@ export default class Forest extends ForestCommon {
     this.viewingCB(route, new URLSearchParams(query));
   }
 
-  setViewing(v){ this.viewingCB=v; }
+  setBackButton(cb){ this.backButtonCB=cb; }
+
+  setViewing(cb){ this.viewingCB=cb; }
 
   Button(name, {label='', children=null, style=null}={}){
     const nested = children && children.length;
