@@ -1,6 +1,6 @@
 
 import React, { Component } from 'react';
-import { Text, TouchableHighlight, AsyncStorage, Linking, Platform } from 'react-native';
+import { View, Text, TouchableOpacity, AsyncStorage, Linking, Platform } from 'react-native';
 import ReactDOM from 'react-dom';
 import superagent from 'superagent';
 import _ from 'lodash';
@@ -73,16 +73,18 @@ export default class Forest extends ForestCommon {
 
   setViewing(v){ this.viewingCB=v; }
 
-  Button(name, {label='', className='', style=null}={}){
-    return <TouchableHighlight
+  Button(name, {label='', children=null, style=null}={}){
+    const nested = children && children.length;
+    return <TouchableOpacity
              delayPressIn={0}
              delayLongPress={800}
              onPressIn={() => this.onChange(name, true)}
              onLongPress={() => this.onChange(name, true)}
              onPressOut={() => this.onChange(name, false)}
+             style={nested && style}
            >
-             <Text style={style}>{label}</Text>
-           </TouchableHighlight>
+             {nested && children || <Text style={style}>{label}</Text>}
+           </TouchableOpacity>
   }
 }
 
