@@ -69,7 +69,7 @@ export default class ForestCommon extends Component {
     };
 
     ws.onerror = e => {
-      console.log('websocket error', JSON.stringify(e, null, 4).substring(0, 100));
+      console.log('websocket error');
     };
   }
 
