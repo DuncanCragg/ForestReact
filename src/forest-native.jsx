@@ -39,17 +39,17 @@ export default class Forest extends ForestCommon {
 
   backButtonCB=null;
 
-  viewingCB=null;
+  initialURLCB=null;
 
   componentDidMount(){
     super.componentDidMount();
     if(this.backButtonCB){
       BackHandler.addEventListener('hardwareBackPress', this.backButtonPushed);
     }
-    if(this.viewingCB){
+    if(this.initialURLCB){
       if(Platform.OS !== 'ios'){
         Linking.getInitialURL()
-          .then(url=>this.callViewing(url))
+          .then(url=>this.callInitialURL(url))
           .catch(err => console.log('unable to get initial URL:', err));
       } else {
         Linking.addEventListener('url', this.initialURLSupplied); // what if there's already been an event?
@@ -69,23 +69,23 @@ export default class Forest extends ForestCommon {
     return true;
   }
 
-  initialURLSupplied = e => this.callViewing(e.url);
+  initialURLSupplied = e => this.callInitialURL(e.url);
 
   urlRE=/.*?:\/\/.*?\/(.*?)\?(.*)/;
 
-  callViewing(url){
-    if(!this.viewingCB) return;
+  callInitialURL(url){
+    if(!this.initialURLCB) return;
     if(!url) return;
     const m = url.match(this.urlRE);
     if(!m) return;
     const route=m[1];
     const query=m[2];
-    this.viewingCB(route, new URLSearchParams(query));
+    this.initialURLCB(route, new URLSearchParams(query));
   }
 
-  setBackButton(cb){ this.backButtonCB=cb; }
+  setBackButtonCB(cb){ this.backButtonCB=cb; }
 
-  setViewing(cb){ this.viewingCB=cb; }
+  setInitialURLCB(cb){ this.initialURLCB=cb; }
 
   Button(name, {label='', children=null, style=null}={}){
     const nested = children && children.length;
