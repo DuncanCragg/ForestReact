@@ -38,6 +38,7 @@
     "express": "^4.16.3",
     "lodash": "^4.17.4",
     "mongodb": "3.1.0-beta4",
+    "mosca": "^2.8.3",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
     "superagent": "^3.6.0",
