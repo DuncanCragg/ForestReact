@@ -1,28 +1,36 @@
 
  - --------------------
- - checkSig(): signing from peers to prove
+ * checkSig(): signing from peers to prove
+ * request checker response: { status: OK, public-key: '..', cache: 'no-persist' } - no-persist if it's an incoming ui object, etc
  - --------------------
- - incomingObject/incomingObjectFromGET don't they need to set Peer? (ws detects json.Peer, watch out)
- - --------------------
- - Cache: no-persist = for userState too
-    - thus Cache: [ .. ] in a list
-    - or merge into user object..
- - React coupling
+ * React coupling
    - hardwiring from obj to notify react (o.react)
      - and from react to notify obj (o.userState)
+   - set output notify callback
+   - recv incoming as Alerted
    - React cpt refers to state and 'subscribes' to it (o.react.notify)
    - React cpt is actually the user object, which can observe a top object and anything linked under it
      - state('watching.counter') what if that changes?
      - state('giphy.url') instead of state('image') - but disappears, so no
      - state('image') relies on 'own' state subscribing and setting something for render
+   - userState -> user-state
  - --------------------
  - drop rem-* with no WS/discard pkts
+ - request checker on websockets too
+ - --------------------
+ - Cache: no-persist = for userState too
+    - thus Cache: [ .. ] in a list
+    - or merge into user object..
+ - --------------------
  - test: incomingObject sets Updated (e.g. results pushed, initially, but also polled)
  - shadow object in update
  - don't see UID as a change
  - --------------------
+ - don't use fetch() in recache(), cos it pulls the whole lot as objects into memory anyway! even though GC-able, just scan string first at least
+ - incomingObject/incomingObjectFromGET don't they need to set Peer? (ws detects json.Peer, watch out)
+ - --------------------
  - doGet:
-    - Version -> ETag? 304s are coming back
+    - Version -> ETag? 304s are coming back with weak ETags
  - treat shell case differently from refresh? (initial load timeout different from polling rate?)
     - do you retry in ONR if you fail to see the object come in? if so, must be over 10s
  - can have remote URL in any object
