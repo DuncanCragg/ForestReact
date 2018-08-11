@@ -33,6 +33,44 @@ const CORS = (req, res, next) => {
   next();
 };
 
+// --------------------------------
+
+function prefixUIDs(o){
+  const s = JSON.stringify(_.omit(o, core.localProps), null, 2);
+  return s.replace(/"(uid-[^"]*"[^:])/g, `"http://${serverHost}:${serverPort}/$1`);
+}
+
+function checkPKAndReturnObject(Peer, uid, res, r){
+  if(!r.pk || r.pk==='FAIL'){
+    res.status(404).send('Not found');
+  }
+  else if(r.pk==='OK' || auth.checkSig(r.pk)){
+    // TODO: delete r
+    return core.getObject(uid).then(o => {
+      res.json(JSON.parse(prefixUIDs(o)));
+      if(Peer) core.setNotify(o,Peer);
+    });
+  }
+  else{
+    res.status(404).send('Not found');
+  }
+  // TODO: delete r
+}
+
+function checkPKAndSaveObject(User, Peer, body, setnotify, res, r){
+  if(!r.pk || r.pk==='FAIL'){
+    res.status(403).send('Forbidden');
+  }
+  else if(r.pk==='OK' || auth.checkSig(r.pk)){
+    core.incomingObject(Object.assign({ User }, Peer && { Peer }, body), setnotify);
+    res.json({ });
+  }
+  else{
+    res.status(403).send('Forbidden');
+  }
+  // TODO: delete r
+}
+
 // ---- HTTP ----------------------
 
 const app = express();
@@ -47,28 +85,6 @@ app.options("/*",
   },
   logResponse,
 );
-
-function prefixUIDs(o){
-  const s = JSON.stringify(_.omit(o, core.localProps), null, 2);
-  return s.replace(/"(uid-[^"]*"[^:])/g, `"http://${serverHost}:${serverPort}/$1`);
-}
-
-function checkPKAndReturnObject(Peer, uid, res, r){
-  if(!r.pk || r.pk==='FAIL'){
-    res.status(404).send('Not found');
-  }
-  else if(r.pk==='OK' || auth.checkSig(r.pk)){
-  // TODO: delete r
-    return core.getObject(uid).then(o => {
-      res.json(JSON.parse(prefixUIDs(o)));
-      if(Peer) core.setNotify(o,Peer);
-    });
-  }
-  else{
-    res.status(404).send('Not found');
-  }
-  // TODO: delete r
-}
 
 app.get('/*',
   logRequest,
@@ -97,20 +113,6 @@ app.get('/*',
   },
   logResponse,
 );
-
-function checkPKAndSaveObject(User, Peer, body, setnotify, res, r){
-  if(!r.pk || r.pk==='FAIL'){
-    res.status(403).send('Forbidden');
-  }
-  else if(r.pk==='OK' || auth.checkSig(r.pk)){
-    core.incomingObject(Object.assign({ User }, Peer && { Peer }, body), setnotify);
-    res.json({ });
-  }
-  else{
-    res.status(403).send('Forbidden');
-  }
-  // TODO: delete r
-}
 
 app.post('/*',
   logRequest,
