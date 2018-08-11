@@ -33,6 +33,7 @@ const CORS = (req, res, next) => {
   next();
 };
 
+// ---- HTTP ----------------------
 
 const app = express();
 
@@ -146,12 +147,16 @@ app.post('/*',
   logResponse,
 );
 
+// --------------------------------
+
 function doGet(url){
   return superagent.get(url)
     .timeout({ response: 9000, deadline: 10000 })
     .set(auth.makeHTTPAuth())
     .then(x => x.body);
 }
+
+// ---- WebSockets ----------------
 
 const pendingWSpackets = {};
 
@@ -203,9 +208,12 @@ function wsFlush(Peer){
   }
 }
 
-core.setNetwork({ doGet, doPost });
 
 // --------------------------------
+
+core.setNetwork({ doGet, doPost });
+
+// ---- Mongo ---------------------
 
 let forestdb;
 
