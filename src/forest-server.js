@@ -41,34 +41,25 @@ function prefixUIDs(o){
   return s.replace(/"(uid-[^"]*"[^:])/g, `"http://${serverHost}:${serverPort}/$1`);
 }
 
-function checkPKAndReturnObject(Peer, uid, res, r){
-  if(!r.pk || r.pk==='FAIL'){
-    res.status(404).send('Not found');
-  }
-  else if(r.pk==='OK' || auth.checkSig(r.pk)){
-    // TODO: delete r
+function checkPKAndReturnObject(Peer, uid, r){
+  if(!r.pk || r.pk==='FAIL') return null;
+  if(r.pk==='OK' || auth.checkSig(r.pk)){
     return core.getObject(uid).then(o => {
-      res.json(JSON.parse(prefixUIDs(o)));
       if(Peer) core.setNotify(o,Peer);
+      return o;
     });
   }
-  else{
-    res.status(404).send('Not found');
-  }
+  return null;
   // TODO: delete r
 }
 
-function checkPKAndSaveObject(User, Peer, body, setnotify, res, r){
-  if(!r.pk || r.pk==='FAIL'){
-    res.status(403).send('Forbidden');
-  }
-  else if(r.pk==='OK' || auth.checkSig(r.pk)){
+function checkPKAndSaveObject(User, Peer, body, setnotify, r){
+  if(!r.pk || r.pk==='FAIL') return false;
+  if(r.pk==='OK' || auth.checkSig(r.pk)){
     core.incomingObject(Object.assign({ User }, Peer && { Peer }, body), setnotify);
-    res.json({ });
+    return true;
   }
-  else{
-    res.status(403).send('Forbidden');
-  }
+  return false;
   // TODO: delete r
 }
 
@@ -102,8 +93,14 @@ app.get('/*',
       url: uid,
     });
     core.runEvaluator(rc).then(r => {
-      if(r.pk) return checkPKAndReturnObject(Peer, uid, res, r);
-      return new Promise(resolve => setTimeout(()=>core.getObject(rc).then(r=>resolve(checkPKAndReturnObject(Peer, uid, res, r))), 500));
+      if(r.pk) return checkPKAndReturnObject(Peer, uid, r);
+      return new Promise(resolve => setTimeout(()=>core.getObject(rc).then(r=>{
+        return resolve(checkPKAndReturnObject(Peer, uid, r));
+      }), 500));
+    })
+    .then(o => {
+      if(o) res.json(JSON.parse(prefixUIDs(o)));
+      else  res.status(404).send('Not found');
     })
     .then(()=>next())
     .catch(e => {
@@ -137,9 +134,12 @@ app.post('/*',
       body,
     });
     core.runEvaluator(rc).then(r => {
-      if(r.pk) return checkPKAndSaveObject(User, Peer, body, setnotify, res, r);
-      return new Promise(resolve => setTimeout(()=>core.getObject(rc).then(r=>resolve(checkPKAndSaveObject(User, Peer, body, setnotify, res, r))), 500));
+      if(r.pk) return checkPKAndSaveObject(User, Peer, body, setnotify, r);
+      return new Promise(resolve => setTimeout(()=>core.getObject(rc).then(r=>{
+        return resolve(checkPKAndSaveObject(User, Peer, body, setnotify, r));
+      }), 500));
     })
+    .then(ok=>ok? res.json({ }): res.status(403).send('Forbidden'))
     .then(()=>next())
     .catch(e => {
       console.error(e);
