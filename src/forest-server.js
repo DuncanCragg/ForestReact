@@ -150,27 +150,7 @@ app.post('/*',
   logResponse,
 );
 
-// --------------------------------
-
-function doGet(url){
-  return superagent.get(url)
-    .timeout({ response: 9000, deadline: 10000 })
-    .set(auth.makeHTTPAuth())
-    .then(x => x.body);
-}
-
 // ---- WebSockets ----------------
-
-const pendingWSpackets = {};
-
-function doPost(o, u){
-  if(core.isURL(u)) return Promise.resolve(false);
-  const Peer = core.isNotify(u)? u: o.Peer;
-  if(!pendingWSpackets[Peer]) pendingWSpackets[Peer] = [];
-  pendingWSpackets[Peer].push(prefixUIDs(o));
-  wsFlush(Peer);
-  return Promise.resolve(true);
-}
 
 const peer2ws = {};
 
@@ -191,6 +171,8 @@ function wsInit(config){
     });
   });
 }
+
+const pendingWSpackets = {};
 
 function wsFlush(Peer){
   const ws = peer2ws[Peer];
@@ -227,6 +209,22 @@ function mqttInit(config){
 }
 
 // --------------------------------
+
+function doGet(url){
+  return superagent.get(url)
+    .timeout({ response: 9000, deadline: 10000 })
+    .set(auth.makeHTTPAuth())
+    .then(x => x.body);
+}
+
+function doPost(o, u){
+  if(core.isURL(u)) return Promise.resolve(false);
+  const Peer = core.isNotify(u)? u: o.Peer;
+  if(!pendingWSpackets[Peer]) pendingWSpackets[Peer] = [];
+  pendingWSpackets[Peer].push(prefixUIDs(o));
+  wsFlush(Peer);
+  return Promise.resolve(true);
+}
 
 core.setNetwork({ doGet, doPost });
 
