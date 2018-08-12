@@ -7,6 +7,7 @@ import superagent from 'superagent';
 import mongodb from 'mongodb';
 import core from './forest-core';
 import auth from './auth';
+import mosca from 'mosca';
 
 let serverHost=null;
 let serverPort=0;
@@ -210,6 +211,20 @@ function wsFlush(Peer){
   }
 }
 
+function mqttInit(config){
+
+  const mqtts = new mosca.Server(config);
+
+  mqtts.on('ready', () => {
+  });
+
+  mqtts.on('clientConnected', (client) => {
+  });
+
+  mqtts.on('published', (packet, client) => {
+    if(packet.topic.startsWith('$')) return;
+  });
+}
 
 // --------------------------------
 
@@ -291,7 +306,7 @@ core.setPersistence({ persist, fetch, recache, query });
 
 // --------------------------------
 
-function init({httpHost, httpPort, wsPort, mongoHostPort}){
+function init({httpHost, httpPort, wsPort, mongoHostPort, mqttConfig}){
   serverHost=httpHost; serverPort=httpPort;
   return new Promise((resolve, reject) => {
     persistenceInit(mongoHostPort)
@@ -299,6 +314,7 @@ function init({httpHost, httpPort, wsPort, mongoHostPort}){
         app.listen(httpPort, ()=>{
           console.log(`Server started on port ${httpPort}`);
           wsInit({ port: wsPort });
+          mqttInit(mqttConfig);
           resolve();
         }).on('error', (err) => reject(err));
       })
