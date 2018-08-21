@@ -185,7 +185,7 @@ function wsInit(config){
         console.log('ws init:', body);
         peer2ws[body.Peer]=ws;
         ws.send(auth.makeWSAuth());
-        wsFlush(body.Peer);
+        wsFlushNotify(body.Peer);
       }
       else{
         console.log('ws incoming:', body);
@@ -196,12 +196,8 @@ function wsInit(config){
 
 const pendingWSpackets = {};
 
-function wsFlush(Peer){
+function wsFlushNotify(Peer){
   const ws = peer2ws[Peer];
-  if(!ws){
-    console.log('websocket not found', Peer);
-    return;
-  }
   let packet;
   while((packet=(pendingWSpackets[Peer]||[]).shift())){
     try{
@@ -276,7 +272,7 @@ function doPost(o, u){
   const Peer = core.isNotify(u)? u: o.Peer;
   if(!pendingWSpackets[Peer]) pendingWSpackets[Peer] = [];
   pendingWSpackets[Peer].push(prefixUIDs(o));
-  wsFlush(Peer);
+  if(peer2ws[Peer]) wsFlushNotify(Peer);
   return Promise.resolve(true);
 }
 
