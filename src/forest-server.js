@@ -28,8 +28,8 @@ function safeParse(s){
 
 const logRequest = (req, res, next) => {
   console.log('---------------------------->');
-  if(req.method==='POST') console.log(req.method, req.originalUrl, req.body && req.body.UID, req.headers.authorization||'');
-  else                    console.log(req.method, req.originalUrl,                           req.headers.authorization||'');
+  if(req.method==='POST') console.log(req.method, req.originalUrl, req.body && (req.body.Notify+' '+req.body.UID), req.headers.authorization||'');
+  else                    console.log(req.method, req.originalUrl,                                                 req.headers.authorization||'');
   next();
 };
 
