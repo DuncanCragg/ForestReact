@@ -14,6 +14,18 @@ let serverPort=0;
 
 // --------------------------------
 
+function safeParse(s){
+  try{
+    return JSON.parse(s);
+  }
+  catch(e){
+    console.error('incoming data corrupt:', s, e);
+    return {};
+  }
+}
+
+// --------------------------------
+
 const logRequest = (req, res, next) => {
   console.log('---------------------------->');
   if(req.method==='POST') console.log(req.method, req.originalUrl, req.body && req.body.UID, req.headers.authorization||'');
@@ -158,7 +170,7 @@ function wsInit(config){
   const wss = new WebSocket.Server(config);
   wss.on('connection', (ws) => {
     ws.on('message', (data) => {
-      const body = JSON.parse(data);
+      const body = safeParse(data);
       if(body.Peer){
         console.log('ws init:', body);
         peer2ws[body.Peer]=ws;
@@ -193,11 +205,14 @@ function wsFlush(Peer){
   }
 }
 
+// ---- MQTT ----------------------
+
 function mqttInit(config){
 
   const mqtts = new mosca.Server(config);
 
   mqtts.on('ready', () => {
+    console.log('MQTT server running on ports', config.port, config.secure.port)
   });
 
   mqtts.on('clientConnected', (client) => {
