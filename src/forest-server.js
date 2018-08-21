@@ -213,9 +213,13 @@ function wsFlushNotify(Peer){
 
 // ---- MQTT ----------------------
 
+let mqtts=null;
+
+const peer2mqtt = {};
+
 function mqttInit(config){
 
-  const mqtts = new mosca.Server(config);
+  mqtts = new mosca.Server(config);
 
   mqtts.on('ready', () => {
     console.log('MQTT server running on ports', config.port, config.secure.port)
@@ -226,6 +230,7 @@ function mqttInit(config){
 
   mqtts.on('published', ({ topic, payload }, client) => {
     if(topic.startsWith('$')) return;
+    if(topic.startsWith('rem-')) return;
     const body = safeParse(payload.toString());
     if(!body || !body.UID) return;
     const { Peer, User } = body;
@@ -250,12 +255,34 @@ function mqttInit(config){
       }), 500));
     })
     .then(ok=>{
+      peer2mqtt[Peer]=ok;
+      mqttFlushNotify(Peer);
       logMQTTResult(ok);
     })
     .catch(e => {
       console.error(e);
     });
   });
+}
+
+function mqttFlushNotify(Peer){
+  let o;
+  while((o=(pendingNotifies[Peer]||[]).shift())){
+    const packet = {
+      topic: Peer,
+      payload: o,
+      qos: 1,
+      retain: false,
+    };
+    try{
+      mqtts.publish(packet, () => {
+        console.log('<<----------mqtt-------------', Peer);
+      });
+    }
+    catch(e){
+      console.error('error sending\n', o, '\nto', Peer, '\n', e);
+    }
+  }
 }
 
 // --------------------------------
@@ -273,6 +300,8 @@ function doPost(o, u){
   if(!pendingNotifies[Peer]) pendingNotifies[Peer] = [];
   pendingNotifies[Peer].push(prefixUIDs(o));
   if(peer2ws[Peer]) wsFlushNotify(Peer);
+  else
+  if(peer2mqtt[Peer]) mqttFlushNotify(Peer);
   return Promise.resolve(true);
 }
 
