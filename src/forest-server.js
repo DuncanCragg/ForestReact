@@ -132,8 +132,8 @@ app.post('/*',
     if(!body || !body.UID) next();
     const { Peer, User } = auth.getPeerUser(req);
     const path = req.originalUrl.substring(1);
-    const setnotify=(path!=='notify' && path);
-    const n=(setnotify && [setnotify] || []).concat(body.Notify||[]);
+    const setnotify=(path!=='notify' && path || '');
+    const n=_.uniq(core.listify(setnotify, body.Notify));
     const notifying=(n.length===1 && n[0]) || n;
     const rc=core.spawnTemporaryObject({
       Evaluator: 'evalRequestChecker',

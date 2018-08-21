@@ -11,6 +11,10 @@ const log = {
   persist:  false,
 }
 
+function listify(...items){
+  return [].concat(...(items.filter(i=>(![undefined, null, ''].includes(i)))));
+}
+
 function setLogging(conf){
   Object.assign(log, conf);
 }
@@ -166,8 +170,9 @@ function ensureObjectState(u, setnotify, observer){
 }
 
 function setNotify(o,uid,savelater){
-  if(!o.Notify.find(n=>valMatch(n,uid))){
-    o.Notify.push(uid);
+  const prevNotify=listify(o.Notify);
+  if(!prevNotify.find(n=>valMatch(n,uid))){
+    o.Notify=prevNotify.concat(uid);
     if(!savelater) cacheAndPersist(o);
   }
 }
@@ -180,7 +185,8 @@ function setNotifyAndObserve(o,observer){
 }
 
 function remNotify(o,uid){
-  o.Notify=o.Notify.filter(n=>!valMatch(n,uid));
+  const prevNotify=listify(o.Notify);
+  o.Notify=prevNotify.filter(n=>!valMatch(n,uid));
   cacheAndPersist(o);
 }
 
@@ -193,7 +199,7 @@ function isShell(o){
 }
 
 function notifyObservers(o){
-  const allNotify = _.uniq([].concat(o.Notifying||[]).concat(o.Notify||[]));
+  const allNotify = _.uniq(listify(o.Notifying, o.Notify));
   if(log.notify) console.log('===========================\no.UID/is/Peer:', `${o.UID} / ${o.is} / ${o.Peer||'--'}`);
   const peers = {};
   Promise.all(allNotify.map(u => getObject(u).then(n=>{
@@ -291,9 +297,9 @@ function updateObject(uid, update){
 }
 
 function mergeUpdate(o,update){
-  const updateNotify=update.Notify; delete update.Notify;
+  const updateNotify=listify(update.Notify); delete update.Notify;
   const p=Object.assign({}, o, update);
-  updateNotify && updateNotify.forEach(un=>setNotify(p,un,true));
+  updateNotify.forEach(un=>setNotify(p,un,true));
   return _.omitBy(p, v => v===null||v===undefined||v===''||v===[]);
 }
 
@@ -468,6 +474,7 @@ function setEvaluator(name, evaluator){
 }
 
 export default {
+  listify,
   makeUID,
   toUID,
   spawnObject,
