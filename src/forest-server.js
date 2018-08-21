@@ -224,12 +224,12 @@ function mqttInit(config){
   mqtts.on('clientConnected', (client) => {
   });
 
-  mqtts.on('published', (packet, client) => {
-    if(packet.topic.startsWith('$')) return;
-    const body = safeParse(packet.payload.toString());
+  mqtts.on('published', ({ topic, payload }, client) => {
+    if(topic.startsWith('$')) return;
+    const body = safeParse(payload.toString());
     if(!body || !body.UID) return;
     const { Peer, User } = body;
-    const setnotify=(packet.topic!=='notify' && packet.topic || '');
+    const setnotify=(topic!=='notify' && topic || '');
     const n=_.uniq(core.listify(setnotify, body.Notify));
     const notifying=(n.length===1 && n[0]) || n;
     logMQTTPublish(notifying, body);
