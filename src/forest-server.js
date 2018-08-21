@@ -101,8 +101,8 @@ app.get('/*',
       is: ['request', 'checker'],
       user: User,
       peer: Peer,
-      method: 'GET',
-      url: uid,
+      direction: 'Observe',
+      uid,
     });
     core.runEvaluator(rc).then(r => {
       if(r.pk) return checkPKAndReturnObject(Peer, uid, r);
@@ -140,8 +140,8 @@ app.post('/*',
       is: ['request', 'checker'],
       user: User,
       peer: Peer,
-      method: 'POST',
-      url: body.UID,
+      direction: 'Notify',
+      uid: body.UID,
       notifying,
       body,
     });
