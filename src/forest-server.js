@@ -358,15 +358,15 @@ core.setPersistence({ persist, fetch, recache, query });
 
 // --------------------------------
 
-function init({httpHost, httpPort, wsPort, mongoHostPort, mqttConfig}){
+function init({httpHost, httpPort, mongoHostPort, wsPort, mqttConfig}){
   serverHost=httpHost; serverPort=httpPort;
   return new Promise((resolve, reject) => {
     persistenceInit(mongoHostPort)
       .then(() => {
         app.listen(httpPort, ()=>{
           console.log(`Server started on port ${httpPort}`);
-          wsInit({ port: wsPort });
-          mqttInit(mqttConfig);
+          if(wsPort) wsInit({ port: wsPort });
+          if(mqttConfig) mqttInit(mqttConfig);
           resolve();
         }).on('error', (err) => reject(err));
       })
