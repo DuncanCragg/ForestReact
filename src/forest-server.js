@@ -58,6 +58,8 @@ const CORS = (req, res, next) => {
 
 // --------------------------------
 
+const pendingNotifies = {};
+
 function prefixUIDs(o){
   const s = JSON.stringify(_.omit(o, core.localProps), null, 2);
   return s.replace(/"(uid-[^"]*"[^:])/g, `"http://${serverHost}:${serverPort}/$1`);
@@ -194,19 +196,17 @@ function wsInit(config){
   });
 }
 
-const pendingWSpackets = {};
-
 function wsFlushNotify(Peer){
   const ws = peer2ws[Peer];
-  let packet;
-  while((packet=(pendingWSpackets[Peer]||[]).shift())){
+  let o;
+  while((o=(pendingNotifies[Peer]||[]).shift())){
     try{
       console.log('<<----------ws---------------', Peer);
-      if(ws.readyState === ws.OPEN) ws.send(packet);
-      else console.log('WebSocket closed sending\n', packet, '\nto', Peer);
+      if(ws.readyState === ws.OPEN) ws.send(o);
+      else console.log('WebSocket closed sending\n', o, '\nto', Peer);
     }
     catch(e){
-      console.error('error sending\n', packet, '\nto', Peer, '\n', e);
+      console.error('error sending\n', o, '\nto', Peer, '\n', e);
     }
   }
 }
@@ -270,8 +270,8 @@ function doGet(url){
 function doPost(o, u){
   if(core.isURL(u)) return Promise.resolve(false);
   const Peer = core.isNotify(u)? u: o.Peer;
-  if(!pendingWSpackets[Peer]) pendingWSpackets[Peer] = [];
-  pendingWSpackets[Peer].push(prefixUIDs(o));
+  if(!pendingNotifies[Peer]) pendingNotifies[Peer] = [];
+  pendingNotifies[Peer].push(prefixUIDs(o));
   if(peer2ws[Peer]) wsFlushNotify(Peer);
   return Promise.resolve(true);
 }
