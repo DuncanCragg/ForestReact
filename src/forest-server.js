@@ -27,7 +27,7 @@ function safeParse(s){
 // --------------------------------
 
 const logRequest = (req, res, next) => {
-  console.log('---------------------------->');
+  console.log('------------http------------>');
   if(req.method==='POST') console.log(req.method, req.originalUrl, req.body && (req.body.Notify+' '+req.body.UID), req.headers.authorization||'');
   else                    console.log(req.method, req.originalUrl,                                                 req.headers.authorization||'');
   next();
@@ -35,18 +35,18 @@ const logRequest = (req, res, next) => {
 
 const logResponse = (req, res, next) => {
   console.log(res.statusCode);
-  console.log('<----------------------------');
+  console.log('<-----------http-------------');
   next();
 };
 
 const logMQTTPublish = (notifying, body) => {
-  console.log('---------------------------->');
+  console.log('------------mqtt------------>');
   console.log('Publish', notifying, body.UID, body.Peer, body.User);
 };
 
 const logMQTTResult = ok => {
   console.log(ok? 'OK': 'FAIL');
-  console.log('<----------------------------');
+  console.log('<-----------mqtt-------------');
 };
 
 const CORS = (req, res, next) => {
