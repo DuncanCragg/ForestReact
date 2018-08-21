@@ -39,6 +39,16 @@ const logResponse = (req, res, next) => {
   next();
 };
 
+const logMQTTPublish = (notifying, body) => {
+  console.log('---------------------------->');
+  console.log('Publish', notifying, body.UID, body.Peer, body.User);
+};
+
+const logMQTTResult = ok => {
+  console.log(ok? 'OK': 'FAIL');
+  console.log('<----------------------------');
+};
+
 const CORS = (req, res, next) => {
   res.header('Access-Control-Allow-Origin','*');
   res.header('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
@@ -220,6 +230,35 @@ function mqttInit(config){
 
   mqtts.on('published', (packet, client) => {
     if(packet.topic.startsWith('$')) return;
+    const body = safeParse(packet.payload.toString());
+    if(!body || !body.UID) return;
+    const { Peer, User } = body;
+    const setnotify=(packet.topic!=='notify' && packet.topic || '');
+    const n=_.uniq(core.listify(setnotify, body.Notify));
+    const notifying=(n.length===1 && n[0]) || n;
+    logMQTTPublish(notifying, body);
+    const rc=core.spawnTemporaryObject({
+      Evaluator: 'evalRequestChecker',
+      is: ['request', 'checker'],
+      user: User,
+      peer: Peer,
+      direction: 'Notify',
+      uid: body.UID,
+      notifying,
+      body,
+    });
+    core.runEvaluator(rc).then(r => {
+      if(r.pk) return checkPKAndSaveObject(User, Peer, body, setnotify, r);
+      return new Promise(resolve => setTimeout(()=>core.getObject(rc).then(r=>{
+        return resolve(checkPKAndSaveObject(User, Peer, body, setnotify, r));
+      }), 500));
+    })
+    .then(ok=>{
+      logMQTTResult(ok);
+    })
+    .catch(e => {
+      console.error(e);
+    });
   });
 }
 
