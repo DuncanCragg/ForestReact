@@ -409,6 +409,7 @@ export default {
   getObject:           core.getObject,
   spawnObject:         core.spawnObject,
   makeUID:             core.makeUID,
+  listify:             core.listify,
   setLogging:          core.setLogging,
   setPeerIdentityUser: auth.setPeerIdentityUser,
 }

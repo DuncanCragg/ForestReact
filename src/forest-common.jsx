@@ -115,6 +115,10 @@ export default class ForestCommon extends Component {
     return core.toUID(uid);
   }
 
+  static listify(...items){
+    return core.listify(...items);
+  }
+
   static setPeerIdentityUser(pi){
     return auth.setPeerIdentityUser(pi);
   }
