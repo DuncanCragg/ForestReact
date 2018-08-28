@@ -107,8 +107,8 @@ export default class ForestCommon extends Component {
     return core.getObject(uid);
   }
 
-  static makeUID(rem){
-    return core.makeUID(rem);
+  static makeUID(peer){
+    return core.makeUID(peer);
   }
 
   static toUID(uid){

@@ -230,7 +230,7 @@ function mqttInit(config){
 
   mqtts.on('published', ({ topic, payload }, client) => {
     if(topic.startsWith('$')) return;
-    if(topic.startsWith('rem-')) return;
+    if(topic.startsWith('peer-')) return;
     const body = safeParse(payload.toString());
     if(!body || !body.UID) return;
     const { Peer, User } = body;
@@ -296,7 +296,7 @@ function doGet(url){
 
 function doPost(o, u){
   if(core.isURL(u)) return Promise.resolve(false);
-  const Peer = core.isNotify(u)? u: o.Peer;
+  const Peer = core.isPeer(u)? u: o.Peer;
   if(!pendingNotifies[Peer]) pendingNotifies[Peer] = [];
   pendingNotifies[Peer].push(prefixUIDs(o));
   if(peer2ws[Peer]) wsFlushNotify(Peer);

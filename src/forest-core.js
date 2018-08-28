@@ -23,7 +23,7 @@ const localProps =         ['Timer', 'TimerId', 'Notifying', 'Alerted', 'Evaluat
 const notNotifiableProps = ['Timer', 'TimerId'];
 const noPersistProps =     [         'TimerId'];
 
-function makeUID(rem){
+function makeUID(peer){
   /*jshint bitwise:false */
   let i, random;
   let uuid = '';
@@ -32,7 +32,7 @@ function makeUID(rem){
     if (i === 8 || i === 12 || i === 16 || i === 20) uuid += '-';
     uuid += (i === 12 ? 4 : (i === 16 ? (random & 3 | 8) : random)).toString(16);
   }
-  return (!rem? 'uid-': 'rem-') + uuid;
+  return (!peer? 'uid-': 'peer-') + uuid;
 }
 
 function difference(a, b) {
@@ -207,8 +207,8 @@ function notifyObservers(o){
     if(log.notify) console.log('peers start', peers, o.UID, o.is);
     if(log.notify) console.log('n.UID/is/Peer:', (n && (`${n.UID} / ${n.is} / ${n.Peer||'--'}`))||'--', u, toPeer(u));
     if(!n){
-      if(isURL(u) || isNotify(u)){
-        if(log.notify) console.log(isURL(u) && 'isURL' || '', isNotify(u) && 'isNotify' || '');
+      if(isURL(u) || isPeer(u)){
+        if(log.notify) console.log(isURL(u) && 'isURL' || '', isPeer(u) && 'isPeer' || '');
         const Peer=toPeer(u);
         if(log.notify) console.log('Peer',Peer);
         if(o.Peer !== Peer){
@@ -304,7 +304,7 @@ function mergeUpdate(o,update){
 }
 
 function isLink(u){
-  return isUID(u) || isURL(u) || isNotify(u);
+  return isUID(u) || isURL(u) || isPeer(u);
 }
 
 function isUID(u){
@@ -315,8 +315,8 @@ function isURL(u){
   return u && u.constructor === String && /^https?:\/\//.test(u);
 }
 
-function isNotify(u){
-  return u && u.constructor === String && /^rem-/.test(u);
+function isPeer(u){
+  return u && u.constructor === String && /^peer-/.test(u);
 }
 
 function toUID(u){
@@ -493,7 +493,7 @@ export default {
   setNetwork,
   localProps,
   isURL,
-  isNotify,
+  isPeer,
   setLogging,
 }
 
