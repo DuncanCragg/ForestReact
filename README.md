@@ -36,16 +36,16 @@ OK, here's a minimal example:
 
 ```javascript
 /* React render reading from `state` for this object's state */
-/* Also has `userState` for declaring widgets without actions or events! */
+/* Also has `this` for declaring widgets without actions or events! */
 /* If the first, name arg matches a `state` fieldname, it reads from there */
-function renderMin(state, userState){
+function render(object){
   return (
     <div>
       <hr/>
-      {userState.textField('message')}
+      {this.textField('message')}
       <br/><br/>
-      <span>Count: {state('counter')}</span>&nbsp;&nbsp;&nbsp;
-      {userState.button('inc', {label: 'increment'})}
+      <span>Count: {object('counter')}</span>&nbsp;&nbsp;&nbsp;
+      {this.button('inc', {label: 'increment'})}
       <br/><br/><hr/><br/>
     </div>);
 }
@@ -69,23 +69,23 @@ forest.storeObjects(
 
 /* Where all the domain logic goes: pure functional */
 /* transform/reduction of visible state to new component state: */
-/* `state = f(state, state.userState)` */
+/* `state = f(state, state.user-state)` */
 function evalMin(state){
-  const incrementPushed  = !state('inc') && state('userState.inc');
+  const incrementPushed  = !state('inc') && state('user-state.inc');
   return Object.assign({},
-    true            && { message: state('userState.message').toLowerCase() },
+    true            && { message: state('user-state.message').toLowerCase() },
     incrementPushed && { counter: state('counter') + 1 },
-    true            && { inc: state('userState.inc') }
+    true            && { inc: state('user-state.inc') }
   );
 }
 ```
 
-An object reads the states around it (`userState` above, but also peer states and API
+An object reads the states around it (`user-state` above, but also peer states and API
 states) 'through' its own state, because in Forest, _the dot `.` can jump across to those
 other objects to read (and then observe) them_.
 
-For example, above, `state('userState.message')` reads `userState`, which is simply the
-UID of the `userState` object, then fetches that object and reads its `message` property.
+For example, above, `state('user-state.message')` reads `user-state`, which is simply the
+UID of the `user-state` object, then fetches that object and reads its `message` property.
 It then continues to be notified of changes to that object.
 
 You can also discover peer component and remote API state in the same way
@@ -93,9 +93,9 @@ You can also discover peer component and remote API state in the same way
 
 The fact that Forest only uses state instead of actions or events means that detecting
 change is done through comparison to previous state. For example, the expression above
-`incrementPushed = !state('inc') && state('userState.inc')` detects that the `userState`
+`incrementPushed = !state('inc') && state('user-state.inc')` detects that the `user-state`
 `inc` button is `true` (down) while the known state was `false` (up). The line 
-`inc: state('userState.inc')` then records the latest state for the next time around.
+`inc: state('user-state.inc')` then records the latest state for the next time around.
 
 ## _"Why is that better?"_
 

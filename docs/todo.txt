@@ -5,7 +5,7 @@
  - --------------------
  * React coupling
    - hardwiring from obj to notify react (o.react)
-     - and from react to notify obj (o.userState)
+     - and from react to notify obj (o.user-state)
    - set output notify callback
    - recv incoming as Alerted
    - React cpt refers to state and 'subscribes' to it (o.react.notify)
@@ -13,12 +13,11 @@
      - state('watching.counter') what if that changes?
      - state('giphy.url') instead of state('image') - but disappears, so no
      - state('image') relies on 'own' state subscribing and setting something for render
-   - userState -> user-state
  - --------------------
- - drop rem-* with no WS/discard pkts
+ - drop peer-* with no WS/discard pkts
  - request checker on websockets too
  - --------------------
- - Cache: no-persist = for userState too
+ - Cache: no-persist = for user-state too
     - thus Cache: [ .. ] in a list
     - or merge into user object..
  - --------------------
@@ -37,7 +36,7 @@
     - evaluate / animated remotely of course
     - only need Notify and render
     - wrap remote with Forest, like WebObjects did?
-       - send userState over the wire
+       - send user-state over the wire
  - --------------------
  x deletion of properties: set eval return value to undefined/''/[]/null and they're removed
  - deletion of objects? returning 404

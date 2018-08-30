@@ -19,7 +19,7 @@ function setLogging(conf){
   Object.assign(log, conf);
 }
 
-const localProps =         ['Timer', 'TimerId', 'Notifying', 'Alerted', 'Evaluator', 'Cache', 'ReactNotify', 'userState'];
+const localProps =         ['Timer', 'TimerId', 'Notifying', 'Alerted', 'Evaluator', 'Cache', 'ReactNotify'];
 const notNotifiableProps = ['Timer', 'TimerId'];
 const noPersistProps =     [         'TimerId'];
 
@@ -438,7 +438,6 @@ function doEvaluate(uid, params) {
     if(log.update) console.log('>>>>>>>>>>>>>', uid, ['is:'].concat(object(uid, 'is')).join(' '));
     if(log.evaluate) console.log(`iteration ${i}`);
     if(log.evaluate) console.log('>>>>>>>>>>>>>\n', object(uid, '.'));
-    if(log.evaluate && object(uid, 'userState.')) console.log('>>>>>user>>>>\n', object(uid, 'userState.'));
     o.Observe=[];
     if(Alerted) o.Alerted=Alerted;
     const evalout = evaluator(object.bind(null, uid), i===0 && params) || {};

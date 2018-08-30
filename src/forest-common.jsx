@@ -133,7 +133,7 @@ export default class ForestCommon extends Component {
       this.state = o;
       this.UID = props.uid;
       this.userStateUID = core.spawnObject({ 'is': ['user', 'state'] });
-      this.state.userState = this.userStateUID;  // hardwiring from obj to react
+      this.state['user-state'] = this.userStateUID;  // hardwiring from obj to react
       this.object = this.object.bind(this);
       this.notify = this.notify.bind(this);
       this.state.ReactNotify = this.notify;      // hardwiring from obj to react

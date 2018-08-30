@@ -46,14 +46,14 @@ const uids = forest.cacheObjects(
 );
 
 function evalMin(object){
-  const incrementPushed  = !object('inc') && object('userState.inc');
+  const incrementPushed  = !object('inc') && object('user-state.inc');
   return Object.assign({},
     object('Timer') === 0    && { Timer: 2000, enableCounting: !object('enableCounting') },
     incrementPushed          && { counter: object('counter') + 1 },
    !object('enableCounting') && { counter: 0 },
-    true                     && { inc: object('userState.inc') },
-    true                     && { message: object('allowuppercase')? object('userState.message'): object('userState.message').toLowerCase() },
-    true                     && { allowuppercase: object('userState.allowuppercase') }
+    true                     && { inc: object('user-state.inc') },
+    true                     && { message: object('allowuppercase')? object('user-state.message'): object('user-state.message').toLowerCase() },
+    true                     && { allowuppercase: object('user-state.allowuppercase') }
   );
 }
 
