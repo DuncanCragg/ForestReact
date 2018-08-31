@@ -27,7 +27,7 @@ function safeParse(s){
 // --------------------------------
 
 const logRequest = (req, res, next) => {
-  console.log('------------http------------>');
+  console.log('------------http------------>', new Date().toISOString());
   if(req.method==='POST') console.log(req.method, req.originalUrl, req.body && (req.body.Notify+' '+req.body.UID), req.headers.authorization||'');
   else                    console.log(req.method, req.originalUrl,                                                 req.headers.authorization||'');
   next();
@@ -40,7 +40,7 @@ const logResponse = (req, res, next) => {
 };
 
 const logMQTTPublish = (notifying, body) => {
-  console.log('------------mqtt------------>');
+  console.log('------------mqtt------------>', new Date().toISOString());
   console.log('Publish', notifying, body.UID, body.Peer, body.User);
 };
 
