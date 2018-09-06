@@ -70,6 +70,18 @@ function getObject(u){
   });
 }
 
+const deltas = {};
+
+function clearDeltas(){
+  for (var member in deltas) delete deltas[member];
+}
+
+function removeDelta(uid){
+  if(uid){
+    delete deltas[uid];
+  }
+}
+
 const toSave = {};
 
 function cachePersistAndNotify(o){
@@ -285,6 +297,9 @@ function updateObject(uid, update){
   checkTimer(p);
   const changed = !_.isEqual(o,p);
   const diff = changed && difference(o,p);
+  if (changed) {
+    deltas[uid] = diff;
+  }
   const notifiable = diff && Object.keys(diff).filter(e=>!notNotifiableProps.includes(e)).length || diff.Timer;
   if(log.changes) console.log('changed:', changed, 'diff:', diff, 'notifiable:', notifiable);
   if(changed){
@@ -353,6 +368,20 @@ function object(u,p,q) { const r = ((uid, path, query)=>{
   if(path==='.') return o;
   const pathbits = path.split('.');
   const observesubs = pathbits[0]!=='Alerted' && o.Cache !== 'no-persist';
+  const deltaCheck =path.endsWith('?');
+  if (deltaCheck) {
+    if(pathbits.length == 1 && path.length > 1 && 'user-state' in o){
+      const userStateUID = o['user-state'];
+      ensureObjectState(userStateUID, observesubs, o);
+      path = path.substring(0, path.length - 1);
+      const userStateDelta = deltas[userStateUID];
+      if(userStateDelta){
+        const delta = userStateDelta[path];
+        return delta ? delta : false;
+      }
+    }
+    return false;
+  }
   let c=o;
   for(let i=0; i<pathbits.length; i++){
     if(pathbits[i]==='') return c;
@@ -452,6 +481,8 @@ function doEvaluate(uid, params) {
     const { updated, changed, notifiable } = updateObject(uid, update);
     if(log.evaluate || log.update) if(changed) console.log('<<<<<<<<<<<<< update:\n', update);
     o = updated;
+
+    removeDelta(Alerted);
     if(!changed) break;
   }
   if(Alerted && !observes.includes(Alerted)){
