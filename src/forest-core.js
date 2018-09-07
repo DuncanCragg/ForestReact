@@ -286,12 +286,12 @@ function updateObject(uid, update){
   const p=mergeUpdate(o, update);
   checkTimer(p);
   const changed = !_.isEqual(o,p);
-  const diff = changed && difference(o,p);
+  const delta = changed && difference(o,p);
   if (changed) {
-    deltas[uid] = diff;
+    deltas[uid] = delta;
   }
-  const notifiable = diff && Object.keys(diff).filter(e=>!notNotifiableProps.includes(e)).length || diff.Timer;
-  if(log.changes) console.log('changed:', changed, 'diff:', diff, 'notifiable:', notifiable);
+  const notifiable = delta && Object.keys(delta).filter(e=>!notNotifiableProps.includes(e)).length || delta.Timer;
+  if(log.changes) console.log('changed:', changed, 'delta:', delta, 'notifiable:', notifiable);
   if(changed){
     if(notifiable && !update.Version) p.Version = (p.Version||0)+1;
     if(log.changes) console.log('changed, result\n', JSON.stringify(p,null,4));
@@ -474,7 +474,6 @@ function doEvaluate(uid, params) {
     const { updated, changed, notifiable } = updateObject(uid, update);
     if(log.evaluate || log.update) if(changed) console.log('<<<<<<<<<<<<< update:\n', update);
     o = updated;
-
     delete deltas[Alerted];
     if(!changed) break;
   }
