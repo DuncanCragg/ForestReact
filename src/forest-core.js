@@ -351,17 +351,16 @@ function cacheQuery(o, uid, query){
 }
 
 function checkDeltas(pathbits, observesubs, o){
-  if(pathbits[0] == 'user-state' && pathbits.length == 2 && 'user-state' in o){
-    const userStateUID = o['user-state'];
-    ensureObjectState(userStateUID, observesubs, o);
-    const p = pathbits[1].substring(0, pathbits[1].length - 1);
-    const userStateDelta = deltas[userStateUID];
-    if(userStateDelta){
-      const delta = userStateDelta[p];
-      return delta !== undefined ? delta : null;
-    }
-  }
-  return null;
+  if(pathbits.length!==2) return null;
+  const p0=pathbits[0];
+  const p1=pathbits[1];
+  const val = o[p0];
+  if(!val) return null;
+  ensureObjectState(val, observesubs, o);
+  const delta = deltas[val];
+  if(!delta) return null;
+  const newval = delta[p1.substring(0, p1.length-1)];
+  return newval !== undefined? newval: null;
 }
 
 function object(u,p,q) { const r = ((uid, path, query)=>{
@@ -372,7 +371,7 @@ function object(u,p,q) { const r = ((uid, path, query)=>{
   if(path==='.') return o;
   const pathbits = path.split('.');
   const observesubs = pathbits[0]!=='Alerted' && o.Cache !== 'no-persist';
-  if (path.endsWith('?')) {
+  if(path.endsWith('?')) {
     return checkDeltas(pathbits, observesubs, o);
   }
   let c=o;
