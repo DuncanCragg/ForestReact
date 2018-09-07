@@ -11,8 +11,8 @@ const uids = Forest.cacheObjects(
 );
 
 function evalTodo(object){
-  const todoSubmitted = !object('creating') && object('user-state.newTodo-submitted')
-  return Object.assign({},
+  const todoSubmitted = object('user-state.newTodo-submitted?');
+  return [
    !object('user-state.newTodo-submitted') && { newTodo: object('user-state.newTodo')|| '' },
     todoSubmitted                          && { newTodo: '',
                                                 todos: [].concat(object('todos')||[]).concat([Forest.spawnObject(
@@ -30,8 +30,7 @@ function evalTodo(object){
                                                 completedTodos: object('todos', { match: { completed: true  }})},
     true                                   && { clearCompleted: object('user-state.clearCompleted') },
     true                                   && { toggleAll: !object('activeTodos') },
-    true                                   && { creating: object('user-state.newTodo-submitted') },
-  );
+  ];
 }
 
 function evalTodoItem(object){

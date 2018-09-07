@@ -12,21 +12,17 @@ const uids = Forest.cacheObjects(
 );
 
 function evalFed(object){
-  const loadButtonPressed = !object('fetching') && object('user-state.loadrandompicture');
-  const addButtonPressed  = !object('adding') && object('user-state.add')
-  return Object.assign({},
-    object('Timer') === 0                  && { Timer:    2000, enableCounting: !object('enableCounting') },
-    addButtonPressed                       && { counter:  object('counter')+1 },
-   !object('enableCounting')               && { counter:  0 },
-    object('watching')                     && { counter:  object('watching.counter') },
-    object('user-state.topic')             && { topic:    object('user-state.topic').toLowerCase() },
-  (!object('giphy') || loadButtonPressed)  && { giphy:   'https://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&tag=' + object('topic') },
-    object('giphy.data')                   && { gdata:    object('giphy.data') },
-    true                                   && { loading: !object('giphy.data') },
-    object('gdata')                        && { image:    object('gdata.fixed_height_small_url') },
-    true                                   && { adding:   object('user-state.add') },
-    true                                   && { fetching: object('user-state.loadrandompicture') }
-  );
+  return [
+    object('Timer') === 0                        && { Timer:    2000, enableCounting: !object('enableCounting') },
+    object('user-state.add?')                    && { counter:  object('counter')+1 },
+   !object('enableCounting')                     && { counter:  0 },
+    object('watching')                           && { counter:  object('watching.counter') },
+    object('user-state.topic')                   && { topic:    object('user-state.topic').toLowerCase() },
+  (!object('giphy')||object('user-state.load?')) && { giphy:   'https://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&tag=' + object('topic') },
+    object('giphy.data')                         && { gdata:    object('giphy.data') },
+    true                                         && { loading: !object('giphy.data') },
+    object('gdata')                              && { image:    object('gdata.fixed_height_small_url') },
+  ];
 }
 
 Forest.renderDOM(<GuiStack uid={uids[0]} />);

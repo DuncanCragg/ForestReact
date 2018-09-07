@@ -26,7 +26,7 @@ class Fed extends Forest {
         {this.button('add', {label: 'increment'})}
         <br/><br/>
         {this.textField('topic', {label: 'Topic'})}
-        {this.button('loadrandompicture', {label: 'Load picture about that'})}
+        {this.button('load', {label: 'Load picture about that'})}
         <br/><br/>
         {this.object('loading')? 'loading..': ''}
         <br/><br/>
