@@ -272,6 +272,8 @@ function storeObject(o){
   cachePersistAndNotify(o);
 }
 
+const deltas = {};
+
 function updateObject(uid, update){
   if(!uid) return null;
   const o=getCachedObject(uid);
@@ -284,9 +286,12 @@ function updateObject(uid, update){
   const p=mergeUpdate(o, update);
   checkTimer(p);
   const changed = !_.isEqual(o,p);
-  const diff = changed && difference(o,p);
-  const notifiable = diff && Object.keys(diff).filter(e=>!notNotifiableProps.includes(e)).length || diff.Timer;
-  if(log.changes) console.log('changed:', changed, 'diff:', diff, 'notifiable:', notifiable);
+  const delta = changed && difference(o,p);
+  if (changed) {
+    deltas[uid] = delta;
+  }
+  const notifiable = delta && Object.keys(delta).filter(e=>!notNotifiableProps.includes(e)).length || delta.Timer;
+  if(log.changes) console.log('changed:', changed, 'delta:', delta, 'notifiable:', notifiable);
   if(changed){
     if(notifiable && !update.Version) p.Version = (p.Version||0)+1;
     if(log.changes) console.log('changed, result\n', JSON.stringify(p,null,4));
@@ -345,6 +350,20 @@ function cacheQuery(o, uid, query){
   return Promise.resolve([]);
 }
 
+function checkDeltas(pathbits, observesubs, o){
+  if(pathbits[0] == 'user-state' && pathbits.length == 2 && 'user-state' in o){
+    const userStateUID = o['user-state'];
+    ensureObjectState(userStateUID, observesubs, o);
+    const p = pathbits[1].substring(0, pathbits[1].length - 1);
+    const userStateDelta = deltas[userStateUID];
+    if(userStateDelta){
+      const delta = userStateDelta[p];
+      return delta !== undefined ? delta : null;
+    }
+  }
+  return null;
+}
+
 function object(u,p,q) { const r = ((uid, path, query)=>{
   if(!uid || !path) return null;
   const o=getCachedObject(uid);
@@ -353,6 +372,9 @@ function object(u,p,q) { const r = ((uid, path, query)=>{
   if(path==='.') return o;
   const pathbits = path.split('.');
   const observesubs = pathbits[0]!=='Alerted' && o.Cache !== 'no-persist';
+  if (path.endsWith('?')) {
+    return checkDeltas(pathbits, observesubs, o);
+  }
   let c=o;
   for(let i=0; i<pathbits.length; i++){
     if(pathbits[i]==='') return c;
@@ -452,6 +474,7 @@ function doEvaluate(uid, params) {
     const { updated, changed, notifiable } = updateObject(uid, update);
     if(log.evaluate || log.update) if(changed) console.log('<<<<<<<<<<<<< update:\n', update);
     o = updated;
+    delete deltas[Alerted];
     if(!changed) break;
   }
   if(Alerted && !observes.includes(Alerted)){
