@@ -70,18 +70,6 @@ function getObject(u){
   });
 }
 
-const deltas = {};
-
-function clearDeltas(){
-  for (var member in deltas) delete deltas[member];
-}
-
-function removeDelta(uid){
-  if(uid){
-    delete deltas[uid];
-  }
-}
-
 const toSave = {};
 
 function cachePersistAndNotify(o){
@@ -284,6 +272,8 @@ function storeObject(o){
   cachePersistAndNotify(o);
 }
 
+const deltas = {};
+
 function updateObject(uid, update){
   if(!uid) return null;
   const o=getCachedObject(uid);
@@ -360,6 +350,20 @@ function cacheQuery(o, uid, query){
   return Promise.resolve([]);
 }
 
+function checkDeltas(pathbits, observesubs, o){
+  if(pathbits[0] == 'user-state' && pathbits.length == 2 && 'user-state' in o){
+    const userStateUID = o['user-state'];
+    ensureObjectState(userStateUID, observesubs, o);
+    const p = pathbits[1].substring(0, pathbits[1].length - 1);
+    const userStateDelta = deltas[userStateUID];
+    if(userStateDelta){
+      const delta = userStateDelta[p];
+      return delta !== undefined ? delta : null;
+    }
+  }
+  return null;
+}
+
 function object(u,p,q) { const r = ((uid, path, query)=>{
   if(!uid || !path) return null;
   const o=getCachedObject(uid);
@@ -368,19 +372,8 @@ function object(u,p,q) { const r = ((uid, path, query)=>{
   if(path==='.') return o;
   const pathbits = path.split('.');
   const observesubs = pathbits[0]!=='Alerted' && o.Cache !== 'no-persist';
-  const deltaCheck =path.endsWith('?');
-  if (deltaCheck) {
-    if(pathbits.length == 1 && path.length > 1 && 'user-state' in o){
-      const userStateUID = o['user-state'];
-      ensureObjectState(userStateUID, observesubs, o);
-      path = path.substring(0, path.length - 1);
-      const userStateDelta = deltas[userStateUID];
-      if(userStateDelta){
-        const delta = userStateDelta[path];
-        return delta ? delta : false;
-      }
-    }
-    return false;
+  if (path.endsWith('?')) {
+    return checkDeltas(pathbits, observesubs, o);
   }
   let c=o;
   for(let i=0; i<pathbits.length; i++){
@@ -482,7 +475,7 @@ function doEvaluate(uid, params) {
     if(log.evaluate || log.update) if(changed) console.log('<<<<<<<<<<<<< update:\n', update);
     o = updated;
 
-    removeDelta(Alerted);
+    delete deltas[Alerted];
     if(!changed) break;
   }
   if(Alerted && !observes.includes(Alerted)){
