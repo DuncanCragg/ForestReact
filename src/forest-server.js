@@ -221,11 +221,20 @@ function mqttInit(config){
 
   mqtts = new mosca.Server(config);
 
+  var authenticate = (client, username, password, cb) => {
+    const ok = true;
+    cb(null, ok);
+  }
+
   mqtts.on('ready', () => {
-    console.log('MQTT server running on ports', config.port, config.secure.port)
+    mqtts.authenticate = authenticate;
+    console.log('MQTT running on ports', config.port, config.secure.port)
   });
 
   mqtts.on('clientConnected', (client) => {
+  });
+
+  mqtts.on('subscribed', (topic, client) => {
   });
 
   mqtts.on('published', ({ topic, payload }, client) => {
