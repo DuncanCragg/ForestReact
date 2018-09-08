@@ -95,8 +95,8 @@ export default class ForestCommon extends Component {
     return core.spawnObject(o);
   }
 
-  static setEvaluator(name, evaluator){
-    return core.setEvaluator(name, evaluator)
+  static setEvaluator(evaluator, name = evaluator.name) {
+    return core.setEvaluator(evaluator, name);
   }
 
   static runEvaluator(uid, params){

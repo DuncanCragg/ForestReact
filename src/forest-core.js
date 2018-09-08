@@ -490,7 +490,7 @@ function runEvaluator(uid, params){
 
 const evaluators = {}
 
-function setEvaluator(name, evaluator){
+function setEvaluator(evaluator, name){
   evaluators[name]=evaluator;
 }
 
