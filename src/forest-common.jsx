@@ -139,6 +139,10 @@ export default class ForestCommon extends Component {
       this.state.ReactNotify = this.notify;      // hardwiring from obj to react
       core.runEvaluator(this.UID)
       this.notify()
+      this.objectUIDs = {
+        UID: this.UID,
+        userStateUID: this.userStateUID,
+      }
     })
   }
 

@@ -1,4 +1,3 @@
-
 import React, { Component } from 'react';
 import { Platform, View, Text, TouchableOpacity, AsyncStorage, Linking, BackHandler } from 'react-native';
 import ReactDOM from 'react-dom';
@@ -26,7 +25,7 @@ function query(is, scope, query){ }
 
 core.setPersistence({ persist, fetch, query, recache });
 
-export default class Forest extends ForestCommon {
+class Forest extends ForestCommon {
 
   constructor(props) {
     super(props)
@@ -102,3 +101,56 @@ export default class Forest extends ForestCommon {
   }
 }
 
+const callAll = (...fns) => (...args) => fns.forEach(fn => fn && fn(...args));
+
+class Button extends Component {
+  pressIn = () => {
+    return core.updateObject(this.props.userStateUID, { [this.props.name]: true });
+  };
+
+  pressOut = () => {
+    return core.updateObject(this.props.userStateUID, { [this.props.name]: false });
+  };
+
+  toggle = () => {
+    const stateValue = core.object(this.props.userStateUID, this.props.name);
+    console.log(stateValue, 'TOGGLER');
+    return core.updateObject(this.props.userStateUID, { [this.props.name]: !stateValue });
+  };
+
+  longPress = () => {
+    return core.updateObject(this.props.userStateUID, { [this.props.name]: true });
+  };
+
+  getButtonProps = (props = {}) => ({
+    onPressIn: callAll(this.pressIn, props.onPressIn),
+    onPressOut: callAll(this.pressOut, props.onPressOut),
+    onLongPress: callAll(this.longPress, props.onLongPress),
+  });
+
+  getToggleProps = (props = {}) => ({
+    onPress: callAll(this.toggle, props.onClick),
+  });
+
+  getAllProps = () => ({
+    getButtonProps: this.getButtonProps,
+    getToggleProps: this.getToggleProps,
+  });
+
+  render() {
+    if (this.props.children) {
+      return this.props.children(this.getAllProps());
+    }
+
+    return (
+      <TouchableOpacity
+        {...this.getButtonProps()}
+        style={this.props.style}
+      >
+        <Text style={this.props.textStyle}>{this.props.label}</Text>}
+      </TouchableOpacity>
+    );
+  }
+}
+
+export { Button, Forest as default };
