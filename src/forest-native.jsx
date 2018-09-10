@@ -1,4 +1,3 @@
-
 import React, { Component } from 'react';
 import { Platform, View, Text, TouchableOpacity, AsyncStorage, Linking, BackHandler } from 'react-native';
 import ReactDOM from 'react-dom';
@@ -101,4 +100,3 @@ export default class Forest extends ForestCommon {
            </TouchableOpacity>
   }
 }
-

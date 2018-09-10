@@ -26,7 +26,7 @@ function doPost(o,url){
 
 core.setNetwork({ doGet, doPost });
 
-export default class ForestCommon extends Component {
+class ForestCommon extends Component {
 
   static setLogging(conf){
     return core.setLogging(conf);
@@ -136,9 +136,10 @@ export default class ForestCommon extends Component {
       this.state['user-state'] = this.userStateUID;  // hardwiring from obj to react
       this.object = this.object.bind(this);
       this.notify = this.notify.bind(this);
+      this.onChange = this.onChange.bind(this);
       this.state.ReactNotify = this.notify;      // hardwiring from obj to react
-      core.runEvaluator(this.UID)
-      this.notify()
+      core.runEvaluator(this.UID);
+      this.notify();
     })
   }
 
@@ -162,7 +163,7 @@ export default class ForestCommon extends Component {
     return value;
   }
 
-  onChange(name, value){
+  onChange(name, value) {
     core.updateObject(this.userStateUID, { [name]: value });
   }
 
@@ -178,3 +179,30 @@ export default class ForestCommon extends Component {
   }
 }
 
+class ForestWidget extends Component {
+  onChange = (value) => {
+    return this.props.onChange(this.props.name, value);
+  };
+
+  getWebButtonProps = () => ({
+    onMouseDown: () => this.onChange(true),
+    onMouseUp: () => this.onChange(false),
+  });
+
+  getAndroidButtonProps = () => ({
+    onPressIn: () => this.onChange(true),
+    onPressOut: () => this.onChange(false),
+    onLongPress: () => this.onChange(true),
+  });
+
+  getAllProps = () => ({
+    getWebButtonProps: this.getWebButtonProps,
+    getAndroidButtonProps: this.getAndroidButtonProps,
+  });
+
+  render() {
+    return this.props.children(this.getAllProps());
+  }
+}
+
+export { ForestCommon, ForestWidget, ForestCommon as default };
