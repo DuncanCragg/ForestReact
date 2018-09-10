@@ -3,9 +3,9 @@ import ReactDOM from 'react-dom';
 import superagent from 'superagent';
 import _ from 'lodash';
 import core from './forest-core';
-import ForestCommon from './forest-common';
+import { ForestCommon, ForestWidget } from './forest-common';
 
-export default class Forest extends ForestCommon {
+class Forest extends ForestCommon {
 
   constructor(props) {
     super(props)
@@ -13,6 +13,7 @@ export default class Forest extends ForestCommon {
 
   button(name, {label='', className=''}={}){
 //  core.updateObject(this.userStateUID, { [name]: false });
+
     return <button className={className} onMouseDown={e => this.onChange(name, true)} onMouseUp={e => this.onChange(name, false)}>{label}</button>;
   }
 
@@ -40,3 +41,6 @@ export default class Forest extends ForestCommon {
                         <input className={className} type="checkbox" onChange={e => this.onChange(name, e.target.checked)} checked={!!this.onRead(name)} />;
   }
 }
+
+export { Forest, ForestWidget, Forest as default };
+

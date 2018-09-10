@@ -184,7 +184,6 @@ class ForestCommon extends Component {
 
 class ForestWidget extends Component {
   onChange = (value) => {
-    console.log(value, 'VALUES');
     return this.props.onChange(this.props.name, value);
   };
 
@@ -209,4 +208,4 @@ class ForestWidget extends Component {
   }
 }
 
-export { ForestWidget, ForestCommon as default };
+export { ForestCommon, ForestWidget, ForestCommon as default };

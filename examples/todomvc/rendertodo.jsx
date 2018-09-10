@@ -1,6 +1,6 @@
 
 import React from 'react';
-import Forest from '../forest-web';
+import { Forest, ForestWidget } from '../forest-web';
 import classNames from 'classnames';
 
 function pluralize(count, word) {
@@ -41,7 +41,9 @@ class TodoApp extends Forest {
             <li><a href="#/active"    className={classNames({selected: this.object('nowShowing') === 'active'   })}>Active</a></li> {' '}
             <li><a href="#/completed" className={classNames({selected: this.object('nowShowing') === 'completed'})}>Completed</a></li>
           </ul>
-          {/* (numcompleted!=0) && */ this.button('clearCompleted', {label: 'Clear completed', className: 'clear-completed'})}
+          <ForestWidget onRead={this.onRead} onChange={this.onChange} name="clearCompleted">
+            {({ getWebButtonProps }) => <button {...getWebButtonProps()} className="clear-completed">Clear mango</button>}
+          </ForestWidget>
         </footer>)}
       </div>
     );
@@ -55,7 +57,9 @@ class TodoItem extends Forest {
         <div className="view">
           {this.checkbox('completed', {className: 'toggle'})}
           <label onDoubleClick={this.handleEdit}>{this.object('title')}</label>
-          {this.button('destroy', {className: 'destroy'})}
+          <ForestWidget onRead={this.onRead} onChange={this.onChange} name="destroy">
+            {({ getWebButtonProps }) => <button {...getWebButtonProps()} className="destroy"/>}
+          </ForestWidget>
         </div>
         {this.textField('title', {className: 'edit'})}
       </li>
