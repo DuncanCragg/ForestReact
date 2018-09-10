@@ -26,7 +26,7 @@ function doPost(o,url){
 
 core.setNetwork({ doGet, doPost });
 
-export default class ForestCommon extends Component {
+class ForestCommon extends Component {
 
   static setLogging(conf){
     return core.setLogging(conf);
@@ -166,7 +166,7 @@ export default class ForestCommon extends Component {
     return value;
   }
 
-  onChange(name, value){
+  onChange = (name, value) => {
     core.updateObject(this.userStateUID, { [name]: value });
   }
 
@@ -182,3 +182,31 @@ export default class ForestCommon extends Component {
   }
 }
 
+class ForestWidget extends Component {
+  onChange = (value) => {
+    console.log(value, 'VALUES');
+    return this.props.onChange(this.props.name, value);
+  };
+
+  getWebButtonProps = () => ({
+    onMouseDown: () => this.onChange(true),
+    onMouseUp: () => this.onChange(false),
+  });
+
+  getAndroidButtonProps = () => ({
+    onPressIn: () => this.onChange(true),
+    onPressOut: () => this.onChange(false),
+    onLongPress: () => this.onChange(true),
+  });
+
+  getAllProps = () => ({
+    getWebButtonProps: this.getWebButtonProps,
+    getAndroidButtonProps: this.getAndroidButtonProps,
+  });
+
+  render() {
+    return this.props.children(this.getAllProps());
+  }
+}
+
+export { ForestWidget, ForestCommon as default };
