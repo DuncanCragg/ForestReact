@@ -13,7 +13,6 @@ class Forest extends ForestCommon {
 
   button(name, {label='', className=''}={}){
 //  core.updateObject(this.userStateUID, { [name]: false });
-
     return <button className={className} onMouseDown={e => this.onChange(name, true)} onMouseUp={e => this.onChange(name, false)}>{label}</button>;
   }
 

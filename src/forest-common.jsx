@@ -136,13 +136,10 @@ class ForestCommon extends Component {
       this.state['user-state'] = this.userStateUID;  // hardwiring from obj to react
       this.object = this.object.bind(this);
       this.notify = this.notify.bind(this);
+      this.onChange = this.onChange.bind(this);
       this.state.ReactNotify = this.notify;      // hardwiring from obj to react
-      core.runEvaluator(this.UID)
-      this.notify()
-      this.objectUIDs = {
-        UID: this.UID,
-        userStateUID: this.userStateUID,
-      }
+      core.runEvaluator(this.UID);
+      this.notify();
     })
   }
 
@@ -166,7 +163,7 @@ class ForestCommon extends Component {
     return value;
   }
 
-  onChange = (name, value) => {
+  onChange(name, value) {
     core.updateObject(this.userStateUID, { [name]: value });
   }
 
