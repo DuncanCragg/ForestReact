@@ -1,17 +1,24 @@
-import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
-import superagent from 'superagent';
-import _ from 'lodash';
-import core from './forest-core';
-import { ForestCommon } from './forest-common';
+import React from 'react';
 
-export default class Forest extends Component {
-  render() {
-    const { Provider, object } = this.props;
-    return (
-      <Provider value={object}>
-        {this.props.children}
-      </Provider>
-    )
-  }
+const Context = React.createContext({
+  onChange: () => {},
+  onRead: () => {},
+  object: () => {},
+});
+
+const Provider = props => (
+  <Context.Provider value={props.childrenProps}>{props.children}</Context.Provider>
+);
+
+function connect(Component) {
+  const Consumer = props => (
+    <Context.Consumer>
+      {({ onChange, onRead, object }) => (
+        <Component onChange={onChange} onRead={onRead} object={object} {...props} />
+      )}
+    </Context.Consumer>
+  );
+  return Consumer;
 }
+
+export { Provider, connect, Context };
