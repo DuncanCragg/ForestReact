@@ -192,7 +192,18 @@ class ForestWidget extends Component {
   getAndroidButtonProps = () => ({
     onPressIn: () => this.onChange(true),
     onPressOut: () => this.onChange(false),
-    onLongPress: () => this.onChange(true),
+    onPress: () => {
+      this.props.onChange(`${this.props.name}-clicked`, true);
+      setTimeout(()=>{
+        this.props.onChange(`${this.props.name}-clicked`, false);
+      }, 250);
+    },
+    onLongPress: () => {
+      this.props.onChange(`${this.props.name}-held`, true);
+      setTimeout(()=>{
+        this.props.onChange(`${this.props.name}-held`, false);
+      },250);
+    },
   });
 
   getAllProps = () => ({
