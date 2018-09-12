@@ -187,6 +187,12 @@ class ForestWidget extends Component {
   getWebButtonProps = () => ({
     onMouseDown: () => this.onChange(true),
     onMouseUp: () => this.onChange(false),
+    onClick: () => {
+      this.props.onChange(`${this.props.name}-clicked`, true);
+      setTimeout(()=>{
+        this.props.onChange(`${this.props.name}-clicked`, false);
+      }, 250);
+    },
   });
 
   getAndroidButtonProps = () => ({
