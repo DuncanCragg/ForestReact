@@ -42,7 +42,7 @@ class TodoApp extends Forest {
             <li><a href="#/completed" className={classNames({selected: this.object('nowShowing') === 'completed'})}>Completed</a></li>
           </ul>
           <ForestWidget onRead={this.onRead} onChange={this.onChange} name="clearCompleted">
-            {({ getWebButtonProps }) => <button {...getWebButtonProps()} className="clear-completed">Clear mango</button>}
+            {({ getWebButtonProps }) => <button {...getWebButtonProps()} className="clear-completed">Clear completed</button>}
           </ForestWidget>
         </footer>)}
       </div>
