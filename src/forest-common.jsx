@@ -32,17 +32,6 @@ const Context = React.createContext({
   object: () => null,
 });
 
-function connect(Component) {
-  const Consumer = props => (
-    <Context.Consumer>
-      {({ onChange, onRead, object }) => (
-        <Component onChange={onChange} onRead={onRead} object={object} {...props} />
-      )}
-    </Context.Consumer>
-  );
-  return Consumer;
-}
-
 class ForestCommon extends Component {
 
   static setLogging(conf){
@@ -140,6 +129,17 @@ class ForestCommon extends Component {
     return auth.setPeerIdentityUser(pi);
   }
 
+  static connect(Component) {
+    const Consumer = props => (
+      <Context.Consumer>
+        {({ onChange, onRead, object }) => (
+          <Component onChange={onChange} onRead={onRead} object={object} {...props} />
+        )}
+      </Context.Consumer>
+    );
+    return Consumer;
+  }
+
   UID;
   userStateUID;
 
@@ -234,4 +234,4 @@ class ForestWidget extends Component {
   }
 }
 
-export { ForestCommon, ForestWidget, connect, ForestCommon as default };
+export { ForestCommon, ForestWidget, ForestCommon as default };

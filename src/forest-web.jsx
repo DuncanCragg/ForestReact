@@ -39,15 +39,6 @@ class Forest extends ForestCommon {
     return label ? <div><input className={className} type="checkbox" onChange={e => this.onChange(name, e.target.checked)} checked={!!this.onRead(name)} /><span>{label}</span></div>:
                         <input className={className} type="checkbox" onChange={e => this.onChange(name, e.target.checked)} checked={!!this.onRead(name)} />;
   }
-
-  render() {
-    const { Provider } = this.props;
-    return (
-      <Provider value={this.object}>
-        {this.props.children}
-      </Provider>
-    )
-  }
 }
 
 export { Forest, ForestWidget, Forest as default };
