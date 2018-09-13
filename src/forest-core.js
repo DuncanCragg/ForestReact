@@ -369,30 +369,27 @@ function regexAwareSplit(path){
 
 function checkRegex(delta, p2){
   const m1 = p2.match(/\/(.+?)\//);
+  if(!m1) return false;
   regexMatches.length = 0;
-  if(m1){
-    for(let x in delta){
-      const m2 = x.match(m1[1]);
-      if(m2){
-        const hit = m2[(m2.length > 1)? 1: 0];
-        regexMatches.push({ deltaKey: x, deltaValue: delta[x], regex: m1[1], match: hit });
-      }
-    }
-    if(regexMatches.length > 0) return true;
+  for(let d in delta){
+    const m2 = d.match(m1[1]);
+    if(!m2) continue;
+    const match = m2[(m2.length > 1)? 1: 0];
+    regexMatches.push({ deltaValue: delta[d], match });
   }
-  return false;
+  return (regexMatches.length > 0);
 }
 
 function checkDeltas(pathbits, observesubs, o){
   if(pathbits.length!==2) return null;
   const p0=pathbits[0];
   const p1=pathbits[1];
-  let p2=p1.substring(0, p1.length-1);
   const val = o[p0];
   if(!val) return null;
   ensureObjectState(val, observesubs, o);
   const delta = deltas[val];
   if(!delta) return null;
+  const p2=p1.slice(0,-1);
   if(checkRegex(delta, p2)) return delistify(regexMatches.map(m=> m.deltaValue ));
   const newval = delta[p2];
   return newval !== undefined? newval: null;
@@ -404,8 +401,10 @@ function object(u,p,q) { const r = ((uid, path, query)=>{
   if(!o) return null;
   const hasMatch = query && query.constructor===Object && query.match;
   if(path==='.') return o;
-  const match=path.match(/\$\d{1}/);
-  if(match) return delistify(regexMatches.map(m=>path.replace(match[0], m.match)).map(p=>object(u,p)));
+
+  const regexsub=path.match(/\$\d{1}/);
+  if(regexsub) return delistify(regexMatches.map(m=>path.replace(regexsub[0], m.match)).map(p=>object(u,p)));
+
   const pathbits = regexAwareSplit(path);
   const observesubs = pathbits[0]!=='Alerted' && o.Cache !== 'no-persist';
   if(path.endsWith('?')) return checkDeltas(pathbits, observesubs, o);
@@ -533,6 +532,7 @@ function setEvaluator(name, evaluator){
 
 export default {
   listify,
+  delistify,
   makeUID,
   toUID,
   spawnObject,
