@@ -375,7 +375,7 @@ function checkRegex(delta, p2){
       const m2 = x.match(m1[1]);
       if(m2){
         const hit = m2[(m2.length > 1)? 1: 0];
-        regexMatches.push({ delta: x, regex: m1[1], match: hit });
+        regexMatches.push({ deltaKey: x, deltaValue: delta[x], regex: m1[1], match: hit });
       }
     }
     if(regexMatches.length > 0) return true;
@@ -393,7 +393,7 @@ function checkDeltas(pathbits, observesubs, o){
   ensureObjectState(val, observesubs, o);
   const delta = deltas[val];
   if(!delta) return null;
-  if(checkRegex(delta, p2)) return delistify(regexMatches.map(m=>m.delta));
+  if(checkRegex(delta, p2)) return delistify(regexMatches.map(m=> m.deltaValue ));
   const newval = delta[p2];
   return newval !== undefined? newval: null;
 }
