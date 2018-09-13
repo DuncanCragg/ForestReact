@@ -26,6 +26,23 @@ function doPost(o,url){
 
 core.setNetwork({ doGet, doPost });
 
+const Context = React.createContext({
+  onChange: () => {},
+  onRead: () => {},
+  object: () => null,
+});
+
+function connect(Component) {
+  const Consumer = props => (
+    <Context.Consumer>
+      {({ onChange, onRead, object }) => (
+        <Component onChange={onChange} onRead={onRead} object={object} {...props} />
+      )}
+    </Context.Consumer>
+  );
+  return Consumer;
+}
+
 class ForestCommon extends Component {
 
   static setLogging(conf){
@@ -137,7 +154,7 @@ class ForestCommon extends Component {
       this.object = this.object.bind(this);
       this.notify = this.notify.bind(this);
       this.onChange = this.onChange.bind(this);
-      this.getForestProps = this.getForestProps.bind(this);
+      this.getProvider = this.getProvider.bind(this);
       this.state.ReactNotify = this.notify;      // hardwiring from obj to react
       core.runEvaluator(this.UID);
       this.notify();
@@ -146,12 +163,15 @@ class ForestCommon extends Component {
 
   mounted = false;
 
-  getForestProps() {
-    return {
-      object: this.object,
-      onRead: this.onRead,
-      onChange: this.onChange,
-    }
+  getProvider() {
+    return props => 
+      <Context.Provider value={{
+        object: this.object,
+        onRead: this.onRead,
+        onChange: this.onChange,
+      }}>
+        {props.children}
+      </Context.Provider>;
   }
 
   componentDidMount(){ this.mounted = true; }
@@ -214,4 +234,4 @@ class ForestWidget extends Component {
   }
 }
 
-export { ForestCommon, ForestWidget, ForestCommon as default };
+export { ForestCommon, ForestWidget, connect, ForestCommon as default };
