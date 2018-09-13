@@ -15,6 +15,10 @@ function listify(...items){
   return [].concat(...(items.filter(i=>(![undefined, null, ''].includes(i)))));
 }
 
+function delistify(i){
+  return [undefined, null, ''].includes(i)? null: ((i.constructor === Array)? ((i.length==1)? i[0]: i): i);
+}
+
 function setLogging(conf){
   Object.assign(log, conf);
 }
@@ -288,7 +292,7 @@ function updateObject(uid, update){
   const changed = !_.isEqual(o,p);
   const delta = changed && difference(o,p);
   if (changed) {
-    deltas[uid] = delta;
+    deltas[uid] = (uid in deltas)? Object.assign(deltas[uid], delta): delta;
   }
   const notifiable = delta && Object.keys(delta).filter(e=>!notNotifiableProps.includes(e)).length || delta.Timer;
   if(log.changes) console.log('changed:', changed, 'delta:', delta, 'notifiable:', notifiable);
@@ -350,16 +354,47 @@ function cacheQuery(o, uid, query){
   return Promise.resolve([]);
 }
 
+const regexMatches = [];
+
+function regexAwareSplit(path){
+  const m1 = path.match(/\/(.+?)\//);
+  if(!m1) return path.split('.');
+  const p2 = path.replace(m1[1], "$1");
+  const pathbits = p2.split('.');
+  for(let i = 0; i < pathbits.length; i++){
+    pathbits[i] = pathbits[i].replace("$1", m1[1]);
+  }
+  return pathbits;
+}
+
+function checkRegex(delta, p2){
+  const m1 = p2.match(/\/(.+?)\//);
+  regexMatches.length = 0;
+  if(m1){
+    for(let x in delta){
+      const m2 = x.match(m1[1]);
+      if(m2){
+        const hit = m2[(m2.length > 1)? 1: 0];
+        regexMatches.push({ deltaKey: x, deltaValue: delta[x], regex: m1[1], match: hit });
+      }
+    }
+    if(regexMatches.length > 0) return true;
+  }
+  return false;
+}
+
 function checkDeltas(pathbits, observesubs, o){
   if(pathbits.length!==2) return null;
   const p0=pathbits[0];
   const p1=pathbits[1];
+  let p2=p1.substring(0, p1.length-1);
   const val = o[p0];
   if(!val) return null;
   ensureObjectState(val, observesubs, o);
   const delta = deltas[val];
   if(!delta) return null;
-  const newval = delta[p1.substring(0, p1.length-1)];
+  if(checkRegex(delta, p2)) return delistify(regexMatches.map(m=> m.deltaValue ));
+  const newval = delta[p2];
   return newval !== undefined? newval: null;
 }
 
@@ -369,11 +404,12 @@ function object(u,p,q) { const r = ((uid, path, query)=>{
   if(!o) return null;
   const hasMatch = query && query.constructor===Object && query.match;
   if(path==='.') return o;
-  const pathbits = path.split('.');
+  const match=path.match(/\$\d{1}/);
+  if(match) return delistify(regexMatches.map(m=>path.replace(match[0], m.match)).map(p=>object(u,p)));
+  const pathbits = regexAwareSplit(path);
   const observesubs = pathbits[0]!=='Alerted' && o.Cache !== 'no-persist';
-  if(path.endsWith('?')) {
-    return checkDeltas(pathbits, observesubs, o);
-  }
+  if(path.endsWith('?')) return checkDeltas(pathbits, observesubs, o);
+  
   let c=o;
   for(let i=0; i<pathbits.length; i++){
     if(pathbits[i]==='') return c;
@@ -474,6 +510,7 @@ function doEvaluate(uid, params) {
     if(log.evaluate || log.update) if(changed) console.log('<<<<<<<<<<<<< update:\n', update);
     o = updated;
     delete deltas[Alerted];
+    regexMatches.length = 0;
     if(!changed) break;
   }
   if(Alerted && !observes.includes(Alerted)){
