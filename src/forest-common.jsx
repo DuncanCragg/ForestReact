@@ -137,7 +137,7 @@ class ForestCommon extends Component {
       this.object = this.object.bind(this);
       this.notify = this.notify.bind(this);
       this.onChange = this.onChange.bind(this);
-      this.getChildrenProps = this.getChildrenProps.bind(this);
+      this.getForestProps = this.getForestProps.bind(this);
       this.state.ReactNotify = this.notify;      // hardwiring from obj to react
       core.runEvaluator(this.UID);
       this.notify();
@@ -146,13 +146,11 @@ class ForestCommon extends Component {
 
   mounted = false;
 
-  getChildrenProps() {
+  getForestProps() {
     return {
       object: this.object,
       onRead: this.onRead,
       onChange: this.onChange,
-      userStateUID: this.userStateUID,
-      uid: this.UID,
     }
   }
 

@@ -7,7 +7,7 @@ const Context = React.createContext({
 });
 
 const Provider = props => (
-  <Context.Provider value={props.childrenProps}>{props.children}</Context.Provider>
+  <Context.Provider value={props.forestProps}>{props.children}</Context.Provider>
 );
 
 function connect(Component) {
