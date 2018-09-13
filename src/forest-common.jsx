@@ -26,7 +26,7 @@ function doPost(o,url){
 
 core.setNetwork({ doGet, doPost });
 
-const Context = React.createContext({
+const Context = React.createContext && React.createContext({
   onChange: () => null,
   onRead: () => null,
   object: () => null,
