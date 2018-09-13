@@ -26,6 +26,12 @@ function doPost(o,url){
 
 core.setNetwork({ doGet, doPost });
 
+const Context = React.createContext({
+  onChange: () => null,
+  onRead: () => null,
+  object: () => null,
+});
+
 class ForestCommon extends Component {
 
   static setLogging(conf){
@@ -123,6 +129,17 @@ class ForestCommon extends Component {
     return auth.setPeerIdentityUser(pi);
   }
 
+  static connect(Component) {
+    const Consumer = props => (
+      <Context.Consumer>
+        {({ onChange, onRead, object }) => (
+          <Component onChange={onChange} onRead={onRead} object={object} {...props} />
+        )}
+      </Context.Consumer>
+    );
+    return Consumer;
+  }
+
   UID;
   userStateUID;
 
@@ -137,6 +154,7 @@ class ForestCommon extends Component {
       this.object = this.object.bind(this);
       this.notify = this.notify.bind(this);
       this.onChange = this.onChange.bind(this);
+      this.getProvider = this.getProvider.bind(this);
       this.state.ReactNotify = this.notify;      // hardwiring from obj to react
       core.runEvaluator(this.UID);
       this.notify();
@@ -144,6 +162,17 @@ class ForestCommon extends Component {
   }
 
   mounted = false;
+
+  getProvider() {
+    return props => 
+      <Context.Provider value={{
+        object: this.object,
+        onRead: this.onRead,
+        onChange: this.onChange,
+      }}>
+        {props.children}
+      </Context.Provider>;
+  }
 
   componentDidMount(){ this.mounted = true; }
 
