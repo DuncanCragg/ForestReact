@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import superagent from 'superagent';
 import _ from 'lodash';
 import core from './forest-core';
-import { ForestCommon, ForestWidget } from './forest-common';
+import { ForestCommon } from './forest-common';
 
 function persist(o){
   return Promise.resolve(localStorage.setItem(core.toUID(o.UID), core.stringify(o)))
