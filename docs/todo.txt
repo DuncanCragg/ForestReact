@@ -1,4 +1,4 @@
-
+ - . -> :
  - --------------------
  * checkSig(): signing from peers to prove
  * request checker response: { status: OK, public-key: '..', cache: 'no-persist' } - no-persist if it's an incoming ui object, etc
