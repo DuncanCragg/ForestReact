@@ -1,6 +1,6 @@
 {
   "name": "forest-react",
-  "version": "0.0.68",
+  "version": "0.0.69",
   "description": "Simple, powerful alternative to Redux, Reselect, Sagas, etc",
   "author": "Duncan Cragg <forest@cilux.org> (http://duncan-cragg.org)",
   "license": "MIT",
