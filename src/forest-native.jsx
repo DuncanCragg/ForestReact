@@ -5,7 +5,7 @@ import superagent from 'superagent';
 import _ from 'lodash';
 import URLSearchParams from 'url-search-params';
 import core from './forest-core';
-import ForestCommon from './forest-common';
+import { ForestCommon, ForestWidget } from './forest-common';
 
 function persist(o){
   return AsyncStorage.setItem(core.toUID(o.UID), JSON.stringify(o, null, 2)).then(() => o.UID + ': ' + [].concat(o.is).join(' '));
@@ -25,7 +25,7 @@ function query(is, scope, query){ }
 
 core.setPersistence({ persist, fetch, query, recache });
 
-export default class Forest extends ForestCommon {
+class Forest extends ForestCommon {
 
   constructor(props) {
     super(props)
@@ -100,3 +100,5 @@ export default class Forest extends ForestCommon {
            </TouchableOpacity>
   }
 }
+
+export { Forest, ForestWidget, Forest as default };
