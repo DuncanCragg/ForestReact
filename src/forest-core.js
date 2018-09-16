@@ -497,6 +497,7 @@ function doEvaluate(uid, params) {
     o.Observe=[];
     if(Alerted) o.Alerted=Alerted;
     const evalout = evaluator(object.bind(null, uid), i===0 && params) || {};
+    if(uid in deltas) delete deltas[uid];
     delete o.Alerted;
     observes=_.uniq(observes.concat(o.Observe));
     delete o.Observe;
