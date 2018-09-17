@@ -119,6 +119,10 @@ class ForestCommon extends Component {
     return core.getObject(uid);
   }
 
+  static updateObject(uid, update){
+    return core.updateObject(uid, update);
+  }
+
   static makeUID(peer){
     return core.makeUID(peer);
   }

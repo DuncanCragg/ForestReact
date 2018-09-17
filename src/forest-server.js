@@ -417,6 +417,7 @@ export default {
   runEvaluator:        core.runEvaluator,
   getObject:           core.getObject,
   spawnObject:         core.spawnObject,
+  updateObject:        core.updateObject,
   makeUID:             core.makeUID,
   listify:             core.listify,
   setLogging:          core.setLogging,
