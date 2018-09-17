@@ -497,7 +497,12 @@ function doEvaluate(uid, params) {
     if(log.evaluate) console.log('>>>>>>>>>>>>>\n', object(uid, '.'));
     o.Observe=[];
     if(Alerted) o.Alerted=Alerted;
-    const evalout = evaluator(object.bind(null, uid), i===0 && params) || {};
+    let evalout={};
+    try{
+      evalout = evaluator(object.bind(null, uid), i===0 && params) || {};
+    }catch(e){
+      console.error('Exception in evaluator!', e);
+    }
     delete deltas[Alerted];
     delete o.Alerted;
     observes=_.uniq(observes.concat(o.Observe));

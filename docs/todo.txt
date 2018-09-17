@@ -1,3 +1,11 @@
+ - --------------------
+ - should spawn doEvaluate immediately?
+    at evalUserResultsList
+    at doEvaluate
+    at Object.spawnObject
+    at evalGatewayDriver
+    at doEvaluate
+ - --------------------
  - . -> :
  - --------------------
  * checkSig(): signing from peers to prove
