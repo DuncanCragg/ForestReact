@@ -353,8 +353,8 @@ function recache(){
                   .then(actives => [].concat(...actives)));
 }
 
-function query(is, scope, query){
-  return forestdb.collection(is.join('-'))
+function query(scope, query){
+  return forestdb.collection(query.match.is.join('-'))
     .find(toMongo(scope, query.match), { projection: { _id: 0 }})
     .toArray()
     .then(r => r.map(o => query.inline? getInlineVals(o, query.inline): o.UID))

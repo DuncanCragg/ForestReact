@@ -342,14 +342,15 @@ function toPeer(u){
   return u.substring(0,s)+'notify';
 }
 
-const isQueryableCacheListLabels = ['queryable', 'cache', 'list'];
+const isQueryableCacheList = is => is && is.constructor===Array && ['queryable','cache','list'].every(s => is.includes(s));
 
 function cacheQuery(o, uid, query){
   setNotify(o,uid);
   if(!persistence) return Promise.resolve([]);
   const scope = o.list;
+  if(!(scope && scope.constructor === Array)) return Promise.resolve([]);
   if(scope.includes('local') || scope.includes('remote')){
-    return persistence.query(o.is.filter(s => !isQueryableCacheListLabels.includes(s)), scope, query);
+    return persistence.query(scope, query);
   }
   return Promise.resolve([]);
 }
@@ -415,8 +416,7 @@ function object(u,p,q) { const r = ((uid, path, query)=>{
     if(pathbits[i]==='') return c;
     if(pathbits[i]==='Timer') return c.Timer || 0;
 
-    const isQueryableCacheList = c.is && c.is.constructor===Array && isQueryableCacheListLabels.every(s => c.is.includes(s));
-    if(pathbits[i]==='list' && isQueryableCacheList && hasMatch) return cacheQuery(c, uid, query);
+    if(pathbits[i]==='list' && hasMatch && isQueryableCacheList(c.is)) return cacheQuery(c, uid, query);
 
     let val = c[pathbits[i]];
     if(val == null) return null;
