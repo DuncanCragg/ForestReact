@@ -403,7 +403,7 @@ function object(u,p,q) { const r = ((uid, path, query)=>{
   if(path==='.') return o;
 
   const regexsub=path.match(/\$\d{1}/);
-  if(regexsub) return path === "$1"? delistify(regexMatches.map(m=>m.match)): delistify(regexMatches.map(m=>path.replace(regexsub[0], m.match)).map(p=>object(u,p)));
+  if(regexsub) return path === "@$1"? delistify(regexMatches.map(m=>m.match)): delistify(regexMatches.map(m=>path.replace(regexsub[0], m.match)).map(p=>object(u,p)));
 
   const pathbits = regexAwareSplit(path);
   const observesubs = pathbits[0]!=='Alerted' && o.Cache !== 'no-persist';
@@ -497,7 +497,7 @@ function doEvaluate(uid, params) {
     o.Observe=[];
     if(Alerted) o.Alerted=Alerted;
     const evalout = evaluator(object.bind(null, uid), i===0 && params) || {};
-    if(uid in deltas) delete deltas[uid];
+    delete deltas[Alerted];
     delete o.Alerted;
     observes=_.uniq(observes.concat(o.Observe));
     delete o.Observe;
@@ -509,7 +509,6 @@ function doEvaluate(uid, params) {
     const { updated, changed, notifiable } = updateObject(uid, update);
     if(log.evaluate || log.update) if(changed) console.log('<<<<<<<<<<<<< update:\n', update);
     o = updated;
-    delete deltas[Alerted];
     regexMatches.length = 0;
     if(!changed) break;
   }
