@@ -60,6 +60,10 @@ const CORS = (req, res, next) => {
 
 const pendingNotifies = {};
 
+function toURL(uid){
+  return `http://${serverHost}:${serverPort}/${uid}`;
+}
+
 function prefixUIDs(o){
   const s = JSON.stringify(_.omit(o, core.localProps), null, 2);
   return s.replace(/"(uid-[^"]*"[^:])/g, `"http://${serverHost}:${serverPort}/$1`);
@@ -369,6 +373,12 @@ function toMongo(scope, match){
 
 function toMongoProp(key, val){
   if(key==='is') return core.delistify(val);
+  if(core.isURL(val)){
+    return { $in: [val,core.toUID(val)] };
+  }
+  if(core.isUID(val)){
+    return { $in: [val,toURL(val)] };
+  }
   if(val.length===3 && val[1]==='..'){
     return { $gt: val[0], $lt: val[2] };
   }

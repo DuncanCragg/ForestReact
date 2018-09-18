@@ -556,6 +556,7 @@ export default {
   setPersistence,
   setNetwork,
   localProps,
+  isUID,
   isURL,
   isPeer,
   setLogging,
