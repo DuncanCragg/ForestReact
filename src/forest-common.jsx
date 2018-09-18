@@ -192,6 +192,10 @@ class ForestCommon extends Component {
     return core.object(this.UID, path, match);
   }
 
+  get(path, match) {
+    return core.object(this.UID, path, match);
+  }
+
   notify(){
     if(this.mounted) this.setState({});
   }
