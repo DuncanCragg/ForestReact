@@ -559,5 +559,6 @@ export default {
   isURL,
   isPeer,
   setLogging,
+  log,
 }
 

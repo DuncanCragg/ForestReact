@@ -362,7 +362,9 @@ function query(scope, query){
 }
 
 function toMongo(scope, match){
-  return Object.assign({}, ...Object.keys(match).map(k => ({[k]: toMongoProp(k,match[k])})));
+  const r = Object.assign({}, ...Object.keys(match).map(k => ({[k]: toMongoProp(k,match[k])})));
+  if(core.log.persist) console.log('toMongo:', r);
+  return r;
 }
 
 function toMongoProp(key, val){
