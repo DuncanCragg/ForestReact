@@ -9,6 +9,7 @@ const log = {
   object:   false,
   net:      false,
   persist:  false,
+  deltas:    false,
 }
 
 function listify(...items){
@@ -292,6 +293,7 @@ function updateObject(uid, update){
   const changed = !_.isEqual(o,p);
   const delta = changed && difference(o,p);
   if (changed) {
+    if(log.deltas) console.log('deltas:', { uid, delta });
     deltas[uid] = (uid in deltas)? Object.assign(deltas[uid], delta): delta;
   }
   const notifiable = delta && Object.keys(delta).filter(e=>!notNotifiableProps.includes(e)).length || delta.Timer;
