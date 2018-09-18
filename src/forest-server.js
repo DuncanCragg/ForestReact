@@ -366,6 +366,7 @@ function toMongo(scope, match){
 }
 
 function toMongoProp(key, val){
+  if(key==='is') return core.delistify(val);
   if(val.length===3 && val[1]==='..'){
     return { $gt: val[0], $lt: val[2] };
   }
