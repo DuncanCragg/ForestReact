@@ -187,8 +187,8 @@ function wsInit(config){
   wss.on('connection', (ws) => {
     ws.on('message', (data) => {
       const body = safeParse(data);
-      if(body.Peer){
-        console.log('ws init:', body);
+      if(body.is==='websocket-init'){
+        console.log('websocket init:', body);
         peer2ws[body.Peer]=ws;
         ws.send(auth.makeWSAuth());
         wsFlushNotify(body.Peer);

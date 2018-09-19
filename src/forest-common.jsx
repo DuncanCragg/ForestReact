@@ -69,8 +69,8 @@ class ForestCommon extends Component {
 
     ws.onmessage = (message) => {
       const json = JSON.parse(message.data);
-      if(json.Peer){
-        console.log('ws init:', json);
+      if(json.is==='websocket-init'){
+        console.log('websocket init:', json);
         ws.Peer = json.Peer;
       }
       else

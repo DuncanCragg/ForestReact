@@ -15,7 +15,7 @@ function makeHTTPAuth(){
 }
 
 function makeWSAuth(){
-  return Peer? JSON.stringify({ Peer, User }): '{}';
+  return Peer? JSON.stringify({ is: 'websocket-init', Peer, User }): '{ "is": "websocket-init" }';
 }
 
 const authRE=/Forest Peer="(.*?)", User="(.*)"/;
