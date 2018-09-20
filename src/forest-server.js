@@ -9,6 +9,7 @@ import core from './forest-core';
 import auth from './auth';
 import mosca from 'mosca';
 
+let serverProt=null;
 let serverHost=null;
 let serverPort=0;
 
@@ -61,12 +62,12 @@ const CORS = (req, res, next) => {
 const pendingNotifies = {};
 
 function toURL(uid){
-  return `http://${serverHost}:${serverPort}/${uid}`;
+  return `${serverProt}://${serverHost}:${serverPort}/${uid}`;
 }
 
 function prefixUIDs(o){
   const s = JSON.stringify(_.omit(o, core.localProps), null, 2);
-  return s.replace(/"(uid-[^"]*"[^:])/g, `"http://${serverHost}:${serverPort}/$1`);
+  return s.replace(/"(uid-[^"]*"[^:])/g, `"${serverProt}://${serverHost}:${serverPort}/$1`);
 }
 
 function checkPKAndReturnObject(Peer, uid, r){
@@ -405,8 +406,8 @@ core.setPersistence({ persist, fetch, recache, query });
 
 // --------------------------------
 
-function init({httpHost, httpPort, mongoHostPort, wsPort, mqttConfig}){
-  serverHost=httpHost; serverPort=httpPort;
+function init({httpProt, httpHost, httpPort, mongoHostPort, wsPort, mqttConfig}){
+  serverProt=httpProt; serverHost=httpHost; serverPort=httpPort;
   return new Promise((resolve, reject) => {
     persistenceInit(mongoHostPort)
       .then(() => {
