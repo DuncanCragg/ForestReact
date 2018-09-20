@@ -49,8 +49,9 @@ class ForestCommon extends Component {
 
   static wsInit(prot,host,port){
 
-    const wsprot = { http: 'ws', https: 'wss' }[prot];
-    const ws = new WebSocket(`${wsprot}://${host}:${port}`);
+    const urlselect = { http:  `ws://${host}:${port}/sockets`,
+                        https: `wss://${host}/sockets` };
+    const ws = new WebSocket(urlselect[prot]);
 
     ws.onopen = () => {
       this.wsRetryIn=1000;
@@ -64,7 +65,7 @@ class ForestCommon extends Component {
       console.log('WebSocket closed, retry in.. ', timeout/1000);
       setTimeout(()=>{
         this.wsRetryIn=Math.min(Math.floor(this.wsRetryIn*1.5), 15000)
-        this.wsInit(prot,host, port)
+        this.wsInit(prot,host,port)
       }, timeout);
     }
 

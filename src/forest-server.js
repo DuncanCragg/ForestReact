@@ -62,12 +62,20 @@ const CORS = (req, res, next) => {
 const pendingNotifies = {};
 
 function toURL(uid){
-  return `${serverProt}://${serverHost}:${serverPort}/${uid}`;
+  const urlselect = {
+    http:  `http://${serverHost}:${serverPort}/${uid}`,
+    https: `https://${serverHost}/${uid}`,
+  };
+  return urlselect[serverProt];
 }
 
 function prefixUIDs(o){
   const s = JSON.stringify(_.omit(o, core.localProps), null, 2);
-  return s.replace(/"(uid-[^"]*"[^:])/g, `"${serverProt}://${serverHost}:${serverPort}/$1`);
+  const urlselect = {
+    http:  `"http://${serverHost}:${serverPort}/$1`,
+    https: `"https://${serverHost}/$1`,
+  };
+  return s.replace(/"(uid-[^"]*"[^:])/g, urlselect[serverProt]);
 }
 
 function checkPKAndReturnObject(Peer, uid, r){
