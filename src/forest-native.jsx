@@ -49,7 +49,7 @@ class Forest extends ForestCommon {
       if(Platform.OS !== 'ios'){
         Linking.getInitialURL()
           .then(url=>this.callInitialURL(url))
-          .catch(err => console.log('unable to get initial URL:', err));
+          .catch(e => console.log('unable to get initial URL:', e.message));
       } else {
         Linking.addEventListener('url', this.initialURLSupplied); // what if there's already been an event?
       }

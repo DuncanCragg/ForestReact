@@ -20,8 +20,7 @@ function doPost(o,url){
     .timeout({ response: 9000, deadline: 10000 })
     .set(auth.makeHTTPAuth())
     .send(data)
-    .then(x => x.body)
-    .catch(e => console.warn('doPost',e,url,data));
+    .then(x => x.body);
 }
 
 core.setNetwork({ doGet, doPost });
@@ -83,7 +82,7 @@ class ForestCommon extends Component {
     };
 
     ws.onerror = e => {
-      console.log('websocket error');
+      console.log('websocket error', e.message);
     };
   }
 
@@ -100,7 +99,7 @@ class ForestCommon extends Component {
       ReactDOM.render(
         Cpt,
         document.getElementById(rootId),
-        (err) => err ? reject(err) : resolve()
+        e => e? reject(e): resolve()
       );
     });
   }
@@ -158,7 +157,7 @@ class ForestCommon extends Component {
   constructor(props) {
     super(props)
     core.getObject(props.uid).then(o=>{
-      if(!o){ console.error('No bound object', props.uid); return; }
+      if(!o){ console.log('No bound object', props.uid); return; }
       this.state = o;
       this.UID = props.uid;
       this.userStateUID = core.spawnObject({ 'is': ['user', 'state'] });

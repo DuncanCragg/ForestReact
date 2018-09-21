@@ -142,7 +142,7 @@ function doGet(url){
     fetching[url]=true;
     network && network.doGet(url)
       .then(json => { fetching[url]=false; incomingObjectFromGET(url, json); })
-      .catch(e => { fetching[url]=false; console.warn('doGet',e,url); });
+      .catch(e => { fetching[url]=false; console.log('doGet',e.message,url); });
   }
 }
 
@@ -240,7 +240,7 @@ function notifyObservers(o){
     if(log.notify) console.log('peers now', peers);
     if(log.notify) console.log('\n------------------------');
   })
-  .catch(e => console.log(e))
+  .catch(e => console.log(e.message))
   ))
   .then(()=>Object.keys(peers).map(u => outgoingObject(Object.assign({}, o, { Notify: peers[u] }), u)));
 }
@@ -248,7 +248,8 @@ function notifyObservers(o){
 function outgoingObject(o,u){
   network && network.doPost(o,u).then((ok) => {
     if(log.net) console.log(ok? '<<-------------- outgoingObject': 'no outgoingObject for', u, '\n', JSON.stringify(o, null, 4));
-  });
+  })
+  .catch(e => console.log('doPost',e.message,u,o));
 }
 
 function incomingObjectFromGET(url, json){
@@ -518,7 +519,7 @@ function doEvaluate(uid, params) {
     try{
       evalout = evaluator(object.bind(null, uid), i===0 && params) || {};
     }catch(e){
-      console.error('Exception in evaluator!', e);
+      console.log('Exception in evaluator!', e.message);
     }
     delete deltas[Alerted];
     delete o.Alerted;

@@ -20,7 +20,7 @@ function safeParse(s){
     return JSON.parse(s);
   }
   catch(e){
-    console.error('incoming data corrupt:', s, e);
+    console.log('incoming data corrupt:', s, e.message);
     return {};
   }
 }
@@ -141,7 +141,7 @@ app.get('/*',
     })
     .then(()=>next())
     .catch(e => {
-      console.error(e);
+      console.log(e.message);
       res.status(404).send('Not found');
       next();
     });
@@ -179,7 +179,7 @@ app.post('/*',
     .then(ok=>ok? res.json({ }): res.status(403).send('Forbidden'))
     .then(()=>next())
     .catch(e => {
-      console.error(e);
+      console.log(e.message);
       res.status(403).send('Forbidden');
       next();
     });
@@ -219,7 +219,7 @@ function wsFlushNotify(Peer){
       else console.log('WebSocket closed sending\n', o, '\nto', Peer);
     }
     catch(e){
-      console.error('error sending\n', o, '\nto', Peer, '\n', e);
+      console.log('error sending\n', o, '\nto', Peer, '\n', e.message);
     }
   }
 }
@@ -282,7 +282,7 @@ function mqttInit(config){
       logMQTTResult(ok);
     })
     .catch(e => {
-      console.error(e);
+      console.log(e.message);
     });
   });
 }
@@ -302,7 +302,7 @@ function mqttFlushNotify(Peer){
       });
     }
     catch(e){
-      console.error('error sending\n', o, '\nto', Peer, '\n', e);
+      console.log('error sending\n', o, '\nto', Peer, '\n', e.message);
     }
   }
 }
@@ -348,7 +348,7 @@ function persist(o){
   return forestdb.collection(collectionName)
     .update({ UID: o.UID }, o, { upsert: true })
     .then(result => result.result)
-    .catch(err => { console.log(err, `Failed to insert ${o.UID} in ${collectionName}`); return err });
+    .catch(e => { console.log(e.message, `Failed to insert ${o.UID} in ${collectionName}`); return e });
 }
 
 function fetch(uid){
@@ -371,7 +371,7 @@ function query(scope, query){
     .find(toMongo(scope, query.match), { projection: { _id: 0 }})
     .toArray()
     .then(r => r.map(o => query.inline? getInlineVals(o, query.inline): o.UID))
-    .catch(e => console.error(e));
+    .catch(e => console.log(e.message));
 }
 
 function toMongo(scope, match){
@@ -424,9 +424,9 @@ function init({httpProt, httpHost, httpPort, mongoHostPort, wsPort, mqttConfig})
           if(wsPort) wsInit({ port: wsPort });
           if(mqttConfig) mqttInit(mqttConfig);
           resolve();
-        }).on('error', (err) => reject(err));
+        }).on('error', e => reject(e));
       })
-      .catch((err) => reject(err));
+      .catch(e => reject(e));
   });
 }
 
