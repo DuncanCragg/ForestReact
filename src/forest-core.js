@@ -368,10 +368,10 @@ function regexAwareSplit(path){
   return pathbits;
 }
 
-function checkRegex(pattern, target){
+function checkRegex(regex, target){
   regexMatches.length = 0;
   for(let p in target){
-    const m2 = p.match(pattern[1]);
+    const m2 = p.match(regex[1]);
     if(!m2) continue;
     const match = m2[(m2.length > 1)? 1: 0];
     regexMatches.push({ value: target[p], match });
