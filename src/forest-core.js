@@ -380,18 +380,34 @@ function checkRegex(pattern, target){
 }
 
 function checkDeltas(pathbits, observesubs, o, regex){
-  if(pathbits.length!==2) return null;
+  if(pathbits.length!==2) return  console.warn("require two path elements for delta '?'", pathbits) || null;
   const p0=pathbits[0];
   const p1=pathbits[1];
   const val = o[p0];
   if(!val) return null;
-  ensureObjectState(val, observesubs, o);
+  const c = ensureObjectState(val, observesubs, o);
+  if(!c) return null;
   const delta = deltas[val];
   if(!delta) return null;
   const p2=p1.slice(0,-1);
-  if(regex && checkRegex(regex, delta)) return delistify(regexMatches.map(m=> m.value ));
+  if (regex) {
+    if (p2 !== regex[0]) return console.warn("regex must span entire path element - exclusing '?'", p1) || null;
+    if(checkRegex(regex, delta)) return delistify(regexMatches.map(m => m.value));
+  }
   const newval = delta[p2];
   return newval !== undefined? newval: null;
+}
+
+function checkNonDeltaWithRegex(pathbits, observesubs, o, regex){
+  if(pathbits.length!==2) return console.warn('require two path elements for regex', pathbits) || null;
+  if(pathbits[1]!==regex[0]) return console.warn('regex must span entire path element', pathbits[1]) || null;
+  const p0=pathbits[0];
+  const p1=pathbits[1];
+  const val = o[p0];
+  if(!val) return null;
+  const t = (typeof val === 'object')? val: ((typeof val === 'string')? ensureObjectState(val, observesubs, o): null);
+  if(t && checkRegex(regex, t)) return  delistify(regexMatches.map(m=> m.value ));
+  return null;
 }
 
 function object(u,p,q) { const r = ((uid, path, query)=>{
@@ -410,13 +426,7 @@ function object(u,p,q) { const r = ((uid, path, query)=>{
 
   const regex = path.match(/\/(.+?)\//);
   if(path.endsWith('?')) return checkDeltas(pathbits, observesubs, o, regex);
-  else if(regex){
-    if(pathbits.length!==2 || pathbits[1]!==regex[0]) return console.warn('incorrect regex structure') && null;
-    const target = o[pathbits[0]];
-    if(!target) return null;
-    if(!checkRegex(regex, target)) return null;
-    return delistify(regexMatches.map(m=> m.value ));
-  }
+  else if(regex) return checkNonDeltaWithRegex(pathbits, observesubs, o, regex);
   
   let c=o;
   for(let i=0; i<pathbits.length; i++){
