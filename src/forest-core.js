@@ -21,7 +21,7 @@ function stringify(o){
 }
 
 function listify(...items){
-  return [].concat(...(items.filter(i=>(![undefined, null, ''].includes(i)))));
+  return [...items.filter(Boolean)];
 }
 
 function delistify(i){
