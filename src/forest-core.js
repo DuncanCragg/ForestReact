@@ -368,32 +368,46 @@ function regexAwareSplit(path){
   return pathbits;
 }
 
-function checkRegex(delta, p2){
-  const m1 = p2.match(/\/(.+?)\//);
-  if(!m1) return false;
+function checkRegex(regex, target){
   regexMatches.length = 0;
-  for(let d in delta){
-    const m2 = d.match(m1[1]);
+  for(let p in target){
+    const m2 = p.match(regex[1]);
     if(!m2) continue;
     const match = m2[(m2.length > 1)? 1: 0];
-    regexMatches.push({ deltaValue: delta[d], match });
+    regexMatches.push({ value: target[p], match });
   }
   return (regexMatches.length > 0);
 }
 
-function checkDeltas(pathbits, observesubs, o){
-  if(pathbits.length!==2) return null;
+function checkDeltas(pathbits, observesubs, o, regex){
+  if(pathbits.length!==2) return  console.warn("require two path elements for delta '?'", pathbits) || null;
   const p0=pathbits[0];
   const p1=pathbits[1];
   const val = o[p0];
   if(!val) return null;
-  ensureObjectState(val, observesubs, o);
+  const c = ensureObjectState(val, observesubs, o);
+  if(!c) return null;
   const delta = deltas[val];
   if(!delta) return null;
   const p2=p1.slice(0,-1);
-  if(checkRegex(delta, p2)) return delistify(regexMatches.map(m=> m.deltaValue ));
+  if (regex) {
+    if (p2 !== regex[0]) return console.warn("regex must span entire path element - exclusing '?'", p1) || null;
+    if(checkRegex(regex, delta)) return delistify(regexMatches.map(m => m.value));
+  }
   const newval = delta[p2];
   return newval !== undefined? newval: null;
+}
+
+function checkNonDeltaWithRegex(pathbits, observesubs, o, regex){
+  if(pathbits.length!==2) return console.warn('require two path elements for regex', pathbits) || null;
+  if(pathbits[1]!==regex[0]) return console.warn('regex must span entire path element', pathbits[1]) || null;
+  const p0=pathbits[0];
+  const p1=pathbits[1];
+  const val = o[p0];
+  if(!val) return null;
+  const t = (typeof val === 'object')? val: ((typeof val === 'string')? ensureObjectState(val, observesubs, o): null);
+  if(t && checkRegex(regex, t)) return  delistify(regexMatches.map(m=> m.value ));
+  return null;
 }
 
 function object(u,p,q) { const r = ((uid, path, query)=>{
@@ -409,7 +423,10 @@ function object(u,p,q) { const r = ((uid, path, query)=>{
 
   const pathbits = regexAwareSplit(path);
   const observesubs = pathbits[0]!=='Alerted' && o.Cache !== 'no-persist';
-  if(path.endsWith('?')) return checkDeltas(pathbits, observesubs, o);
+
+  const regex = path.match(/\/(.+?)\//);
+  if(path.endsWith('?')) return checkDeltas(pathbits, observesubs, o, regex);
+  else if(regex) return checkNonDeltaWithRegex(pathbits, observesubs, o, regex);
   
   let c=o;
   for(let i=0; i<pathbits.length; i++){
