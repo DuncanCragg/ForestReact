@@ -241,7 +241,7 @@ function mqttInit(config){
 
   mqtts.on('ready', () => {
     mqtts.authenticate = authenticate;
-    console.log('MQTT running on port'+(config.secure? 's': ''), config.port, config.secure && config.secure.port || '');
+    console.log(`MQTT running on ${config.secure? 'secure ': ''}port`, config.secure && config.secure.port || config.port);
   });
 
   mqtts.on('clientConnected', (client) => {
