@@ -368,20 +368,18 @@ function regexAwareSplit(path){
   return pathbits;
 }
 
-function checkRegex(delta, p2){
-  const m1 = p2.match(/\/(.+?)\//);
-  if(!m1) return false;
+function checkRegex(pattern, target){
   regexMatches.length = 0;
-  for(let d in delta){
-    const m2 = d.match(m1[1]);
+  for(let p in target){
+    const m2 = p.match(pattern[1]);
     if(!m2) continue;
     const match = m2[(m2.length > 1)? 1: 0];
-    regexMatches.push({ deltaValue: delta[d], match });
+    regexMatches.push({ value: target[p], match });
   }
   return (regexMatches.length > 0);
 }
 
-function checkDeltas(pathbits, observesubs, o){
+function checkDeltas(pathbits, observesubs, o, regex){
   if(pathbits.length!==2) return null;
   const p0=pathbits[0];
   const p1=pathbits[1];
@@ -391,7 +389,7 @@ function checkDeltas(pathbits, observesubs, o){
   const delta = deltas[val];
   if(!delta) return null;
   const p2=p1.slice(0,-1);
-  if(checkRegex(delta, p2)) return delistify(regexMatches.map(m=> m.deltaValue ));
+  if(regex && checkRegex(regex, delta)) return delistify(regexMatches.map(m=> m.value ));
   const newval = delta[p2];
   return newval !== undefined? newval: null;
 }
@@ -409,7 +407,16 @@ function object(u,p,q) { const r = ((uid, path, query)=>{
 
   const pathbits = regexAwareSplit(path);
   const observesubs = pathbits[0]!=='Alerted' && o.Cache !== 'no-persist';
-  if(path.endsWith('?')) return checkDeltas(pathbits, observesubs, o);
+
+  const regex = path.match(/\/(.+?)\//);
+  if(path.endsWith('?')) return checkDeltas(pathbits, observesubs, o, regex);
+  else if(regex){
+    if(pathbits.length!==2 || pathbits[1]!==regex[0]) return console.warn('incorrect regex structure') && null;
+    const target = o[pathbits[0]];
+    if(!target) return null;
+    if(!checkRegex(regex, target)) return null;
+    return delistify(regexMatches.map(m=> m.value ));
+  }
   
   let c=o;
   for(let i=0; i<pathbits.length; i++){
