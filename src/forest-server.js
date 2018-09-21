@@ -70,7 +70,7 @@ function toURL(uid){
 }
 
 function prefixUIDs(o){
-  const s = JSON.stringify(_.omit(o, core.localProps), null, 2);
+  const s = core.stringify(_.omit(o, core.localProps));
   const urlselect = {
     http:  `"http://${serverHost}:${serverPort}/$1`,
     https: `"https://${serverHost}/$1`,

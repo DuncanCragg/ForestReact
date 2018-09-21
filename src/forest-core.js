@@ -11,6 +11,15 @@ const log = {
   persist:  false,
 }
 
+function stringify(o){
+  try{
+    return JSON.stringify(o,null,4);
+  }
+  catch(e){
+    return 'failed to stringify: '+e.message+'\n'+o+'\n';
+  }
+}
+
 function listify(...items){
   return [].concat(...(items.filter(i=>(![undefined, null, ''].includes(i)))));
 }
@@ -247,14 +256,14 @@ function notifyObservers(o){
 
 function outgoingObject(o,u){
   network && network.doPost(o,u).then((ok) => {
-    if(log.net) console.log(ok? '<<-------------- outgoingObject': 'no outgoingObject for', u, '\n', JSON.stringify(o, null, 4));
+    if(log.net) console.log(ok? '<<-------------- outgoingObject': 'no outgoingObject for', u, '\n', stringify(o));
   })
   .catch(e => console.log('doPost',e.message,u,o));
 }
 
 function incomingObjectFromGET(url, json){
   json = Object.assign({ Updated: Date.now() }, json);
-  if(log.net) console.log('-------------->> incomingObjectFromGET\n', JSON.stringify(json, null, 4));
+  if(log.net) console.log('-------------->> incomingObjectFromGET\n', stringify(json));
   updateObject(url, json);
 }
 
@@ -263,7 +272,7 @@ function incomingObject(json, notify){
   if(!json.Peer) json.Peer=toPeer(json.UID);
   json = Object.assign({ Updated: Date.now() }, json);
   if(notify) setNotify(json, notify, true);
-  if(log.net) console.log('-------------->> incomingObject\n', JSON.stringify(json, null, 4), notify);
+  if(log.net) console.log('-------------->> incomingObject\n', stringify(json), notify);
   getObject(json.UID).then(o=>{
     if(!o) storeObject(json);
     else updateObject(json.UID, json);
@@ -283,7 +292,7 @@ function updateObject(uid, update){
   if(!uid) return null;
   const o=getCachedObject(uid);
   if(!o) return null;
-  if(log.changes) console.log(uid, 'before\n', JSON.stringify(o,null,4),'\nupdate:\n',JSON.stringify(update,null,4));
+  if(log.changes) console.log(uid, 'before\n', stringify(o),'\nupdate:\n',stringify(update));
   if(o.Version && update.Version && o.Version >= update.Version){
     console.log('incoming version not newer:', o.Version, 'not less than', update.Version);
     return null;
@@ -299,7 +308,7 @@ function updateObject(uid, update){
   if(log.changes) console.log('changed:', changed, 'delta:', delta, 'notifiable:', notifiable);
   if(changed){
     if(notifiable && !update.Version) p.Version = (p.Version||0)+1;
-    if(log.changes) console.log('changed, result\n', JSON.stringify(p,null,4));
+    if(log.changes) console.log('changed, result\n', stringify(p));
     if(notifiable) cachePersistAndNotify(p);
     else           cacheAndPersist(p);
   }
@@ -557,6 +566,7 @@ function setEvaluator(name, evaluator){
 export default {
   listify,
   delistify,
+  stringify,
   makeUID,
   toUID,
   spawnObject,
