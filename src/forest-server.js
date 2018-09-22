@@ -435,6 +435,7 @@ export default {
   dropAll,
   cacheObjects:        core.cacheObjects,
   reCacheObjects:      core.reCacheObjects,
+  dumpCache:           core.dumpCache,
   setEvaluator:        core.setEvaluator,
   runEvaluator:        core.runEvaluator,
   getObject:           core.getObject,

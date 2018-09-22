@@ -136,6 +136,10 @@ class ForestCommon extends Component {
     return core.listify(...items);
   }
 
+  static dumpCache(slowness){
+    return core.dumpCache(slowness);
+  }
+
   static setPeerIdentityUser(pi){
     return auth.setPeerIdentityUser(pi);
   }

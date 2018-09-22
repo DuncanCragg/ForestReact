@@ -16,7 +16,7 @@ function stringify(o){
     return JSON.stringify(o,null,4);
   }
   catch(e){
-    return 'failed to stringify: '+e.message+'\n'+o+'\n';
+    return +'\n'+(Object.assign({ 'Stringify-Error': e.message }, o))+'\n';
   }
 }
 
@@ -120,9 +120,14 @@ function reCacheObjects(){
   return Promise.resolve([]);
 }
 
-function dumpCache(){
+function dumpCache(slowness){
   console.log('---------cache-------');
-  Object.keys(objects).map(k => console.log(objects[k]));
+  if(!slowness) Object.keys(objects).map(k => console.log(stringify(objects[k])));
+  else{
+    Object.keys(objects).map((k,i) => {
+      setTimeout(() => console.log(stringify(objects[k])), i*slowness);
+    });
+  }
   console.log('---------------------');
 }
 
@@ -574,6 +579,7 @@ export default {
   storeObject,
   cacheObjects,
   reCacheObjects,
+  dumpCache,
   setNotify,
   updateObject,
   incomingObject,
