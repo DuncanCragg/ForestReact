@@ -395,7 +395,7 @@ function toMongoProp(key, val){
 }
 
 function getInlineVals(o, inline){
-  return Object.assign({}, ...inline.map(k => o[k] && { [k]: o[k] }), { More: o.UID });
+  return Object.assign({}, ...inline.map(k => o[k]!==undefined && { [k]: o[k] }), { More: o.UID });
 }
 
 function dropAll(actually){
