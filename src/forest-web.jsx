@@ -5,39 +5,34 @@ import _ from 'lodash';
 import core from './forest-core';
 import { ForestCommon, ForestWidget } from './forest-common';
 
-function persist(o) {
-  return Promise.resolve(localStorage.setItem(core.toUID(o.UID), core.stringify(o))).then(
-    () => o.UID + ': ' + [].concat(o.is).join(' ')
-  );
+function persist(o){
+  return Promise.resolve(localStorage.setItem(core.toUID(o.UID), core.stringify(o)))
+          .then(() => o.UID + ': ' + [].concat(o.is).join(' '));
 }
 
-function fetch(uid) {
-  return Promise.resolve(localStorage.getItem(uid)).then(s => JSON.parse(s));
+function fetch(uid){
+  return Promise.resolve(localStorage.getItem(uid)).then(s=>JSON.parse(s));
 }
 
-function recache() {
-  return Promise.resolve(Object.keys(localStorage)).then(uids =>
-    Promise.all(uids.map(uid => fetch(uid).then(o => (o.Cache === 'keep-active' ? o : null)))).then(
-      actives => actives.filter(o => o)
-    )
-  );
+function recache(){
+  return Promise.resolve(Object.keys(localStorage))
+    .then(uids => Promise.all(uids.map(uid => fetch(uid).then(o=>o.Cache==='keep-active'? o: null)))
+                         .then(actives => actives.filter(o=>o)));
 }
 
-function query(is, scope, query) {}
+function query(is, scope, query){ }
 
 core.setPersistence({ persist, fetch, query, recache });
 
 class Forest extends ForestCommon {
-  constructor(props) {
+
+  constructor(props){
     super(props);
   }
 
-  static dropAll(actually) {
-    return Promise.resolve(Object.keys(localStorage)).then(
-      uids =>
-        console.log(actually ? '*************** dropping' : '(not dropping)', uids) ||
-        (actually && localStorage.clear())
-    );
+  static dropAll(actually){
+    return Promise.resolve(Object.keys(localStorage))
+      .then(uids => console.log(actually? '*************** dropping': '(not dropping)', uids) || (actually && localStorage.clear()));
   }
 
   button(name, { label = '', className = '' } = {}) {

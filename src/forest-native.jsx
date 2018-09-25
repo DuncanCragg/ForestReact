@@ -8,17 +8,18 @@ import core from './forest-core';
 import { ForestCommon, ForestWidget } from './forest-common';
 
 function persist(o){
-  return AsyncStorage.setItem(core.toUID(o.UID), core.stringify(o)).then(() => o.UID + ': ' + [].concat(o.is).join(' '));
+  return AsyncStorage.setItem(core.toUID(o.UID), core.stringify(o))
+          .then(() => o.UID + ': ' + [].concat(o.is).join(' '));
 }
 
 function fetch(uid){
-  return AsyncStorage.getItem(uid).then(s=>JSON.parse(s))
+  return AsyncStorage.getItem(uid).then(s=>JSON.parse(s));
 }
 
 function recache(){
   return AsyncStorage.getAllKeys()
     .then(uids => Promise.all(uids.map(uid => fetch(uid).then(o=>o.Cache==='keep-active'? o: null)))
-                   .then(actives => actives.filter(o=>o)))
+                         .then(actives => actives.filter(o=>o)));
 }
 
 function query(is, scope, query){ }
@@ -27,13 +28,13 @@ core.setPersistence({ persist, fetch, query, recache });
 
 class Forest extends ForestCommon {
 
-  constructor(props) {
-    super(props)
+  constructor(props){
+    super(props);
   }
 
   static dropAll(actually){
     return AsyncStorage.getAllKeys()
-      .then(uids => console.log(actually? '*************** dropping': '(not dropping)', uids) || actually && AsyncStorage.clear());
+      .then(uids => console.log(actually? '*************** dropping': '(not dropping)', uids) || (actually && AsyncStorage.clear()));
   }
 
   backButtonCB=null;
