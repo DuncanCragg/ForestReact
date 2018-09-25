@@ -31,12 +31,6 @@ const Context = React.createContext && React.createContext({
   object: () => null,
 });
 
-const Provider = props => (
-  <Context.Provider value={props.forestProps}>
-    {props.children}
-  </Context.Provider>
-);
-
 class ForestCommon extends Component {
 
   static setLogging(conf){
@@ -169,8 +163,6 @@ class ForestCommon extends Component {
       this.object = this.object.bind(this);
       this.notify = this.notify.bind(this);
       this.onChange = this.onChange.bind(this);
-      this.getProvider = this.getProvider.bind(this);
-      this.Provider = this.getProvider();
       this.state.ReactNotify = this.notify;      // hardwiring from obj to react
       core.runEvaluator(this.UID);
       this.notify();
@@ -179,15 +171,15 @@ class ForestCommon extends Component {
 
   mounted = false;
 
-  getProvider() {
-    Provider.defaultProps = {
-      forestProps: { 
+  Provider = props => (
+    <Context.Provider value={{ 
         object: this.object, 
         onRead: this.onRead, 
-        onChange: this.onChange },
-    };
-    return Provider;
-  }
+        onChange: this.onChange,
+    }}>
+      {props.children}
+    </Context.Provider>
+  )
 
   componentDidMount(){ this.mounted = true; }
 
