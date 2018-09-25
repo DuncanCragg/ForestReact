@@ -22,7 +22,7 @@ function recache(){
 
 function query(is, scope, query){ }
 
-core.setPersistence({ persist, fetch, query, recache });
+try{ localStorage && core.setPersistence({ persist, fetch, query, recache }); } catch(e){}
 
 class Forest extends ForestCommon {
 
