@@ -141,8 +141,8 @@ class ForestCommon extends Component {
   static connect(Component) {
     const Consumer = props => (
       <Context.Consumer>
-        {({ onChange, onRead, object, fProvider }) => (
-          <Component onChange={onChange} onRead={onRead} object={object} fProvider={fProvider} {...props} />
+        {({ onChange, onRead, object }) => (
+          <Component onChange={onChange} onRead={onRead} object={object} {...props} />
         )}
       </Context.Consumer>
     );
@@ -176,7 +176,6 @@ class ForestCommon extends Component {
         object: this.object, 
         onRead: this.onRead, 
         onChange: this.onChange,
-        fProvider: this,
     }}>
       {props.children}
     </Context.Provider>
