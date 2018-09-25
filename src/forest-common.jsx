@@ -147,8 +147,8 @@ class ForestCommon extends Component {
   static connect(Component) {
     const Consumer = props => (
       <Context.Consumer>
-        {({ onChange, onRead, object }) => (
-          <Component onChange={onChange} onRead={onRead} object={object} {...props} />
+        {({ onChange, onRead, object, fProvider }) => (
+          <Component onChange={onChange} onRead={onRead} object={object} fProvider={fProvider} {...props} />
         )}
       </Context.Consumer>
     );
@@ -180,11 +180,14 @@ class ForestCommon extends Component {
   mounted = false;
 
   getProvider() {
+    console.log(this.UID, '[UID FROM GET PROVIDER]')
     Provider.defaultProps = {
       forestProps: { 
         object: this.object, 
         onRead: this.onRead, 
-        onChange: this.onChange },
+        onChange: this.onChange,
+        fProvider: this,
+      },
     };
     return Provider;
   }
