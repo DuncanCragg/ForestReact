@@ -1,4 +1,5 @@
 import { ForestWidget } from './forest-common';
-import { Forest } from './forest-native';
+import ForestNative from './forest-native';
+import ForestWeb from './forest-web';
 
-export { Forest, ForestWidget };
+export { ForestNative, ForestWeb, ForestWidget };

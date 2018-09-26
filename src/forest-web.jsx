@@ -24,7 +24,7 @@ function query(is, scope, query){ }
 
 try{ localStorage && core.setPersistence({ persist, fetch, query, recache }); } catch(e){}
 
-class Forest extends ForestCommon {
+export default class Forest extends ForestCommon {
 
   constructor(props){
     super(props);
@@ -95,5 +95,3 @@ class Forest extends ForestCommon {
     );
   }
 }
-
-export { Forest, ForestWidget, Forest as default };
