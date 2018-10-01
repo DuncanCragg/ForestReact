@@ -443,6 +443,7 @@ export default {
   updateObject:        core.updateObject,
   makeUID:             core.makeUID,
   listify:             core.listify,
+  stringify:           core.stringify,
   setLogging:          core.setLogging,
   setPeerIdentityUser: auth.setPeerIdentityUser,
 }

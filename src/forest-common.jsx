@@ -130,6 +130,10 @@ class ForestCommon extends Component {
     return core.listify(...items);
   }
 
+  static stringify(o){
+    return core.stringify(o);
+  }
+
   static dumpCache(slowness){
     return core.dumpCache(slowness);
   }
