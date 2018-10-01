@@ -309,7 +309,7 @@ function updateObject(uid, update){
   if (changed) {
     deltas[uid] = (uid in deltas)? Object.assign(deltas[uid], delta): delta;
   }
-  const notifiable = delta && Object.keys(delta).filter(e=>!notNotifiableProps.includes(e)).length || delta.Timer;
+  const notifiable = changed && Object.keys(update).filter(e=>!notNotifiableProps.includes(e)).length || update.Timer;
   if(log.changes) console.log('changed:', changed, 'delta:', delta, 'notifiable:', notifiable);
   if(changed){
     if(notifiable && !update.Version) p.Version = (p.Version||0)+1;
