@@ -269,7 +269,7 @@ function outgoingObject(o,u){
 function incomingObjectFromGET(url, json){
   json = Object.assign({ Updated: Date.now() }, json);
   if(log.net) console.log('-------------->> incomingObjectFromGET\n', stringify(json));
-  updateObject(url, json);
+  updateObject(url, json, true);
 }
 
 function incomingObject(json, notify){
@@ -280,7 +280,7 @@ function incomingObject(json, notify){
   if(log.net) console.log('-------------->> incomingObject\n', stringify(json), notify);
   getObject(json.UID).then(o=>{
     if(!o) storeObject(json);
-    else updateObject(json.UID, json);
+    else updateObject(json.UID, json, true);
   });
 }
 
@@ -293,23 +293,23 @@ function storeObject(o){
 
 const deltas = {};
 
-function updateObject(uid, update){
+function updateObject(uid, update, full){
   if(!uid) return null;
   const o=getCachedObject(uid);
   if(!o) return null;
-  if(log.changes) console.log(uid, 'before\n', stringify(o),'\nupdate:\n',stringify(update));
+  if(log.changes) console.log(uid, 'before\n', stringify(o), full? '\nincoming:\n': '\nupdate:\n', stringify(update));
   if(o.Version && update.Version && o.Version >= update.Version){
-    console.log('incoming version not newer:', o.Version, 'not less than', update.Version);
+    console.log('incoming version not newer:', update.Version, 'not greater than', o.Version, 'is:', update.is);
     return null;
   }
-  const p=mergeUpdate(o, update);
+  const p=mergeUpdate(o, update, full);
   checkTimer(p);
   const changed = !_.isEqual(o,p);
   const delta = changed && difference(o,p);
   if (changed) {
     deltas[uid] = (uid in deltas)? Object.assign(deltas[uid], delta): delta;
   }
-  const notifiable = changed && Object.keys(update).filter(e=>!notNotifiableProps.includes(e)).length || update.Timer;
+  const notifiable = full || update.Timer || (changed && Object.keys(update).filter(e=>!notNotifiableProps.includes(e)).length);
   if(log.changes) console.log('changed:', changed, 'delta:', delta, 'notifiable:', notifiable);
   if(changed){
     if(notifiable && !update.Version) p.Version = (p.Version||0)+1;
@@ -320,9 +320,9 @@ function updateObject(uid, update){
   return { updated: p, changed, notifiable };
 }
 
-function mergeUpdate(o,update){
+function mergeUpdate(o, update, full){
   const updateNotify=listify(update.Notify); delete update.Notify;
-  const p=Object.assign({}, o, update);
+  const p=Object.assign({ UID: o.UID, Peer: o.Peer, Notify: o.Notify, Version: o.Version }, full? {}: o, update);
   updateNotify.forEach(un=>setNotify(p,un,true));
   return _.omitBy(p, v => v===null||v===undefined||v===''||v===[]);
 }
