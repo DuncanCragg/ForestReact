@@ -141,8 +141,8 @@ class ForestCommon extends Component {
   static connect(Component) {
     const Consumer = props => (
       <Context.Consumer>
-        {({ onChange, onRead, object }) => (
-          <Component onChange={onChange} onRead={onRead} object={object} {...props} />
+        {({ onChange, onRead, object, onKeyDown }) => (
+          <Component onChange={onChange} onRead={onRead} object={object} onKeyDown={onKeyDown} {...props} />
         )}
       </Context.Consumer>
     );
@@ -176,6 +176,7 @@ class ForestCommon extends Component {
         object: this.object, 
         onRead: this.onRead, 
         onChange: this.onChange,
+        onKeyDown: this.onKeyDown,
     }}>
       {props.children}
     </Context.Provider>
@@ -248,9 +249,21 @@ class ForestWidget extends Component {
     },
   });
 
+  KEY_ENTER = 13;
+
+  getTextFieldProps = () => ({
+    type: 'text',
+    onChange: e => this.props.onChange(this.props.name, e.target.value), 
+    onKeyDown: e => this.props.onKeyDown(this.props.name, e),
+    value: this.props.onRead(this.props.name),
+    placeholder: this.props.placeholder,
+    autoFocus: true,
+  })
+
   getAllProps = () => ({
     getWebButtonProps: this.getWebButtonProps,
     getAndroidButtonProps: this.getAndroidButtonProps,
+    getTextFieldProps: this.getTextFieldProps,
   });
 
   render() {
