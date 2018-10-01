@@ -533,7 +533,7 @@ function doEvaluate(uid, params) {
     try{
       evalout = evaluator(object.bind(null, uid), i===0 && params) || {};
     }catch(e){
-      console.log('Exception in evaluator!', e.message);
+      console.log('Exception in evaluator!', e.message, '\n', e.stack);
     }
     delete deltas[Alerted];
     delete o.Alerted;
