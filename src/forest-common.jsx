@@ -259,7 +259,7 @@ class ForestWidget extends Component {
     type: 'text',
     onChange: e => this.props.onChange(this.props.name, e.target.value), 
     onKeyDown: e => this.props.onKeyDown(this.props.name, e),
-    value: this.props.onRead(this.props.name),
+    value: this.props.onRead(this.props.name) || undefined,
     placeholder: this.props.placeholder,
     autoFocus: true,
   })
