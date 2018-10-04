@@ -1,5 +1,6 @@
 
 import _ from 'lodash';
+// import { inspect } from 'util';
 
 const log = {
   update:   false,
@@ -11,12 +12,17 @@ const log = {
   persist:  false,
 }
 
+const localProps =         ['Timer', 'TimerId', 'Notifying', 'Alerted', 'Evaluator', 'Cache', 'ReactNotify'];
+const notNotifiableProps = ['Timer', 'TimerId'];
+const noPersistProps =     [         'TimerId'];
+
 function stringify(o){
+  const oo=_.omit(o, noPersistProps);
   try{
-    return JSON.stringify(o,null,4);
+    return JSON.stringify(oo,null,4);
   }
   catch(e){
-    return +'\n'+(Object.assign({ 'Stringify-Error': e.message }, o))+'\n';
+    return /* inspect && inspect(oo) || */ `{ "Stringify-Error": "${e.message}" }\n`;
   }
 }
 
@@ -31,10 +37,6 @@ function delistify(i){
 function setLogging(conf){
   Object.assign(log, conf);
 }
-
-const localProps =         ['Timer', 'TimerId', 'Notifying', 'Alerted', 'Evaluator', 'Cache', 'ReactNotify'];
-const notNotifiableProps = ['Timer', 'TimerId'];
-const noPersistProps =     [         'TimerId'];
 
 function makeUID(peer){
   /*jshint bitwise:false */
