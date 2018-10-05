@@ -147,8 +147,13 @@ function spawnTemporaryObject(o){
   return UID;
 }
 
-function cacheObjects(list){
-  return list.map(o => spawnObject(o));
+function cacheObjects(objects){
+  if(objects.constructor===Array){
+    return objects.map(o => spawnObject(o));
+  }
+  if(objects.constructor===Object){
+    return Object.assign({}, ...Object.keys(objects).map(k => ({[k]: spawnObject(objects[k])})));
+  }
 }
 
 let fetching = {};
