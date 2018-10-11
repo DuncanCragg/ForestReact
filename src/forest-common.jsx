@@ -26,9 +26,10 @@ function doPost(o,url){
 core.setNetwork({ doGet, doPost });
 
 const Context = React.createContext && React.createContext({
-  onChange: () => null,
-  onRead: () => null,
   object: () => null,
+  onRead: () => null,
+  onChange: () => null,
+  onKeyDown: () => null,
 });
 
 class ForestCommon extends Component {
@@ -145,8 +146,8 @@ class ForestCommon extends Component {
   static connect(Component) {
     const Consumer = props => (
       <Context.Consumer>
-        {({ onChange, onRead, object, onKeyDown }) => (
-          <Component onChange={onChange} onRead={onRead} object={object} onKeyDown={onKeyDown} {...props} />
+        {({ object, onRead, onChange, onKeyDown }) => (
+          <Component object={object} onRead={onRead} onChange={onChange} onKeyDown={onKeyDown} {...props} />
         )}
       </Context.Consumer>
     );
@@ -165,8 +166,10 @@ class ForestCommon extends Component {
       this.userStateUID = core.spawnObject({ 'is': ['user', 'state'] });
       this.state['user-state'] = this.userStateUID;  // hardwiring from obj to react
       this.object = this.object.bind(this);
-      this.notify = this.notify.bind(this);
+      this.onRead = this.onRead.bind(this);
       this.onChange = this.onChange.bind(this);
+      this.onKeyDown = this.onKeyDown.bind(this);
+      this.notify = this.notify.bind(this);
       this.state.ReactNotify = this.notify;      // hardwiring from obj to react
       core.runEvaluator(this.UID);
       this.notify();
@@ -259,7 +262,7 @@ class ForestWidget extends Component {
     type: 'text',
     onChange: e => this.props.onChange(this.props.name, e.target.value), 
     onKeyDown: e => this.props.onKeyDown(this.props.name, e),
-    value: this.props.onRead(this.props.name),
+    value: this.props.onRead(this.props.name)||'',
     placeholder: this.props.placeholder,
     autoFocus: true,
   })
