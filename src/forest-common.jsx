@@ -167,6 +167,8 @@ class ForestCommon extends Component {
       this.object = this.object.bind(this);
       this.notify = this.notify.bind(this);
       this.onChange = this.onChange.bind(this);
+      this.onKeyDown = this.onKeyDown.bind(this);
+      this.onRead = this.onRead.bind(this);
       this.state.ReactNotify = this.notify;      // hardwiring from obj to react
       core.runEvaluator(this.UID);
       this.notify();
