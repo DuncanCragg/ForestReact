@@ -12,8 +12,8 @@ const log = {
   persist:  false,
 }
 
-const localProps =         ['Timer', 'TimerId', 'Notifying', 'Alerted', 'Evaluator', 'Cache', 'ReactNotify'];
-const notNotifiableProps = ['Timer', 'TimerId'];
+const localProps =         ['Timer', 'TimerId', 'Updated', 'Notifying', 'Alerted', 'Evaluator', 'Cache', 'ReactNotify'];
+const notNotifiableProps = ['Timer', 'TimerId', 'Updated'];
 const noPersistProps =     [         'TimerId'];
 
 function stringify(o){
@@ -305,10 +305,8 @@ function updateObject(uid, update, full){
   const o=getCachedObject(uid);
   if(!o) return null;
   if(log.changes) console.log(uid, 'before\n', stringify(o), full? '\nincoming:\n': '\nupdate:\n', stringify(update));
-  if(o.Version && update.Version && o.Version >= update.Version){
-    console.log('incoming version not newer:', update.Version, 'not greater than', o.Version, 'is:', update.is);
-    return null;
-  }
+  const newer = !update.Version || !o.Version || update.Version > o.Version;
+  if(!newer) console.log('incoming version not newer:', update.Version, 'not greater than', o.Version, 'is:', update.is);
   const p=mergeUpdate(o, update, full);
   checkTimer(p);
   const changed = !_.isEqual(o,p);
@@ -316,7 +314,7 @@ function updateObject(uid, update, full){
   if (changed) {
     deltas[uid] = (uid in deltas)? Object.assign(deltas[uid], delta): delta;
   }
-  const notifiable = full || update.Timer || (changed && Object.keys(update).filter(e=>!notNotifiableProps.includes(e)).length);
+  const notifiable = full? newer: (update.Timer || (changed && Object.keys(update).filter(e=>!notNotifiableProps.includes(e)).length));
   if(log.changes) console.log('changed:', changed, 'delta:', delta, 'notifiable:', notifiable);
   if(changed){
     if(notifiable && !update.Version) p.Version = (p.Version||0)+1;
@@ -329,7 +327,7 @@ function updateObject(uid, update, full){
 
 function mergeUpdate(o, update, full){
   const updateNotify=listify(update.Notify); delete update.Notify;
-  const p=Object.assign({ UID: o.UID, Peer: o.Peer, Notify: o.Notify, Version: o.Version }, full? {}: o, update);
+  const p=Object.assign({ UID: o.UID, Peer: o.Peer, Notify: o.Notify, Version: o.Version, Updated: o.Updated }, full? {}: o, update);
   updateNotify.forEach(un=>setNotify(p,un,true));
   return _.omitBy(p, v => v===null||v===undefined||v===''||v===[]);
 }
