@@ -35,49 +35,45 @@ highly declarative, visible set of state transformation functions, per component
 OK, here's a minimal example:
 
 ```javascript
-/* React render reading from `state` for this object's state */
+/* React render reading from `object` for this object's state */
 /* Also has `this` for declaring widgets without actions or events! */
-/* If the first, name arg matches a `state` fieldname, it reads from there */
-function render(object){
-  return (
-    <div>
-      <hr/>
-      {this.textField('message')}
-      <br/><br/>
-      <span>Count: {object('counter')}</span>&nbsp;&nbsp;&nbsp;
-      {this.button('inc', {label: 'increment'})}
-      <br/><br/><hr/><br/>
-    </div>);
+/* If the first, name arg matches an `object` fieldname, it reads from there */
+class Min extends Forest{
+  render(){
+    return (
+      <div>
+        <hr/>
+        {this.textField('message')}
+        <br/><br/>
+        <span>Count: {this.object('counter')}</span>&nbsp;&nbsp;&nbsp;
+        {this.button('inc', {label: 'increment'})}
+        <br/><br/><hr/><br/>
+      </div>);
+  }
 }
 
-/* Mapping to above render function from a string matching */
-/* the `is:` property of the backing state object. */
-const renderers = {
-  'minimal': renderMin
-};
-
 /* Initial list of state objects */
-/* The first one is taken to be the 'top' state object. */
-forest.storeObjects(
+const uids = Forest.cacheObjects(
   [{ Evaluator: evalMin,
      is: 'minimal',
      message: 'Hello World!',
      counter: 17
-  }],
-  renderers
+  }]
 );
 
 /* Where all the domain logic goes: pure functional */
 /* transform/reduction of visible state to new component state: */
 /* `state = f(state, state.user-state)` */
-function evalMin(state){
-  const incrementPushed  = !state('inc') && state('user-state.inc');
-  return Object.assign({},
-    true            && { message: state('user-state.message').toLowerCase() },
-    incrementPushed && { counter: state('counter') + 1 },
-    true            && { inc: state('user-state.inc') }
-  );
+function evalMin(object){
+  const incrementPushed  = !object('inc') && object('user-state.inc');
+  return [
+    true            && { message: object('user-state.message').toLowerCase() },
+    incrementPushed && { counter: object('counter') + 1 },
+    true            && { inc: object('user-state.inc') }
+  ];
 }
+
+Forest.renderDOM(<Min uid={uids[0]} />);
 ```
 
 An object reads the states around it (`user-state` above, but also peer states and API
@@ -108,16 +104,16 @@ expressions - one single dot `.` can give a component access to all the state ar
 locally and remotely, _and_ subscribe it to that state so that it's notified if it
 changes. All the interactive logic is held in pure functions.
 
-## Credit
-
-Thanks to my Tes colleague, [Federico 'framp' Rampazzo](https://github.com/framp), for
-the inspiration, example and base code from [Storry](https://github.com/framp/storry)!
-
 ## Similar
 
 The [Eve Language](http://witheve.com/) is one of the closest examples I've found of
 a similar approach. The [Red Language](http://www.red-lang.org/) also has a number of
 aspects in common.
+
+## Credit
+
+Thanks to my ex-Tes colleague, [Federico 'framp' Rampazzo](https://github.com/framp), for
+the inspiration, example and base code from [Storry](https://github.com/framp/storry)!
 
 
 

@@ -49,14 +49,14 @@ const uids = forestWeb.Forest.cacheObjects(
 
 function evalMin(object){
   const incrementPushed  = !object('inc') && object('user-state.inc');
-  return Object.assign({},
+  return [
     object('Timer') === 0    && { Timer: 2000, enableCounting: !object('enableCounting') },
     incrementPushed          && { counter: object('counter') + 1 },
    !object('enableCounting') && { counter: 0 },
     true                     && { inc: object('user-state.inc') },
     true                     && { message: object('allowuppercase')? object('user-state.message'): (object('user-state.message')||'').toLowerCase() },
     true                     && { allowuppercase: object('user-state.allowuppercase') }
-  );
+  ];
 }
 
 forestWeb.Forest.renderDOM(<Min uid={uids[0]} />);
