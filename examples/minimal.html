@@ -5,17 +5,19 @@
   </head>
   <body>
     <div id="root"></div>
-    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.5.0/react.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.5.0/react-dom.js"></script>
-    <script src="../lib/forest-core.js"></script>
-    <script src="../lib/forest-web.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/lodash@4.17.11/lodash.min.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/react@16.6.3/umd/react.development.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/react-dom@16.6.3/umd/react-dom.development.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <script type="text/javascript">var react = React; var lodash = _; var reactDom = ReactDOM;</script>
+    <script type="text/javascript" src="../lib/forest-core.js"></script>
+    <script type="text/javascript" src="../lib/forest-common.js"></script>
+    <script type="text/javascript" src="../lib/forest-web.js"></script>
     <script type="text/babel">
 
 // ------------------------------------
 
-class Min extends Forest{
+class Min extends forestWeb.Forest{
   render(){
     return (
       <div>
@@ -35,7 +37,7 @@ class Min extends Forest{
 
 // ------------------------------------
 
-const uids = forest.cacheObjects(
+const uids = forestWeb.Forest.cacheObjects(
   [{ Evaluator: evalMin,
      is: 'minimal',
      enableCounting: true,
@@ -52,12 +54,12 @@ function evalMin(object){
     incrementPushed          && { counter: object('counter') + 1 },
    !object('enableCounting') && { counter: 0 },
     true                     && { inc: object('user-state.inc') },
-    true                     && { message: object('allowuppercase')? object('user-state.message'): object('user-state.message').toLowerCase() },
+    true                     && { message: object('allowuppercase')? object('user-state.message'): (object('user-state.message')||'').toLowerCase() },
     true                     && { allowuppercase: object('user-state.allowuppercase') }
   );
 }
 
-forest.renderDOM(<Min uid={uids[0]} />);
+forestWeb.Forest.renderDOM(<Min uid={uids[0]} />);
 
 // ------------------------------------
 
