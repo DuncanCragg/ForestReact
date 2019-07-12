@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import superagent from 'superagent';
 import _ from 'lodash';
 import core from './forest-core';
-import { ForestCommon, ForestWidget } from './forest-common';
+import { ForestCommon } from './forest-common';
 
 function persist(o){
   return Promise.resolve(localStorage.setItem(core.toUID(o.UID), core.stringify(o)))
@@ -24,7 +24,7 @@ function query(is, scope, query){ }
 
 try{ localStorage && core.setPersistence({ persist, fetch, query, recache }); } catch(e){}
 
-class Forest extends ForestCommon {
+export default class Forest extends ForestCommon {
 
   constructor(props){
     super(props);
@@ -95,5 +95,3 @@ class Forest extends ForestCommon {
     );
   }
 }
-
-export { Forest, ForestWidget, Forest as default };

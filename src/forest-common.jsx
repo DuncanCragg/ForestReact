@@ -278,4 +278,4 @@ class ForestWidget extends Component {
   }
 }
 
-export { ForestCommon, ForestWidget, ForestCommon as default };
+export { ForestCommon, ForestWidget };
