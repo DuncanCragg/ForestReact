@@ -10,6 +10,7 @@ const log = {
   object:   false,
   net:      false,
   persist:  false,
+  deltas:    false,
 }
 
 const localProps =         ['Timer', 'TimerId', 'Updated', 'Notifying', 'Alerted', 'Evaluator', 'Cache', 'ReactNotify'];
@@ -312,6 +313,7 @@ function updateObject(uid, update, full){
   const changed = !_.isEqual(o,p);
   const delta = changed && difference(o,p);
   if (changed) {
+    if(log.deltas) console.log('deltas:', { uid, delta });
     deltas[uid] = (uid in deltas)? Object.assign(deltas[uid], delta): delta;
   }
   const notifiable = full? newer: (update.Timer || (changed && Object.keys(update).filter(e=>!notNotifiableProps.includes(e)).length));
